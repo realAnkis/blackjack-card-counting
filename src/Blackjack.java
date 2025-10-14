@@ -42,6 +42,16 @@ public class Blackjack {
                    deck[index]+=3;
             }
         }
+        /*
+        for (int k = 0; k < antalDeck; k++) {
+            for (int i = 0; i < 13; i++) {
+                for (int j = 0; j < 4; j++) {
+                    deck[52*k+13*j+i] = i*10 + j;
+                }
+            }
+        }
+         */
+
         Arrays.sort(deck);
 // I array deck finns alla kort med sit värde i början och ettans positon visar des färg (0=hjäter, 1=clöver, 2=ruter, 3= spader),
 // för värdet ta arraypositonens värde delat med 10
