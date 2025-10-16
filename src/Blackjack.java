@@ -2,19 +2,54 @@
 import java.util.*;
 
 public class Blackjack {
+
+    static ArrayList<Integer> deck2 = new ArrayList<>();
+        static int finnsEssFörPlayer = 0;
+        static int finnsEssFörDealer = 0;
+        static int dealerTotal=0;
+        static int playerTotal=0;
+
+    public static int dealCard() {
+        int valdIndex = (int)(deck2.size() * Math.random());
+        int valtKort = deck2.get(valdIndex);
+        deck2.remove(valdIndex);
+
+        //här kan valfri mänsklig korträkningsmetod köras med valtKort som parameter
+
+        return valtKort;
+    }
+
+    public static void dealPlayer() {
+        int card = dealCard();
+        if (card/10 == 1) {
+            finnsEssFörPlayer++;
+            playerTotal += 11;
+        } else if(card/10 > 10) {
+            playerTotal += 10;
+        }
+        else playerTotal += card;
+    }
+
+    public static void dealDealer() {
+        int card = dealCard();
+        if (card/10 == 1) {
+            finnsEssFörDealer++;
+            dealerTotal += 11;
+        } else if(card/10 > 10) {
+            dealerTotal += 10;
+        }
+        else dealerTotal += card;
+    }
+
     public static void main(String[] args) {
 
         int pengar = 100;
         int[] playerCards = new int[21];
         int numPlayerCards=0;
-        int playerTotal=0;
         int card = 0;
         int usedCards=0;
         int[] dealerCards = new int[21];
         int numDealerCards = 0;
-        int dealerTotal=0;
-        int finnsEssFörPlayer = 0;
-        int finnsEssFörDealer = 0;
         int antalDeck = 2;
         int bet=0;
         Scanner scanner = new Scanner(System.in);
@@ -42,15 +77,18 @@ public class Blackjack {
                    deck[index]+=3;
             }
         }
-        /*
+
+        //k loopar för varje deck, i loopar för kortnummer och j loopar för färg
         for (int k = 0; k < antalDeck; k++) {
-            for (int i = 0; i < 13; i++) {
-                for (int j = 0; j < 4; j++) {
-                    deck[52*k+13*j+i] = i*10 + j;
+            for (int j = 0; j < 4; j++) {
+                for (int i = 0; i < 13; i++) {
+                    deck2.add(52 * k + 13 * j + i, i * 10 + j);
                 }
             }
         }
-         */
+
+        System.out.println(deck2);
+        System.out.println(deck2.size());
 
         Arrays.sort(deck);
 // I array deck finns alla kort med sit värde i början och ettans positon visar des färg (0=hjäter, 1=clöver, 2=ruter, 3= spader),
@@ -179,18 +217,19 @@ public class Blackjack {
            }
            System.out.print("(total="+playerTotal +")\n");
            if(dealerTotal<=21){
-           if(dealerTotal>playerTotal){
+           if(dealerTotal>playerTotal) {
                pengar-=bet;
                System.out.println("Dealer wins");
-           }else
+           } else
                if(dealerTotal<playerTotal){
             pengar+= bet;
                System.out.println("You win!");
-           }else System.out.println("It's a tie");
-           }else
+           } else System.out.println("It's a tie");
+           } else
            { System.out.println("Dealer has busted");
                System.out.println("You win");
-               pengar+=bet;}
+               pengar+=bet;
+           }
 
         finnsEssFörDealer =0;
            finnsEssFörPlayer=0;
