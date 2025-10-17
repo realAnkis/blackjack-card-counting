@@ -21,24 +21,24 @@ public class Blackjack {
 
     public static void dealPlayer() {
         int card = dealCard();
-        if (card/10 == 1) {
-            finnsEssFörPlayer++;
-            playerTotal += 11;
-        } else if(card/10 > 10) {
-            playerTotal += 10;
-        }
-        else playerTotal += card;
+        if (card/10 == 1) finnsEssFörPlayer++;
+        playerTotal += cardValue(card);
     }
 
     public static void dealDealer() {
         int card = dealCard();
+        if (card/10 == 1) finnsEssFörDealer++;
+        dealerTotal += cardValue(card);
+    }
+
+    public static int cardValue(int card) {
         if (card/10 == 1) {
-            finnsEssFörDealer++;
-            dealerTotal += 11;
-        } else if(card/10 > 10) {
-            dealerTotal += 10;
-        }
-        else dealerTotal += card;
+            return 11;
+        } else return Math.min(card / 10, 10);
+    }
+
+    public static int insuranceBet() {
+        return 0;
     }
 
     public static void main(String[] args) {
@@ -52,9 +52,11 @@ public class Blackjack {
         int numDealerCards = 0;
         int antalDeck = 2;
         int bet=0;
+        int insuranceBet;
         Scanner scanner = new Scanner(System.in);
         String stop = "";
         String action = "";
+        int dealer2ndCard;
 
    int [] deck = new int[antalDeck*52];
         String []färg = {"Hjäter","Clöver","Ruter","Spader"};
@@ -114,6 +116,7 @@ public class Blackjack {
            usedCards++;
            numPlayerCards++;
 
+           dealPlayer();
 
            card = (int)((Math.random()*(deck.length-usedCards))+usedCards);
            dealerCards[numDealerCards]=deck[card];
@@ -124,6 +127,8 @@ public class Blackjack {
            usedCards++;
            numDealerCards++;
 
+           dealDealer();
+
            card = (int)((Math.random()*(deck.length-usedCards))+usedCards);
            playerCards[numPlayerCards]=deck[card];
            if (deck[card]/10==11)finnsEssFörPlayer++;
@@ -132,6 +137,20 @@ public class Blackjack {
            Arrays.sort(deck);
            usedCards++;
            numPlayerCards++;
+
+           dealPlayer();
+
+           dealer2ndCard = dealCard();
+
+           if(dealerTotal == 11) insuranceBet = insuranceBet();
+
+           if(dealerTotal + cardValue(dealer2ndCard) == 21) {
+               if(playerTotal == 21) {
+
+               }
+           }
+
+
         action=scanner.nextLine();
 
 
