@@ -1,6 +1,7 @@
 
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 public class Blackjack {
 
@@ -11,13 +12,15 @@ public class Blackjack {
     static int dealerTotal = 0;
     static int playerTotal = 0;
     static int splitTotal = 0;
+    static int antalDeck = 2;
+    static Consumer<Integer> externaldealCardMethod;
 
     public static int dealCard() {
         int valdIndex = (int) (deck.size() * Math.random());
         int valtKort = deck.get(valdIndex);
         deck.remove(valdIndex);
 
-        //här kan valfri mänsklig korträkningsmetod köras med valtKort som parameter
+        externaldealCardMethod.accept(valtKort);
 
         return valtKort;
     }
@@ -62,6 +65,21 @@ public class Blackjack {
         } else return Math.min(card / 10, 10);
     }
 
+    public static void shuffleDeck() {
+        deck.clear();
+        //k loopar för varje deck, i loopar för kortnummer och j loopar för färg
+        for (int k = 0; k < antalDeck; k++) {
+            for (int j = 0; j < 4; j++) {
+                for (int i = 0; i < 13; i++) {
+                    deck.add(52 * k + 13 * j + i, (i + 1) * 10 + j);
+                }
+            }
+        }
+        // I listan deck finns alla kort med sit värde i början och ettans positon visar dess färg (0 = hjäter, 1 = klöver, 2 = ruter, 3 = spader)
+        // för värdet ta kortets värde delat med 10
+        // för färg ta % 10
+    }
+
     public static void print(int allowedActions) {
         System.out.println("\nDealer has: " + dealerTotal);
         System.out.println("Player has: " + playerTotal);
@@ -72,33 +90,22 @@ public class Blackjack {
         else if (allowedActions == 3) System.out.println("hit, stand, double or split (h/s/d/sp)");
     }
 
-    public static void main(String[] args, BiFunction<int[], ArrayList<Integer>, String> actionMethod, BiFunction<int[], ArrayList<Integer>, Integer> betMethod) {
+    public static void main(String[] args, BiFunction<int[], ArrayList<Integer>, String> actionMethod, BiFunction<int[], ArrayList<Integer>, Integer> insuranceBetMethod, BiFunction<int[], ArrayList<Integer>, Integer> betMethod, Consumer<Integer> cardDealtMethod) {
 
         int pengar = 100;
         int[] playerFirstCards = new int[2];
         int allowedActions;
-        int antalDeck = 2;
         int bet;
         int splitBet = 0;
         int insuranceBet;
-        Scanner scanner = new Scanner(System.in);
         String action = "";
         int dealer2ndCard;
+        externaldealCardMethod = cardDealtMethod;
 
         //String []färg = {"Hjäter","Clöver","Ruter","Spader"};
 
-        //k loopar för varje deck, i loopar för kortnummer och j loopar för färg
-        for (int k = 0; k < antalDeck; k++) {
-            for (int j = 0; j < 4; j++) {
-                for (int i = 0; i < 13; i++) {
-                    deck.add(52 * k + 13 * j + i, (i + 1) * 10 + j);
-                }
-            }
-        }
+        shuffleDeck();
 
-        // I listan deck finns alla kort med sit värde i början och ettans positon visar des färg (0=hjäter, 1=clöver, 2=ruter, 3= spader),
-        // för värdet ta kortets värde delat med 10
-        // för färg ta % 10
         System.out.println("===== Black Jack =====");
         while (!action.equals("stopp")) {
             insuranceBet = 0;
@@ -132,7 +139,7 @@ public class Blackjack {
             if (dealerTotal == 11) {
                 print(allowedActions);
                 System.out.println("Insurance bet?");
-                insuranceBet = Math.min(betMethod.apply(new int[]{},deck), bet / 2);
+                insuranceBet = Math.min(insuranceBetMethod.apply(new int[0],deck), bet / 2);
                 pengar -= insuranceBet;
                 System.out.println("You have bet " + insuranceBet + "kr");
             }
