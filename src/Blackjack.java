@@ -1,4 +1,5 @@
 
+import java.awt.*;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -6,57 +7,31 @@ import java.util.function.Consumer;
 public class Blackjack {
 
     static ArrayList<Integer> deck = new ArrayList<>();
-    static int finnsEssFörPlayer = 0;
-    static int finnsEssFörDealer = 0;
-    static int finnsEssFörSplit = 0;
-    static int dealerTotal = 0;
-    static int playerTotal = 0;
-    static int splitTotal = 0;
-    static int antalDeck = 2;
-    static Consumer<Integer> externaldealCardMethod;
+    //arrayposition 0 är Player, 1 är Dealer och 2 är Split.
+    static int[] total = new int[3];
+    static int[] hasAce = new int[3];
+    static Consumer<Integer> externalDealCardMethod;
 
     public static int dealCard() {
         int valdIndex = (int) (deck.size() * Math.random());
         int valtKort = deck.get(valdIndex);
         deck.remove(valdIndex);
 
-        externaldealCardMethod.accept(valtKort);
+        externalDealCardMethod.accept(valtKort);
 
         return valtKort;
     }
 
-    public static int dealPlayer() {
+    public static int deal(int dealingTo) {
         int card = dealCard();
-        if (card / 10 == 1) finnsEssFörPlayer++;
-        playerTotal += cardValue(card);
+        if (card / 10 == 1) hasAce[dealingTo]++;
+        total[dealingTo] += cardValue(card);
 
-        if (playerTotal > 21 && finnsEssFörPlayer != 0) {
-            playerTotal -= 10;
-            finnsEssFörPlayer--;
+        if (total[dealingTo] > 21 && hasAce[dealingTo] != 0) {
+            total[dealingTo] -= 10;
+            hasAce[dealingTo]--;
         }
         return cardValue(card);
-    }
-
-    public static void dealSplit() {
-        int card = dealCard();
-        if (card / 10 == 1) finnsEssFörSplit++;
-        splitTotal += cardValue(card);
-
-        if (splitTotal > 21 && finnsEssFörSplit != 0) {
-            splitTotal -= 10;
-            finnsEssFörSplit--;
-        }
-    }
-
-    public static void dealDealer() {
-        int card = dealCard();
-        if (card / 10 == 1) finnsEssFörDealer++;
-        dealerTotal += cardValue(card);
-
-        if (dealerTotal > 21 && finnsEssFörDealer != 0) {
-            dealerTotal -= 10;
-            finnsEssFörDealer--;
-        }
     }
 
     public static int cardValue(int card) {
@@ -65,10 +40,10 @@ public class Blackjack {
         } else return Math.min(card / 10, 10);
     }
 
-    public static void shuffleDeck() {
+    public static void shuffleDeck(int deckAmount) {
         deck.clear();
         //k loopar för varje deck, i loopar för kortnummer och j loopar för färg
-        for (int k = 0; k < antalDeck; k++) {
+        for (int k = 0; k < deckAmount; k++) {
             for (int j = 0; j < 4; j++) {
                 for (int i = 0; i < 13; i++) {
                     deck.add(52 * k + 13 * j + i, (i + 1) * 10 + j);
@@ -81,16 +56,16 @@ public class Blackjack {
     }
 
     public static void print(int allowedActions) {
-        System.out.println("\nDealer has: " + dealerTotal);
-        System.out.println("Player has: " + playerTotal);
-        if (splitTotal > 0) System.out.println("Split has: " + splitTotal);
+        System.out.println("\nDealer has: " + total[1]);
+        System.out.println("Player has: " + total[0]);
+        if (total[2] > 0) System.out.println("Split has: " + total[2]);
 
         if (allowedActions == 1) System.out.println("hit or stand (h/s)");
         else if (allowedActions == 2) System.out.println("hit, stand or double (h/s/d)");
         else if (allowedActions == 3) System.out.println("hit, stand, double or split (h/s/d/sp)");
     }
 
-    public static void main(String[] args, BiFunction<int[], ArrayList<Integer>, String> actionMethod, BiFunction<int[], ArrayList<Integer>, Integer> insuranceBetMethod, BiFunction<int[], ArrayList<Integer>, Integer> betMethod, Consumer<Integer> cardDealtMethod) {
+    public static void main(String[] args, BiFunction<int[], ArrayList<Integer>, String> actionMethod, BiFunction<int[], ArrayList<Integer>, Integer> insuranceBetMethod, BiFunction<int[], ArrayList<Integer>, Integer> betMethod, Consumer<Integer> dealCardMethod) {
 
         int pengar = 100;
         int[] playerFirstCards = new int[2];
@@ -98,24 +73,23 @@ public class Blackjack {
         int bet;
         int splitBet = 0;
         int insuranceBet;
+        int numberOfDecks = 2;
+        double reshufflePercent = 0.25;
         String action = "";
         int dealer2ndCard;
-        externaldealCardMethod = cardDealtMethod;
+        externalDealCardMethod = dealCardMethod;
 
         //String []färg = {"Hjäter","Clöver","Ruter","Spader"};
-
-        shuffleDeck();
 
         System.out.println("===== Black Jack =====");
         while (!action.equals("stopp")) {
             insuranceBet = 0;
             allowedActions = 0;
-            splitTotal = 0;
-            finnsEssFörSplit = 0;
-            finnsEssFörDealer = 0;
-            finnsEssFörPlayer = 0;
-            playerTotal = 0;
-            dealerTotal = 0;
+            for (int i = 0; i < 3; i++) {
+                total[i] = hasAce[i] = 0;
+            }
+
+            if(deck.size() <= reshufflePercent * 52 * numberOfDecks) shuffleDeck(numberOfDecks);
 
             System.out.println("You have " + pengar + "kr to bet");
             System.out.println("Enter your bet:");
@@ -127,16 +101,18 @@ public class Blackjack {
             System.out.println("You have bet " + bet + "kr");
             pengar -= bet;
 
-            playerFirstCards[0] = dealPlayer();
+            //playerFirstCards[0] = dealPlayer();
+            playerFirstCards[0] = deal(0);
 
-            dealDealer();
+            //dealDealer();
+            deal(1);
 
-            playerFirstCards[1] = dealPlayer();
+            playerFirstCards[1] = deal(0);
 
             dealer2ndCard = dealCard();
 
             //Om dealerns visade kort är ess
-            if (dealerTotal == 11) {
+            if (total[1] == 11) {
                 print(allowedActions);
                 System.out.println("Insurance bet?");
                 insuranceBet = Math.min(insuranceBetMethod.apply(new int[0],deck), bet / 2);
@@ -145,8 +121,8 @@ public class Blackjack {
             }
 
             //Om dealer har blackjack
-            if (dealerTotal + cardValue(dealer2ndCard) == 21) {
-                if (playerTotal == 21) {
+            if (total[1] + cardValue(dealer2ndCard) == 21) {
+                if (total[0] == 21) {
                     pengar += bet;
                     System.out.println("Dealer has blackjack, tie!");
                 } else System.out.println("Dealer has blackjack!");
@@ -160,7 +136,7 @@ public class Blackjack {
             if (playerFirstCards[0] == playerFirstCards[1]) allowedActions = 3;
             print(allowedActions);
 
-            if (playerTotal == 21) {
+            if (total[0] == 21) {
                 System.out.println("Player has blackjack! +" + (int) (bet * 2.5) + "kr");
                 pengar += (int) (bet * 2.5);
                 continue;
@@ -168,98 +144,99 @@ public class Blackjack {
             
             action = actionMethod.apply(new int[]{},deck);
 
-            while (playerTotal < 21 && !action.equals("s")) {
+            while (total[0] < 21 && !action.equals("s")) {
                 //double
                 if (action.equals("d")) {
                     pengar -= bet;
                     bet *= 2;
-                    dealPlayer();
+                    deal(0);
                     break;
                 }
                 //hit
                 if (action.equals("h")) {
                     allowedActions = 1;
-                    dealPlayer();
-                    if (playerTotal > 21) allowedActions = 0;
+                    deal(0);
+                    if (total[0] > 21) allowedActions = 0;
                 }
                 //split
                 if (action.equals("sp")) {
-                    playerTotal = splitTotal = playerFirstCards[0];
-                    if (splitTotal == 11) finnsEssFörSplit++;
-                    dealPlayer();
-                    dealSplit();
+                    total[0] = total[2] = playerFirstCards[0];
+                    if (total[2] == 11) hasAce[2]++;
+                    deal(0);
+                    deal(2);
                     splitBet = bet;
                     pengar -= splitBet;
                     System.out.println("You bet " + splitBet + "kr");
                 }
                 print(allowedActions);
-                if (playerTotal < 21) action = actionMethod.apply(new int[]{},deck);
+                if (total[0] < 21) action = actionMethod.apply(new int[]{},deck);
             }
 
             //spelar det splittade spelet
-            if (splitTotal != 0) {
+            if (total[2] != 0) {
                 allowedActions = 2;
                 print(allowedActions);
                 action = actionMethod.apply(new int[]{},deck);
-                while (splitTotal < 21 && !action.equals("s")) {
+                while (total[2] < 21 && !action.equals("s")) {
                     //double
                     if (action.equals("d")) {
                         pengar -= splitBet;
                         splitBet *= 2;
-                        dealSplit();
+                        deal(2);
                         break;
                     }
                     //hit
                     if (action.equals("h")) {
                         allowedActions = 1;
-                        dealSplit();
-                        if (splitTotal > 21) allowedActions = 0;
+                        deal(2);
+                        if (total[2] > 21) allowedActions = 0;
                     }
                     print(allowedActions);
-                    if (splitTotal < 21) action = actionMethod.apply(new int[]{},deck);
+                    if (total[2] < 21) action = actionMethod.apply(new int[]{},deck);
                 }
             }
 
-            if (playerTotal > 21) System.out.println("Player busted!");
-            if (splitTotal > 21) System.out.println("Split busted!");
-            if (playerTotal > 21 && splitTotal > 21) continue;
+            if (total[0] > 21) System.out.println("Player busted!");
+            if (total[2] > 21) System.out.println("Split busted!");
+            if ((total[0] > 21 && total[2] > 21) || (total[0] > 21 && total[2] == 0)) continue;
 
-            dealerTotal += cardValue(dealer2ndCard);
-            if (!(playerFirstCards[0] >= 10 && finnsEssFörPlayer != 0 && playerTotal == 21 && finnsEssFörSplit != 0 && splitTotal == 21))
-                while (dealerTotal < 17) {
-                    dealDealer();
+            total[1] += cardValue(dealer2ndCard);
+            if(cardValue(dealer2ndCard) == 11) hasAce[1]++;
+            if (!(playerFirstCards[0] >= 10 && hasAce[0] != 0 && total[0] == 21 && hasAce[2] != 0 && total[2] == 21))
+                while (total[1] < 17) {
+                    deal(1);
                 }
 
             allowedActions = 0;
             print(allowedActions);
 
-            if (playerFirstCards[0] >= 10 && finnsEssFörPlayer != 0 && playerTotal == 21) {
+            if (playerFirstCards[0] >= 10 && hasAce[0] != 0 && total[0] == 21) {
                 System.out.println("Player has blackjack! +" + (int) (bet * 2.5) + "kr");
                 pengar += (int) (bet * 2.5);
-            } else if (playerTotal <= 21) {
-                if (playerTotal > dealerTotal) {
+            } else if (total[0] <= 21) {
+                if (total[0] > total[1]) {
                     System.out.println("Player wins! +" + bet * 2 + "kr");
                     pengar += bet * 2;
-                } else if (playerTotal == dealerTotal) {
+                } else if (total[0] == total[1]) {
                     System.out.println("Tie! +" + bet + "kr");
                     pengar += bet;
-                } else if (dealerTotal > 21) {
+                } else if (total[1] > 21) {
                     System.out.println("Dealer Busted! +" + bet * 2 + "kr");
                     pengar += bet * 2;
                 } else System.out.println("Dealer wins!");
             }
 
-            if (splitTotal == 21 && playerFirstCards[0] >= 10 && finnsEssFörSplit != 0) {
+            if (total[2] == 21 && playerFirstCards[0] >= 10 && hasAce[2] != 0) {
                 System.out.println("Split has blackjack! +" + (int) (splitBet * 2.5) + "kr");
                 pengar += (int) (splitBet * 2.5);
-            } else if (splitTotal != 0 && splitTotal <= 21) {
-                if (splitTotal > dealerTotal) {
+            } else if (total[2] != 0 && total[2] <= 21) {
+                if (total[2] > total[1]) {
                     System.out.println("Split wins! +" + splitBet * 2 + "kr");
                     pengar += splitBet * 2;
-                } else if (splitTotal == dealerTotal) {
+                } else if (total[2] == total[1]) {
                     System.out.println("Split Tie! +" + splitBet + "kr");
                     pengar += splitBet;
-                } else if (dealerTotal > 21) {
+                } else if (total[1] > 21) {
                     System.out.println("Dealer Busted! +" + bet * 2 + "kr");
                     pengar += bet * 2;
                 } else System.out.println("Dealer wins over split!");
