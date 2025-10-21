@@ -1,5 +1,6 @@
 
 import java.util.*;
+import java.util.function.BiFunction;
 
 public class Blackjack {
 
@@ -71,7 +72,7 @@ public class Blackjack {
         else if (allowedActions == 3) System.out.println("hit, stand, double or split (h/s/d/sp)");
     }
 
-    public static void main(String[] args, Runnable actionMethod) {
+    public static void main(String[] args, BiFunction<int[], ArrayList<Integer>, String> actionMethod, BiFunction<int[], ArrayList<Integer>, Integer> betMethod) {
 
         int pengar = 100;
         int[] playerFirstCards = new int[2];
@@ -111,11 +112,10 @@ public class Blackjack {
 
             System.out.println("You have " + pengar + "kr to bet");
             System.out.println("Enter your bet:");
-            bet = scanner.nextInt();
-            scanner.nextLine();
+            bet = betMethod.apply(new int[]{},deck);
             while (bet > pengar || bet < 1) {
                 System.out.println("You can't bet that, try agian");
-                bet = scanner.nextInt();
+                bet = betMethod.apply(new int[]{},deck);
             }
             System.out.println("You have bet " + bet + "kr");
             pengar -= bet;
@@ -132,8 +132,7 @@ public class Blackjack {
             if (dealerTotal == 11) {
                 print(allowedActions);
                 System.out.println("Insurance bet?");
-                insuranceBet = Math.min(scanner.nextInt(), bet / 2);
-                scanner.nextLine();
+                insuranceBet = Math.min(betMethod.apply(new int[]{},deck), bet / 2);
                 pengar -= insuranceBet;
                 System.out.println("You have bet " + insuranceBet + "kr");
             }
@@ -159,9 +158,8 @@ public class Blackjack {
                 pengar += (int) (bet * 2.5);
                 continue;
             }
-
-            //action = scanner.nextLine();
-            action = actionMethod.run();
+            
+            action = actionMethod.apply(new int[]{},deck);
 
             while (playerTotal < 21 && !action.equals("s")) {
                 //double
@@ -188,14 +186,14 @@ public class Blackjack {
                     System.out.println("You bet " + splitBet + "kr");
                 }
                 print(allowedActions);
-                if (playerTotal < 21) action = scanner.nextLine();
+                if (playerTotal < 21) action = actionMethod.apply(new int[]{},deck);
             }
 
             //spelar det splittade spelet
             if (splitTotal != 0) {
                 allowedActions = 2;
                 print(allowedActions);
-                action = scanner.nextLine();
+                action = actionMethod.apply(new int[]{},deck);
                 while (splitTotal < 21 && !action.equals("s")) {
                     //double
                     if (action.equals("d")) {
@@ -211,7 +209,7 @@ public class Blackjack {
                         if (splitTotal > 21) allowedActions = 0;
                     }
                     print(allowedActions);
-                    if (splitTotal < 21) action = scanner.nextLine();
+                    if (splitTotal < 21) action = actionMethod.apply(new int[]{},deck);
                 }
             }
 
