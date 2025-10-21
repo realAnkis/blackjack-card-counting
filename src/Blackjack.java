@@ -71,7 +71,7 @@ public class Blackjack {
         else if (allowedActions == 3) System.out.println("hit, stand, double or split (h/s/d/sp)");
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args, Runnable actionMethod) {
 
         int pengar = 100;
         int[] playerFirstCards = new int[2];
@@ -160,7 +160,8 @@ public class Blackjack {
                 continue;
             }
 
-            action = scanner.nextLine();
+            //action = scanner.nextLine();
+            action = actionMethod.run();
 
             while (playerTotal < 21 && !action.equals("s")) {
                 //double
