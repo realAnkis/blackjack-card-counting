@@ -17,18 +17,21 @@ public class SpelaSjälv {
 
     //körs när det ursprungliga bettet ska bestämmas
     public static int decideBet(int[] args, ArrayList<Integer> deck) {
+        System.out.println("Enter your bet:");
         int bet = scanner.nextInt();
         scanner.nextLine();
+        System.out.println("You have bet " + bet + "kr");
         return bet;
     }
 
     //körs ifall möjlighet för ett insurance bet finns (dvs. ifall dealern har ett ess), args är tom
     public static int decideInsuranceBet(int[] args, ArrayList<Integer> deck) {
+        System.out.println("Insurance bet?");
         return decideBet(new int[0], null);
     }
 
     public static void main(String[] args) {
-        Blackjack.main(new String[]{}, SpelaSjälv::decideAction, SpelaSjälv::decideBet, SpelaSjälv::decideInsuranceBet, SpelaSjälv::cardDealt);
+        Blackjack.main(new String[]{},true, SpelaSjälv::decideAction, SpelaSjälv::decideBet, SpelaSjälv::decideInsuranceBet, SpelaSjälv::cardDealt);
     }
 
 }
