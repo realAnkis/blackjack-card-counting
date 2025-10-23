@@ -5,11 +5,12 @@ public class SpelaSjälv {
 
     static Scanner scanner = new Scanner(System.in);
 
-    //körs när ett kort delas ut från kortleken
-    public static void cardDealt(int card) {
+    //körs när ett kort delas ut från kortleken, args[0] = kortet som delas ut (inte värdet utan själva kortet), args[1] = 0 ifall korter delas till spelaren, 1 ifall det delas till dealern, 2 ifall det delas till split
+    public static void cardDealt(Integer[] args) {
     }
 
-    //körs när en aktion i spelet behöver bestämmas
+    //körs när en aktion i spelet behöver bestämmas, bör returna "s", "h", "d" eller "sp"
+    //agrs innehåller [spelarens total, dealerns total, spelarens ess, dealerns ess, tillåtna aktioner (3 ifall alla är tillåtna, 2 ifall double är tillåtet och 1 om bara hit och stand är tillåtet), antal deck, spelarens första kort (används ifall split är tillåtet)]
     public static String decideAction(int[] args, ArrayList<Integer> deck) {
         return scanner.nextLine();
     }
@@ -21,7 +22,7 @@ public class SpelaSjälv {
         return bet;
     }
 
-    //körs ifall möjlighet för ett insurance bet finns (dvs. ifall dealern har ett ess)
+    //körs ifall möjlighet för ett insurance bet finns (dvs. ifall dealern har ett ess), args är tom
     public static int decideInsuranceBet(int[] args, ArrayList<Integer> deck) {
         return decideBet(new int[0], null);
     }

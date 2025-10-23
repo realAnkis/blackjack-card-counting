@@ -10,20 +10,20 @@ public class Blackjack {
     //arrayposition 0 är Player, 1 är Dealer och 2 är Split.
     static int[] total = new int[3];
     static int[] hasAce = new int[3];
-    static Consumer<Integer> externalDealCardMethod;
+    static Consumer<Integer[]> externalDealCardMethod;
 
-    public static int dealCard() {
+    public static int dealCard(int dealingTo) {
         int valdIndex = (int) (deck.size() * Math.random());
         int valtKort = deck.get(valdIndex);
         deck.remove(valdIndex);
 
-        externalDealCardMethod.accept(valtKort);
+        externalDealCardMethod.accept(new Integer[]{valtKort,dealingTo});
 
         return valtKort;
     }
 
     public static int deal(int dealingTo) {
-        int card = dealCard();
+        int card = dealCard(dealingTo);
         if (card / 10 == 1) hasAce[dealingTo]++;
         total[dealingTo] += cardValue(card);
 
@@ -65,9 +65,10 @@ public class Blackjack {
         else if (allowedActions == 3) System.out.println("hit, stand, double or split (h/s/d/sp)");
     }
 
-    public static void main(String[] args, BiFunction<int[], ArrayList<Integer>, String> actionMethod, BiFunction<int[], ArrayList<Integer>, Integer> insuranceBetMethod, BiFunction<int[], ArrayList<Integer>, Integer> betMethod, Consumer<Integer> dealCardMethod) {
+    public static void main(String[] args, BiFunction<int[], ArrayList<Integer>, String> actionMethod, BiFunction<int[], ArrayList<Integer>, Integer> insuranceBetMethod, BiFunction<int[], ArrayList<Integer>, Integer> betMethod, Consumer<Integer[]> dealCardMethod) {
 
         int pengar = 100;
+        int numberOfGames = 1000;
         int[] playerFirstCards = new int[2];
         int allowedActions;
         int bet;
@@ -75,14 +76,14 @@ public class Blackjack {
         int insuranceBet;
         int numberOfDecks = 2;
         double reshufflePercent = 0.25;
-        String action = "";
+        String action;
         int dealer2ndCard;
         externalDealCardMethod = dealCardMethod;
 
         //String []färg = {"Hjäter","Clöver","Ruter","Spader"};
 
         System.out.println("===== Black Jack =====");
-        while (!action.equals("stopp")) {
+        for (int game = 0; game < numberOfGames; game++) {
             insuranceBet = 0;
             allowedActions = 0;
             for (int i = 0; i < 3; i++) {
@@ -109,7 +110,7 @@ public class Blackjack {
 
             playerFirstCards[1] = deal(0);
 
-            dealer2ndCard = dealCard();
+            dealer2ndCard = dealCard(1);
 
             //Om dealerns visade kort är ess
             if (total[1] == 11) {
@@ -142,7 +143,7 @@ public class Blackjack {
                 continue;
             }
             
-            action = actionMethod.apply(new int[]{},deck);
+            action = actionMethod.apply(new int[]{total[0],total[1],hasAce[0],hasAce[1],allowedActions,numberOfDecks,playerFirstCards[0]},deck);
 
             while (total[0] < 21 && !action.equals("s")) {
                 //double
@@ -169,14 +170,14 @@ public class Blackjack {
                     System.out.println("You bet " + splitBet + "kr");
                 }
                 print(allowedActions);
-                if (total[0] < 21) action = actionMethod.apply(new int[]{},deck);
+                if (total[0] < 21) action = actionMethod.apply(new int[]{total[0],total[1],hasAce[0],hasAce[1],allowedActions,numberOfDecks,playerFirstCards[0]},deck);
             }
 
             //spelar det splittade spelet
             if (total[2] != 0) {
                 allowedActions = 2;
                 print(allowedActions);
-                action = actionMethod.apply(new int[]{},deck);
+                action = actionMethod.apply(new int[]{total[2],total[1],hasAce[2],hasAce[1],allowedActions,numberOfDecks,playerFirstCards[0]},deck);
                 while (total[2] < 21 && !action.equals("s")) {
                     //double
                     if (action.equals("d")) {
@@ -192,7 +193,7 @@ public class Blackjack {
                         if (total[2] > 21) allowedActions = 0;
                     }
                     print(allowedActions);
-                    if (total[2] < 21) action = actionMethod.apply(new int[]{},deck);
+                    if (total[2] < 21) action = actionMethod.apply(new int[]{total[2],total[1],hasAce[2],hasAce[1],allowedActions,numberOfDecks,playerFirstCards[0]},deck);
                 }
             }
 
