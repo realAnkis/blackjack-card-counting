@@ -10,6 +10,7 @@ public class test {
     //körs när en aktion i spelet behöver bestämmas, bör returna "s", "h", "d" eller "sp"
     //agrs innehåller [spelarens total (0), dealerns total (1), spelarens ess (2), dealerns ess (3), tillåtna aktioner (har värdet 3 ifall alla är tillåtna, 2 ifall double är tillåtet och 1 om bara hit och stand är tillåtet) (4), antal deck (5), spelarens första kort (används ifall split är tillåtet) (6), dealerns andra kort (för att läggas tillbaka i högen) (7)]
     public static String decideAction(int[] args, ArrayList<Integer> deck) {
+        if(args[4] == 3 && args[2] != 0) return "sp";
         if(args[0] == 11) return "d";
         if(args[0] < 11) return "h";
         if(args[0] < args[1] + Blackjack.cardValue(args[7])) return "h";

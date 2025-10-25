@@ -61,10 +61,10 @@ public class Blackjack {
     private static void print(int allowedActions, int currentHand) {
         System.out.println("\nDealer has: " + total[4]);
 
-        if(allowedActions == 0) {
+        if (allowedActions == 0) {
             for (int i = 0; i < 4; i++) {
                 if (total[i] == 0) break;
-                System.out.println("Hand " + (i+1) + " has: " + total[i]);
+                System.out.println("Hand " + (i + 1) + " has: " + total[i]);
             }
         } else System.out.println("Player has: " + total[currentHand]);
 
@@ -128,13 +128,19 @@ public class Blackjack {
         }
     }
 
+    private static double placeCut(double[] interval) {
+        return Math.random()*(interval[1]-interval[0]) + interval[0];
+    }
+
     public static void main(String[] args, boolean printGameStatus, BiFunction<int[], ArrayList<Integer>, String> actionMethod, BiFunction<int[], ArrayList<Integer>, Integer> betMethod, BiFunction<int[], ArrayList<Integer>, Integer> insuranceBetMethod, Consumer<Integer[]> dealCardMethod) {
 
-        int pengar = 0;
-        int numberOfGames = 1000000;
+        int money = 0;
+        int betTotal = 0;
+        int numberOfGames = 10000000;
         int insuranceBet;
-        int numberOfDecks = 2;
-        double reshufflePercent = 0.25;
+        int numberOfDecks = 6;
+        double[] reshufflePercentInterval = new double[]{0.25,0.55};
+        double reshufflePercent = 1;
         int dealer2ndCard;
         externalDealCardMethod = dealCardMethod;
 
@@ -151,7 +157,10 @@ public class Blackjack {
                 playerFirstCards[i][0] = playerFirstCards[i][1] = 0;
             }
 
-            if (deck.size() <= reshufflePercent * 52 * numberOfDecks) shuffleDeck(numberOfDecks);
+            if (deck.size() <= reshufflePercent * 52 * numberOfDecks) {
+                shuffleDeck(numberOfDecks);
+                reshufflePercent = placeCut(reshufflePercentInterval);
+            }
             bet[0] = betMethod.apply(new int[]{}, deck);
 
             playerFirstCards[0][0] = deal(0);
@@ -166,7 +175,8 @@ public class Blackjack {
             if (total[4] == 11) {
                 if (printGameStatus) print(0, 0);
                 insuranceBet = Math.min(insuranceBetMethod.apply(new int[0], deck), bet[0] / 2);
-                pengar -= insuranceBet;
+                money -= insuranceBet;
+                betTotal += insuranceBet;
             }
 
             //Om dealer har blackjack
@@ -175,10 +185,12 @@ public class Blackjack {
                     if (printGameStatus) System.out.println("Dealer has blackjack, tie!");
                 } else {
                     if (printGameStatus) System.out.println("Dealer has blackjack!");
-                    pengar -= bet[0];
+                    money -= bet[0];
+                    betTotal += bet[0];
                 }
-                pengar += insuranceBet * 2;
-                if (printGameStatus && insuranceBet != 0) System.out.println("+" + insuranceBet * 2 + "kr from insurance bet");
+                money += insuranceBet * 2;
+                if (printGameStatus && insuranceBet != 0)
+                    System.out.println("+" + insuranceBet * 2 + "kr from insurance bet");
                 continue;
             }
 
@@ -192,31 +204,32 @@ public class Blackjack {
                     deal(4);
                 }
 
-            if (printGameStatus) print(0,0);
+            if (printGameStatus) print(0, 0);
 
             for (int i = 0; i < 4; i++) {
                 if (playerFirstCards[i][0] == 0) break;
+                betTotal += bet[i];
 
                 if (playerFirstCards[i][0] + playerFirstCards[i][1] == 21) {
                     if (printGameStatus)
                         System.out.println("Hand " + (i + 1) + " has blackjack! +" + (int) (bet[i] * 2.5) + "kr");
-                    pengar += (int) (bet[i] * 1.5);
+                    money += (int) (bet[i] * 1.5);
                 } else if (total[i] <= 21) {
                     if (total[i] > total[4]) {
                         if (printGameStatus) System.out.println("Hand " + (i + 1) + " wins! +" + bet[i] * 2 + "kr");
-                        pengar += bet[i];
+                        money += bet[i];
                     } else if (total[i] == total[4]) {
                         if (printGameStatus) System.out.println("Hand " + (i + 1) + " is a tie! +" + bet[i] + "kr");
                     } else if (total[4] > 21) {
                         if (printGameStatus) System.out.println("Dealer Busted! +" + bet[i] * 2 + "kr");
-                        pengar += bet[i];
+                        money += bet[i];
                     } else {
                         if (printGameStatus) System.out.println("Dealer wins hand " + (i + 1) + "!");
-                        pengar -= bet[i];
+                        money -= bet[i];
                     }
-                } else pengar -= bet[i];
+                } else money -= bet[i];
             }
         }
-            System.out.println(pengar);
+        Statistics.printStats(money, betTotal);
     }
 }
