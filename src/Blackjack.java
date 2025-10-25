@@ -1,4 +1,3 @@
-import java.awt.*;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -9,7 +8,7 @@ public class Blackjack {
     //arrayposition 0 är Player, 1-3 är Split och 4 är Dealer.
     static int[] total = new int[5];
     static int[] hasAce = new int[5];
-    static int[][] playerFirstCards = new int[4][2];
+    static int[][] firstCardValues = new int[4][2];
     static int[] bet = new int[4];
     static int nextEmptyHand;
     static String action = "";
@@ -76,7 +75,7 @@ public class Blackjack {
     private static boolean allHandsHaveBlackjack() {
         int total;
         for (int i = 0; i < 4; i++) {
-            total = playerFirstCards[i][0] + playerFirstCards[i][1];
+            total = firstCardValues[i][0] + firstCardValues[i][1];
             if (total == 0) return true;
             if (total != 21) return false;
         }
@@ -94,13 +93,13 @@ public class Blackjack {
 
     private static void playHand(int handIndex, boolean printGameStatus, BiFunction<int[], ArrayList<Integer>, String> actionMethod, int numberOfDecks, int dealer2ndCard) {
         int allowedActions = 2;
-        if (playerFirstCards[handIndex][0] == playerFirstCards[handIndex][1] && nextEmptyHand != 4) allowedActions = 3;
+        if (firstCardValues[handIndex][0] == firstCardValues[handIndex][1] && nextEmptyHand != 4) allowedActions = 3;
 
         action = "";
 
         while (total[handIndex] < 21 && !action.equals("s")) {
             if (printGameStatus) print(allowedActions, handIndex);
-            action = actionMethod.apply(new int[]{total[handIndex], total[4], hasAce[handIndex], hasAce[4], allowedActions, numberOfDecks, playerFirstCards[handIndex][0], dealer2ndCard}, deck);
+            action = actionMethod.apply(new int[]{total[handIndex], total[4], hasAce[handIndex], hasAce[4], allowedActions, numberOfDecks, firstCardValues[handIndex][0], dealer2ndCard}, deck);
             //double
             if (action.equals("d")) {
                 bet[handIndex] *= 2;
@@ -115,10 +114,10 @@ public class Blackjack {
             }
             //split
             if (action.equals("sp")) {
-                total[handIndex] = total[nextEmptyHand] = playerFirstCards[nextEmptyHand][0] = playerFirstCards[handIndex][0];
+                total[handIndex] = total[nextEmptyHand] = firstCardValues[nextEmptyHand][0] = firstCardValues[handIndex][0];
                 if (total[nextEmptyHand] == 11) hasAce[nextEmptyHand]++;
-                playerFirstCards[handIndex][1] = deal(handIndex);
-                playerFirstCards[nextEmptyHand][1] = deal(nextEmptyHand);
+                firstCardValues[handIndex][1] = deal(handIndex);
+                firstCardValues[nextEmptyHand][1] = deal(nextEmptyHand);
                 bet[nextEmptyHand] = bet[handIndex];
                 nextEmptyHand++;
                 playHand(nextEmptyHand - 1, printGameStatus, actionMethod, numberOfDecks, dealer2ndCard);
@@ -154,7 +153,7 @@ public class Blackjack {
             for (int i = 0; i < 5; i++) {
                 total[i] = hasAce[i] = 0;
                 if (i == 4) break;
-                playerFirstCards[i][0] = playerFirstCards[i][1] = 0;
+                firstCardValues[i][0] = firstCardValues[i][1] = 0;
             }
 
             if (deck.size() <= reshufflePercent * 52 * numberOfDecks) {
@@ -163,11 +162,11 @@ public class Blackjack {
             }
             bet[0] = betMethod.apply(new int[]{}, deck);
 
-            playerFirstCards[0][0] = deal(0);
+            firstCardValues[0][0] = deal(0);
 
             deal(4);
 
-            playerFirstCards[0][1] = deal(0);
+            firstCardValues[0][1] = deal(0);
 
             dealer2ndCard = dealCard(4);
 
@@ -207,10 +206,10 @@ public class Blackjack {
             if (printGameStatus) print(0, 0);
 
             for (int i = 0; i < 4; i++) {
-                if (playerFirstCards[i][0] == 0) break;
+                if (firstCardValues[i][0] == 0) break;
                 betTotal += bet[i];
 
-                if (playerFirstCards[i][0] + playerFirstCards[i][1] == 21) {
+                if (firstCardValues[i][0] + firstCardValues[i][1] == 21) {
                     if (printGameStatus)
                         System.out.println("Hand " + (i + 1) + " has blackjack! +" + (int) (bet[i] * 2.5) + "kr");
                     money += (int) (bet[i] * 1.5);
