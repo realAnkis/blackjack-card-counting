@@ -1,5 +1,8 @@
 package BlackjackMedKlasser;
 
 public class Player {
-    private int[] hands;
+    private Hand[] hands;
+
+    public Player() {
+    }
 }

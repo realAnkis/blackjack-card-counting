@@ -9,6 +9,7 @@ public class Deck {
 
     public Deck(int numberOfDecks) {
         this.numberOfDecks = numberOfDecks;
+        shuffle();
     }
 
     public void shuffle(){

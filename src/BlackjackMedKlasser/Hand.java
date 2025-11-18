@@ -3,7 +3,7 @@ package BlackjackMedKlasser;
 import java.util.LinkedList;
 
 public class Hand {
-    private LinkedList<Card> cards;
+    private LinkedList<Card> cards = new LinkedList<>();
     private int total = 0;
     private int avalabelAces;
 
@@ -15,7 +15,11 @@ public class Hand {
         return total;
     }
 
-    public int Hand(Card card) {
+    public LinkedList<Card> getCards() {
+        return cards;
+    }
+
+    public int addCard(Card card) {
         cards.add(card);
         total += card.getValue();
         if (card.getValue() == 11) avalabelAces++;
@@ -24,6 +28,10 @@ public class Hand {
             avalabelAces -= 1;
         }
         return total;
+    }
+
+    public void clear() {
+        cards.clear();
     }
 
 }
