@@ -5,7 +5,5 @@ public class Game {
 
     public Game(Settings settings) {
         deck = new Deck(settings.numberOfDecks);
-        Round round = new Round(deck);
     }
-
 }

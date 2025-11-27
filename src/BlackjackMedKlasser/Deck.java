@@ -5,7 +5,7 @@ import java.util.LinkedList;
 
 public class Deck {
     private final int numberOfDecks;
-    private LinkedList<Card> cards;
+    private LinkedList<Card> cards = new LinkedList<>();
 
     public Deck(int numberOfDecks) {
         this.numberOfDecks = numberOfDecks;
