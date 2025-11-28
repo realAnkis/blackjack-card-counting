@@ -1,7 +1,6 @@
 package BlackjackMedKlasser.playMethods;
 
 import BlackjackMedKlasser.Round;
-import GammaltGYA.SpelaSjälv;
 
 import java.util.function.Function;
 
