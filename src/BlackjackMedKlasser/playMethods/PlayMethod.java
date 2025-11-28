@@ -1,23 +1,22 @@
 package BlackjackMedKlasser.playMethods;
 
-import BlackjackMedKlasser.Round;
+import BlackjackMedKlasser.*;
 
-import java.util.function.Function;
 
 public class PlayMethod {
 
     public PlayMethod() {
     }
 
-    public String actionMethod(BlackjackMedKlasser.Round round) {
+    public String actionMethod(Round round) {
         return "";
     }
-    public int betMethod(BlackjackMedKlasser.Round round) {
+    public int betMethod(Round round) {
         return 0;
     }
-    public int insuranceBetMethod(BlackjackMedKlasser.Round round) {
+    public int insuranceBetMethod(Round round) {
         return 0;
     }
-    public void cardDealtMethod(BlackjackMedKlasser.Card card) {
+    public void cardDealtMethod(Card card) {
     }
 }
