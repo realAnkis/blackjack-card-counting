@@ -4,6 +4,7 @@ public class Game {
     private Deck deck;
 
     public Game(Settings settings) {
-        deck = new Deck(settings.numberOfDecks);
+        deck = new Deck(settings);
     }
+
 }

@@ -5,8 +5,12 @@ public class Round {
     private Hand dealerHand = new Hand();
 
     public Round(Deck deck) {
-    dealerHand.addCard(deck.deal());
-    hands[0].addCard((deck.deal()));
+        deck.CheckReshuffle();
+        hands[0].addCard((deck.deal()));
+        dealerHand.addCard(deck.deal());
+        hands[0].addCard((deck.deal()));
+        dealerHand.addCard(deck.deal());
+
     }
 
 }

@@ -1,6 +1,7 @@
 package BlackjackMedKlasser.playMethods;
 
 import BlackjackMedKlasser.Round;
+import GammaltGYA.SpelaSjälv;
 
 import java.util.function.Function;
 
@@ -19,5 +20,14 @@ public class PlayMethod {
 
     public String actionMethod(BlackjackMedKlasser.Round round) {
         return actionMethod.apply(round);
+    }
+    public String betMethod(BlackjackMedKlasser.Round round) {
+        return betMethod.apply(round);
+    }
+    public String insuranceBetMethod(BlackjackMedKlasser.Round round) {
+        return insuranceBetMethod.apply(round);
+    }
+    public String cardDealtMethod(BlackjackMedKlasser.Round round) {
+        return cardDealtMethod.apply(round);
     }
 }
