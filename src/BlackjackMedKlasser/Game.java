@@ -2,6 +2,7 @@ package BlackjackMedKlasser;
 
 import BlackjackMedKlasser.playMethods.PlayMethod;
 import BlackjackMedKlasser.playMethods.SpelaSjälv;
+import BlackjackMedKlasser.playMethods.TestMethod;
 
 public class Game {
     private Deck deck;
@@ -12,7 +13,7 @@ public class Game {
 
     public Game(Settings settings) {
         deck = new Deck(settings);
-        PlayMethod playMethod = new SpelaSjälv();
+        PlayMethod playMethod = new TestMethod();
         Round round = new Round(deck,playMethod);
 
         int money = 0;

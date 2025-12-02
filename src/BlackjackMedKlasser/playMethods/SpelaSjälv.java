@@ -8,13 +8,14 @@ public class SpelaSjälv extends PlayMethod {
 
     Scanner scanner = new Scanner(System.in);
 
-    //körs när ett kort delas ut från kortleken, args[0] = kortet som delas ut (inte värdet utan själva kortet), args[1] = 0-3 ifall korter delas till spelarens olika högar, 4 ifall det delas till dealern
+    //körs när ett kort delas ut från kortleken
     @Override
     public void cardDealtMethod(Card card) {
     }
 
     //körs när en aktion i spelet behöver bestämmas, bör returna "s", "h", "d" eller "sp"
-    //agrs innehåller [spelarens total (0), dealerns total (1), spelarens ess (2), dealerns ess (3), tillåtna aktioner (har värdet 3 ifall alla är tillåtna, 2 ifall double är tillåtet och 1 om bara hit och stand är tillåtet) (4), antal deck (5), spelarens första kort (används ifall split är tillåtet) (6), dealerns andra kort (för att läggas tillbaka i högen) (7)]
+    //allowedActions har värdet 3 ifall alla är tillåtna, 2 ifall "h, s or d" är tillåtet och 1 om bara "h or s" är tillåtet
+    //handIndex är den hand som just nu spelas, bör användas i till exempel: round.getHands()[handIndex]
     @Override
     public String actionMethod(Round round, int allowedActions, int handIndex) {
         System.out.println("\nDealer total: " + round.getDealerHand().getCards().getFirst().getValue());
@@ -35,7 +36,7 @@ public class SpelaSjälv extends PlayMethod {
         return bet;
     }
 
-    //körs ifall möjlighet för ett insurance bet finns (dvs. ifall dealern har ett ess), args är tom
+    //körs ifall möjlighet för ett insurance bet finns (dvs. ifall dealern har ett ess)
     @Override
     public int insuranceBetMethod(Round round) {
         System.out.println("\nDealer total: " + round.getDealerHand().getCards().getFirst().getValue());
@@ -44,6 +45,8 @@ public class SpelaSjälv extends PlayMethod {
         return betMethod(round);
     }
 
+
+    //körs ibland när info skulle kunna tänkas ges till en spelare (ej relevant ifall inte en riktig människa ska spela)
     @Override
     public void gameStatusMethod(Round round) {
         System.out.println("\nDealer total: " + round.getDealerHand().getTotal());

@@ -76,7 +76,7 @@ public class Round {
 
         String action = "";
         int allowedActions = 2;
-        if (hands[handIndex].getCards().get(0).getValue() == hands[handIndex].getCards().get(1).getValue())
+        if (hands[handIndex].getCards().get(0).getValue() == hands[handIndex].getCards().get(1).getValue() && nextEmptyHand != 4)
             allowedActions = 3;
 
         while (hands[handIndex].getTotal() < 21 && !action.equals("s")) {
@@ -119,7 +119,7 @@ public class Round {
         }
     }
 
-    public int calculateNetProfit(int insuranceBetWinnings) {
+    private int calculateNetProfit(int insuranceBetWinnings) {
         int totalBetAmount = 0;
         int totalWinnings = 0;
 
@@ -135,6 +135,7 @@ public class Round {
             else if (hands[i].getTotal() > dealerHand.getTotal()) totalWinnings += hands[i].getBet() * 2;
         }
         endOfRoundProfit = totalWinnings + insuranceBetWinnings - totalBetAmount;
+        betTotal += totalBetAmount;
         playMethod.gameStatusMethod(this); // endast för spelmetoder som vill ha någon slags visuell output
         return endOfRoundProfit;
     }
