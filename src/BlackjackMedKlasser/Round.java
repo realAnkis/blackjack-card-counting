@@ -141,7 +141,7 @@ public class Round {
 
     private boolean allHandsHaveBlackjackOrBusted() {
         for (int i = 0; i < 4; i++) {
-            if (!hands[i].hasBlackjack() && hands[i].getTotal() != 0 && hands[i].getTotal() > 21) return false;
+            if (!hands[i].hasBlackjack() && hands[i].getTotal() != 0 && hands[i].getTotal() <= 21) return false;
         }
         return true;
     }
