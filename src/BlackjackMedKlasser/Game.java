@@ -1,7 +1,6 @@
 package BlackjackMedKlasser;
 
-import BlackjackMedKlasser.playMethods.PlayMethod;
-import BlackjackMedKlasser.playMethods.SpelaSjälv;
+import BlackjackMedKlasser.playMethods.*;
 
 public class Game {
     private Deck deck;

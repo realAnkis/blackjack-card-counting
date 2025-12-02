@@ -1,4 +1,6 @@
 package BlackjackMedKlasser;
+import BlackjackMedKlasser.playMethods.*;
+import BlackjackMedKlasser.*;
 
 public class Round {
     private Hand[] hands = new Hand[4];
@@ -10,7 +12,7 @@ public class Round {
         dealerHand.addCard(deck.deal());
         hands[0].addCard((deck.deal()));
         dealerHand.addCard(deck.deal());
-
+        System.out.println(hands[0].getCards());
     }
 
 }

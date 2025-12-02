@@ -1,5 +1,8 @@
 package BlackjackMedKlasser;
 
+import BlackjackMedKlasser.playMethods.*;
+import BlackjackMedKlasser.*;
+
 import java.util.LinkedList;
 
 public class Hand {
