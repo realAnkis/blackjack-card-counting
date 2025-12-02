@@ -13,6 +13,17 @@ public class Game {
     public Game(Settings settings) {
         deck = new Deck(settings);
         PlayMethod playMethod = new SpelaSjälv();
+        Round round = new Round(deck,playMethod);
+
+        int money = 0;
+
+        for (int i = 0; i < settings.getNumberOfGames(); i++) {
+            money += round.playRound();
+
+            round.reset();
+        }
+
+        Statistics statistics = new Statistics(money,round.getBetTotal());
     }
 
 }

@@ -8,7 +8,7 @@ public class PlayMethod {
     public PlayMethod() {
     }
 
-    public String actionMethod(Round round) {
+    public String actionMethod(Round round, int allowedActions, int handIndex) {
         return "";
     }
     public int betMethod(Round round) {
@@ -18,5 +18,11 @@ public class PlayMethod {
         return 0;
     }
     public void cardDealtMethod(Card card) {
+    }
+
+    public void reshuffleMethod() {
+    }
+
+    public void gameStatusMethod(Round round) {
     }
 }

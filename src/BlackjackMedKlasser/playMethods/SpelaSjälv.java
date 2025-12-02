@@ -1,9 +1,10 @@
 package BlackjackMedKlasser.playMethods;
 
 import BlackjackMedKlasser.*;
+
 import java.util.Scanner;
 
-public class SpelaSjälv extends PlayMethod{
+public class SpelaSjälv extends PlayMethod {
 
     Scanner scanner = new Scanner(System.in);
 
@@ -15,7 +16,12 @@ public class SpelaSjälv extends PlayMethod{
     //körs när en aktion i spelet behöver bestämmas, bör returna "s", "h", "d" eller "sp"
     //agrs innehåller [spelarens total (0), dealerns total (1), spelarens ess (2), dealerns ess (3), tillåtna aktioner (har värdet 3 ifall alla är tillåtna, 2 ifall double är tillåtet och 1 om bara hit och stand är tillåtet) (4), antal deck (5), spelarens första kort (används ifall split är tillåtet) (6), dealerns andra kort (för att läggas tillbaka i högen) (7)]
     @Override
-    public String actionMethod(Round round) {
+    public String actionMethod(Round round, int allowedActions, int handIndex) {
+        System.out.println("\nDealer total: " + round.getDealerHand().getCards().getFirst().getValue());
+        System.out.println("Your total: " + round.getHands()[handIndex].getTotal());
+        if (allowedActions == 3) System.out.println("h, s, d or sp");
+        else if (allowedActions == 2) System.out.println("h, s or d");
+        else System.out.println("h or s");
         return scanner.nextLine();
     }
 
@@ -32,7 +38,23 @@ public class SpelaSjälv extends PlayMethod{
     //körs ifall möjlighet för ett insurance bet finns (dvs. ifall dealern har ett ess), args är tom
     @Override
     public int insuranceBetMethod(Round round) {
+        System.out.println("\nDealer total: " + round.getDealerHand().getCards().getFirst().getValue());
+        System.out.println("Your total: " + round.getHands()[0].getTotal());
         System.out.println("Insurance bet?");
         return betMethod(round);
+    }
+
+    @Override
+    public void gameStatusMethod(Round round) {
+        System.out.println("\nDealer total: " + round.getDealerHand().getTotal());
+        for (int i = 0; i < 4; i++) {
+            if (round.getHands()[i].getTotal() == 0) break;
+            System.out.println("Hand " + (i + 1)  + " total: " + round.getHands()[i].getTotal());
+        }
+        if(round.getEndOfRoundProfit() != 0) {
+            int profit = round.getEndOfRoundProfit();
+            if(profit > 0) System.out.println("+" + profit + "kr");
+            else System.out.println(profit + "kr");
+        }
     }
 }
