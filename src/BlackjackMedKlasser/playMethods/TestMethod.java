@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 public class TestMethod extends PlayMethod {
 
+
     //körs när ett kort delas ut från kortleken
     @Override
     public void cardDealtMethod(Card card) {
@@ -17,12 +18,7 @@ public class TestMethod extends PlayMethod {
     //handIndex är den hand som just nu spelas, bör användas i till exempel: round.getHands()[handIndex].getTotal()
     @Override
     public String actionMethod(Round round, int allowedActions, int handIndex) {
-        /*
-        if(allowedActions == 3 && round.getHands()[handIndex].getAvailabelAces() != 0) return "sp";
-        if(round.getHands()[handIndex].getTotal() == 11) return "d";
-        if(round.getHands()[handIndex].getTotal() < 11) return "h";
-        if(round.getHands()[handIndex].getTotal() < round.getDealerHand().getTotal()) return "h";
-        */
+        if(round.getHands()[handIndex].getTotal() <= 10) return "h";
         return "s";
     }
 

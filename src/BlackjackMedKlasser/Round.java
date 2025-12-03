@@ -21,6 +21,10 @@ public class Round {
         return dealerHand;
     }
 
+    public int getDealerCard() {
+        return dealerHand.getCards().getFirst().getValue();
+    }
+
     public Deck getDeck() {
         return deck;
     }
