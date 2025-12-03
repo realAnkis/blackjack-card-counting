@@ -6,7 +6,7 @@ public class Round {
     private Hand[] hands = new Hand[4];
     private Hand dealerHand = new Hand();
     private Deck deck;
-    private int betTotal = 0;
+    private Game game;
     int totalRoundBet = 0;
     private int currentHandIndex;
     private PlayMethod playMethod;
@@ -33,9 +33,10 @@ public class Round {
         return endOfRoundProfit;
     }
 
-    public Round(Deck deck, PlayMethod playMethod) {
+    public Round(Deck deck, PlayMethod playMethod, Game game) {
         this.deck = deck;
         this.playMethod = playMethod;
+        this.game = game;
 
         for (int i = 0; i < 4; i++) {
             hands[i] = new Hand();
@@ -58,7 +59,7 @@ public class Round {
         int insuranceBet = 0;
         if (dealerHand.getCards().getFirst().getValue() == 11) {
             insuranceBet = playMethod.insuranceBetMethod(this);
-            betTotal += insuranceBet;
+            game.addBetTotal(insuranceBet);
         }
 
         if (dealerHand.hasBlackjack()) return calculateNetProfit(insuranceBet * 2);
@@ -126,16 +127,17 @@ public class Round {
         for (int i = 0; i < 4; i++) {
             if (hands[i].getBet() == 0) continue;
             totalBetAmount += hands[i].getBet();
-            if (hands[i].hasBlackjack()) {
-                totalWinnings += (int) (hands[i].getBet() * 2.5);
-                continue;
-            }
 
-            if (hands[i].getTotal() == dealerHand.getTotal()) totalWinnings += hands[i].getBet();
-            else if (hands[i].getTotal() > dealerHand.getTotal()) totalWinnings += hands[i].getBet() * 2;
+            if(hands[i].getTotal() > 21) continue;
+
+            if (hands[i].hasBlackjack() && !dealerHand.hasBlackjack()) {
+                totalWinnings += (int) (hands[i].getBet() * 2.5);
+            }
+            else if (hands[i].getTotal() == dealerHand.getTotal()) totalWinnings += hands[i].getBet();
+            else if (hands[i].getTotal() > dealerHand.getTotal() || dealerHand.getTotal() > 21) totalWinnings += hands[i].getBet() * 2;
         }
         endOfRoundProfit = totalWinnings + insuranceBetWinnings - totalBetAmount;
-        betTotal += totalBetAmount;
+        game.addBetTotal(totalBetAmount);
         playMethod.gameStatusMethod(this); // endast för spelmetoder som vill ha någon slags visuell output
         return endOfRoundProfit;
     }
@@ -154,9 +156,5 @@ public class Round {
         dealerHand.clear();
         nextEmptyHand = 1;
         totalRoundBet = 0;
-    }
-
-    public int getBetTotal() {
-        return betTotal;
     }
 }
