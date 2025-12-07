@@ -7,7 +7,11 @@ import BlackjackMedKlasser.Settings;
 public class HumanCardCounting extends PlayMethod {
     private Settings settings;
     public HumanCardCounting(Settings settings) {this.settings = settings;}
-    public double count = 0;
+    private double count = 0;
+    private double trueCont;
+    // note
+    // borde implementera trueCount alltså count/decks kavar
+
 
     //körs när ett kort delas ut från kortleken
     @Override
