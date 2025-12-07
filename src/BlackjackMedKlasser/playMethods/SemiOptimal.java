@@ -1,16 +1,20 @@
 package BlackjackMedKlasser.playMethods;
 
-import BlackjackMedKlasser.Card;
-import BlackjackMedKlasser.Round;
-import BlackjackMedKlasser.Settings;
+import BlackjackMedKlasser.*;
 
-import java.util.Scanner;
+public class SemiOptimal extends PlayMethod {
+    private final int betSimulationAmount = 1000;
+    private final int actionSimulationAmount = 100;
+    private final int actionDepthSimulationAmount = 20;
 
-public class TestMethod extends PlayMethod {
     private Settings settings;
+    private Deck simulatedDeck;
+    private Round simulatedRound;
 
-    public TestMethod(Settings settings) {
+    public SemiOptimal(Settings settings) {
         this.settings = settings;
+        simulatedDeck = new Deck(settings);
+        simulatedRound = new Round(simulatedDeck,this,new Game());
     }
 
     //körs när ett kort delas ut från kortleken
@@ -35,6 +39,12 @@ public class TestMethod extends PlayMethod {
     //körs när det ursprungliga bettet ska bestämmas
     @Override
     public int betMethod(Round round) {
+        int simulatedWinnings = 0;
+        simulatedDeck.setCards(round.getDeck().getCards());
+        for (int i = 0; i < betSimulationAmount; i++) {
+            simulatedWinnings += simulatedRound.playRound();
+        }
+        if(simulatedWinnings > 0) return settings.getMaxBet();
         return settings.getMinBet();
     }
 
@@ -43,4 +53,5 @@ public class TestMethod extends PlayMethod {
     public int insuranceBetMethod(Round round) {
         return 0;
     }
+
 }

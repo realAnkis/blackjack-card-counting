@@ -54,10 +54,10 @@ public class Round {
 
         hands[0].setBet(playMethod.betMethod(this));
 
-        hands[0].addCard(deck.deal(playMethod));
-        dealerHand.addCard(deck.deal(playMethod));
-        hands[0].addCard((deck.deal(playMethod)));
-        dealerHand.addCard(deck.deal(playMethod));
+        hands[0].addCard(deck.deal(playMethod, true));
+        dealerHand.addCard(deck.deal(playMethod, true));
+        hands[0].addCard((deck.deal(playMethod, true)));
+        dealerHand.addCard(deck.deal(playMethod, false));
 
 
         int insuranceBet = 0;
@@ -70,6 +70,7 @@ public class Round {
 
         playHand(0);
 
+        playMethod.cardDealtMethod(dealerHand.getCards().get(1));
         playDealerHand();
 
         playMethod.gameStatusMethod(this); // endast för spelmetoder som vill ha någon slags visuell output
@@ -90,21 +91,21 @@ public class Round {
             //double
             if (action.equals("d")) {
                 hands[handIndex].setBet(hands[handIndex].getBet() * 2);
-                hands[handIndex].addCard(deck.deal(playMethod));
+                hands[handIndex].addCard(deck.deal(playMethod, true));
                 break;
             }
             //hit
             if (action.equals("h")) {
                 allowedActions = 1;
-                hands[handIndex].addCard(deck.deal(playMethod));
+                hands[handIndex].addCard(deck.deal(playMethod, true));
             }
             //split
             if (action.equals("sp")) {
                 hands[nextEmptyHand].addCard(hands[handIndex].pollCard()); // tar ett kort från ena handen till andra
                 hands[handIndex].setTotal(hands[handIndex].getCards().getFirst().getValue()); // ser till att totalen stämmer
 
-                hands[handIndex].addCard(deck.deal(playMethod));
-                hands[nextEmptyHand].addCard(deck.deal(playMethod));
+                hands[handIndex].addCard(deck.deal(playMethod, true));
+                hands[nextEmptyHand].addCard(deck.deal(playMethod, true));
 
                 hands[nextEmptyHand].setBet(hands[handIndex].getBet());
 
@@ -119,7 +120,7 @@ public class Round {
     private void playDealerHand() {
         if (allHandsHaveBlackjackOrBusted()) return;
         while (dealerHand.getTotal() < 17) {
-            dealerHand.addCard(deck.deal(playMethod));
+            dealerHand.addCard(deck.deal(playMethod, true));
             playMethod.gameStatusMethod(this); // endast för spelmetoder som vill ha någon slags visuell output
         }
     }
