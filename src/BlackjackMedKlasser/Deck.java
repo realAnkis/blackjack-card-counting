@@ -2,6 +2,7 @@ package BlackjackMedKlasser;
 
 import BlackjackMedKlasser.playMethods.PlayMethod;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 
@@ -12,11 +13,19 @@ public class Deck {
     double cutOff = 0;
 
 
-
     public Deck(Settings settings) {
         numberOfDecks = settings.numberOfDecks;
         reshufflePercentInterval = settings.reshufflePercentInterval;
         shuffle();
+    }
+
+    public void setCards(LinkedList<Card> newCards) {
+        cards.clear();
+        cards.addAll(newCards);
+    }
+
+    public LinkedList<Card> getCards() {
+        return cards;
     }
 
     public void shuffle() {
@@ -33,9 +42,9 @@ public class Deck {
         cutOff = reshufflePercentInterval[0] + Math.random() * (reshufflePercentInterval[1] - reshufflePercentInterval[0]);
     }
 
-    public Card deal(PlayMethod playMethod) {
+    public Card deal(PlayMethod playMethod, boolean playerIsShownCard) {
         Card card = cards.poll();
-        playMethod.cardDealtMethod(card);
+        if(playerIsShownCard) playMethod.cardDealtMethod(card);
         return card;
     }
 

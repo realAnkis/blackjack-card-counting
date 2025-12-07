@@ -5,6 +5,11 @@ import BlackjackMedKlasser.*;
 import java.util.Scanner;
 
 public class SpelaSjälv extends PlayMethod {
+    private Settings settings;
+
+    public SpelaSjälv(Settings settings) {
+        this.settings = settings;
+    }
 
     Scanner scanner = new Scanner(System.in);
 

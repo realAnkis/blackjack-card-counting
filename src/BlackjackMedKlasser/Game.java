@@ -1,6 +1,7 @@
 package BlackjackMedKlasser;
 
 import BlackjackMedKlasser.playMethods.PlayMethod;
+import BlackjackMedKlasser.playMethods.SemiOptimal;
 import BlackjackMedKlasser.playMethods.SpelaSjälv;
 import BlackjackMedKlasser.playMethods.TestMethod;
 
@@ -12,7 +13,8 @@ public class Game {
     private int betTotal = 0;
 
     public static void main(String[] args) {
-        Game game = new Game(new Settings(), selectPlayMethod());
+        Settings settings = new Settings();
+        Game game = new Game(settings, selectPlayMethod(settings));
     }
 
     public Game(Settings settings, PlayMethod playMethod) {
@@ -28,21 +30,25 @@ public class Game {
         Statistics statistics = new Statistics(money, betTotal, playMethod);
     }
 
+    public Game() {}
+
     public void addBetTotal(int addedAmount) {
         betTotal += addedAmount;
     }
 
-    public static PlayMethod selectPlayMethod() {
+    public static PlayMethod selectPlayMethod(Settings settings) {
         System.out.println("Please select one of the following playmethods:");
         System.out.println("- SpelaSjälv");
         System.out.println("- TestMethod");
+        System.out.println("- SemiOptimal");
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
             String input = scanner.nextLine();
 
-            if (input.equals("SpelaSjälv")) return new SpelaSjälv();
-            if (input.equals("TestMethod")) return new TestMethod();
+            if (input.equals("SpelaSjälv")) return new SpelaSjälv(settings);
+            if (input.equals("TestMethod")) return new TestMethod(settings);
+            if (input.equals("SemiOptimal")) return new SemiOptimal(settings);
         }
     }
 }
