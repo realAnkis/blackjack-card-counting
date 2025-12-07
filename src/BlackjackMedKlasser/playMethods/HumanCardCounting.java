@@ -2,16 +2,22 @@ package BlackjackMedKlasser.playMethods;
 
 import BlackjackMedKlasser.Card;
 import BlackjackMedKlasser.Round;
+import BlackjackMedKlasser.Settings;
 
 public class HumanCardCounting extends PlayMethod {
-
+    private Settings settings;
+    public HumanCardCounting(Settings settings) {this.settings = settings;}
     public double count = 0;
 
     //körs när ett kort delas ut från kortleken
     @Override
     public void cardDealtMethod(Card card) {
         count += hiLo(card);
-
+    }
+    //körs när kortleken blandas
+    @Override
+    public void reshuffleMethod() {
+        count=0;
     }
 
     //körs när en aktion i spelet behöver bestämmas, bör returna "s", "h", "d" eller "sp"
@@ -20,22 +26,17 @@ public class HumanCardCounting extends PlayMethod {
     // får bar d på första kortet
     @Override
     public String actionMethod(Round round, int allowedActions, int handIndex) {
-
         return basicStrategy(round,allowedActions,handIndex);
-
-
     }
 
     //körs när det ursprungliga bettet ska bestämmas
     @Override
     public int betMethod(Round round) {
-        int maxBet = 100;
-        int minBet = 10;
         int bet;
-        if (count < 0) bet = minBet;
-        else if (count == 1) bet = minBet + (maxBet / 10);
-        else if (count == 2) bet = minBet + (maxBet / 5);
-        else bet = maxBet;
+        if (count < 0) bet = settings.getMinBet();
+        else if (count == 1) bet = settings.getMinBet() + (settings.getMaxBet() / 10);
+        else if (count == 2) bet = settings.getMinBet() + (settings.getMaxBet() / 5);
+        else bet = settings.getMaxBet();
 
         return bet;
     }
@@ -45,6 +46,9 @@ public class HumanCardCounting extends PlayMethod {
     public int insuranceBetMethod(Round round) {
         return 0;
     }
+
+
+
 
 
     public int hiLo(Card card) {

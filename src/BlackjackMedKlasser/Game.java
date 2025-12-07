@@ -1,9 +1,6 @@
 package BlackjackMedKlasser;
 
-import BlackjackMedKlasser.playMethods.PlayMethod;
-import BlackjackMedKlasser.playMethods.SemiOptimal;
-import BlackjackMedKlasser.playMethods.SpelaSjälv;
-import BlackjackMedKlasser.playMethods.TestMethod;
+import BlackjackMedKlasser.playMethods.*;
 
 import java.util.Scanner;
 
@@ -41,6 +38,7 @@ public class Game {
         System.out.println("- SpelaSjälv");
         System.out.println("- TestMethod");
         System.out.println("- SemiOptimal");
+        System.out.println("- HumanCardCounting");
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
@@ -49,6 +47,7 @@ public class Game {
             if (input.equals("SpelaSjälv")) return new SpelaSjälv(settings);
             if (input.equals("TestMethod")) return new TestMethod(settings);
             if (input.equals("SemiOptimal")) return new SemiOptimal(settings);
+            if (input.equals("HumanCardCounting")) return new HumanCardCounting(settings);
         }
     }
 }
