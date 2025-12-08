@@ -11,11 +11,12 @@ public class Game {
 
     public static void main(String[] args) {
         Settings settings = new Settings();
-        Game game = new Game(settings, selectPlayMethod(settings));
+        Game game = new Game(settings);
     }
 
-    public Game(Settings settings, PlayMethod playMethod) {
+    public Game(Settings settings) {
         deck = new Deck(settings);
+        PlayMethod playMethod = selectPlayMethod(settings,deck);
         Round round = new Round(deck, playMethod, this);
 
         for (int i = 0; i < settings.getNumberOfGames(); i++) {
@@ -33,7 +34,7 @@ public class Game {
         betTotal += addedAmount;
     }
 
-    public static PlayMethod selectPlayMethod(Settings settings) {
+    public static PlayMethod selectPlayMethod(Settings settings, Deck deck) {
         System.out.println("Please select one of the following playmethods:");
         System.out.println("- SpelaSjälv");
         System.out.println("- TestMethod");
@@ -47,7 +48,7 @@ public class Game {
             if (input.equals("SpelaSjälv")) return new SpelaSjälv(settings);
             if (input.equals("TestMethod")) return new TestMethod(settings);
             if (input.equals("SemiOptimal")) return new SemiOptimal(settings);
-            if (input.equals("HumanCardCounting")) return new HumanCardCounting(settings);
+            if (input.equals("HumanCardCounting")) return new HumanCardCounting(settings, deck);
         }
     }
 }
