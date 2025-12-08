@@ -19,10 +19,15 @@ public class Deck {
         shuffle();
     }
 
+    public int getSizeOfDeck() {
+        return cards.size();
+    }
+
     public void setCards(LinkedList<Card> newCards) {
         cards.clear();
         cards.addAll(newCards);
     }
+
 
     public LinkedList<Card> getCards() {
         return cards;

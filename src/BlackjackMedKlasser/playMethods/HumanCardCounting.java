@@ -1,14 +1,17 @@
 package BlackjackMedKlasser.playMethods;
 
 import BlackjackMedKlasser.Card;
+import BlackjackMedKlasser.Deck;
 import BlackjackMedKlasser.Round;
 import BlackjackMedKlasser.Settings;
 
 public class HumanCardCounting extends PlayMethod {
     private Settings settings;
-    public HumanCardCounting(Settings settings) {this.settings = settings;}
+    private Deck deck;
+    public HumanCardCounting(Settings settings, Deck deck) {this.settings = settings; this.deck=deck;}
     private double count = 0;
-    private double trueCont;
+
+    //private double trueCont =(count/ (/52));
     // note
     // borde implementera trueCount alltså count/decks kavar
 
@@ -40,6 +43,7 @@ public class HumanCardCounting extends PlayMethod {
         if (count < 0) bet = settings.getMinBet();
         else if (count == 1) bet = settings.getMinBet() + (settings.getMaxBet() / 10);
         else if (count == 2) bet = settings.getMinBet() + (settings.getMaxBet() / 5);
+        else if (count == 3) bet = settings.getMinBet() + (settings.getMaxBet() / 2);
         else bet = settings.getMaxBet();
 
         return bet;
@@ -48,7 +52,7 @@ public class HumanCardCounting extends PlayMethod {
     //körs ifall möjlighet för ett insurance bet finns (dvs. ifall dealern har ett ess)
     @Override
     public int insuranceBetMethod(Round round) {
-        return 0;
+        if (count >3) return 100; else return 0;
     }
 
 
