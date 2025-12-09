@@ -10,11 +10,7 @@ public class HumanCardCounting extends PlayMethod {
     private Deck deck;
     public HumanCardCounting(Settings settings, Deck deck) {this.settings = settings; this.deck=deck;}
     private double count = 0;
-
-    //private double trueCont =(count/ (/52));
-    // note
-    // borde implementera trueCount alltså count/decks kavar
-
+    //private double trueCount = (count/deck.getSizeOfDeck()*52);
 
     //körs när ett kort delas ut från kortleken
     @Override
