@@ -1,6 +1,7 @@
 package BlackjackMedKlasser.playMethods;
 
 import BlackjackMedKlasser.*;
+import BlackjackMedKlasser.playMethods.SemiOptimalSubclasses.SimulatedRound;
 
 public class SemiOptimal extends PlayMethod {
     private final int betSimulationAmount = 1000;
@@ -8,18 +9,21 @@ public class SemiOptimal extends PlayMethod {
     private final int actionDepthSimulationAmount = 20;
 
     private Settings settings;
+    private Deck predictedGameDeck;
     private Deck simulatedDeck;
     private Round simulatedRound;
 
     public SemiOptimal(Settings settings) {
         this.settings = settings;
         simulatedDeck = new Deck(settings);
-        simulatedRound = new Round(simulatedDeck,this,new Game());
+        predictedGameDeck = new Deck(settings);
+        simulatedRound = new Round(simulatedDeck,new SimulatedRound(settings, this),new Game());
     }
 
     //körs när ett kort delas ut från kortleken
     @Override
     public void cardDealtMethod(Card card) {
+        predictedGameDeck.getCards().remove(card);
     }
 
     //körs när kortleken blandas
@@ -40,9 +44,11 @@ public class SemiOptimal extends PlayMethod {
     @Override
     public int betMethod(Round round) {
         int simulatedWinnings = 0;
-        simulatedDeck.setCards(round.getDeck().getCards());
         for (int i = 0; i < betSimulationAmount; i++) {
+            simulatedDeck.setCards(predictedGameDeck.getCards());
+            simulatedDeck.shuffle();
             simulatedWinnings += simulatedRound.playRound();
+            simulatedRound.reset();
         }
         if(simulatedWinnings > 0) return settings.getMaxBet();
         return settings.getMinBet();

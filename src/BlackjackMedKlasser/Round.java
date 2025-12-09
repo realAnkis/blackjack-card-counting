@@ -70,7 +70,6 @@ public class Round {
 
         playHand(0);
 
-        playMethod.cardDealtMethod(dealerHand.getCards().get(1));
         playDealerHand();
 
         playMethod.gameStatusMethod(this); // endast för spelmetoder som vill ha någon slags visuell output
@@ -118,7 +117,9 @@ public class Round {
     }
 
     private void playDealerHand() {
-        if (allHandsHaveBlackjackOrBusted()) return;
+        if (allHandsHaveBusted()) return;
+        playMethod.cardDealtMethod(dealerHand.getCards().get(1));
+        if(allHandsHaveBlackjack()) return;
         while (dealerHand.getTotal() < 17) {
             dealerHand.addCard(deck.deal(playMethod, true));
             playMethod.gameStatusMethod(this); // endast för spelmetoder som vill ha någon slags visuell output
@@ -147,9 +148,16 @@ public class Round {
         return endOfRoundProfit;
     }
 
-    private boolean allHandsHaveBlackjackOrBusted() {
+    private boolean allHandsHaveBlackjack() {
         for (int i = 0; i < 4; i++) {
-            if (!hands[i].hasBlackjack() && hands[i].getTotal() != 0 && hands[i].getTotal() <= 21) return false;
+            if (!hands[i].hasBlackjack() && hands[i].getTotal() != 0) return false;
+        }
+        return true;
+    }
+
+    private boolean allHandsHaveBusted() {
+        for (int i = 0; i < 4; i++) {
+            if (hands[i].getTotal() != 0 && hands[i].getTotal() <= 21) return false;
         }
         return true;
     }
