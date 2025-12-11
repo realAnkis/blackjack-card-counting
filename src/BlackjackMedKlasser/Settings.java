@@ -4,6 +4,7 @@ public class Settings {
     int numberOfDecks = 6;
     double[] reshufflePercentInterval = new double[]{0.25,0.55};
     int numberOfGames = 10000000;
+    //                  10000000  = 10 000 000
     int maxBet = 100;
     int minBet = 10;
 
