@@ -22,7 +22,7 @@ public class HumanCardCounting extends PlayMethod {
 
     @Override
     public void cardDealtMethod(Card card) {
-        count += hiLo(card);
+        //count += hiLo(card);
         trueCount = (count / ((int) (deck.getSizeOfDeck() / 52)));
     }
 
@@ -54,13 +54,16 @@ public class HumanCardCounting extends PlayMethod {
     @Override
     public int betMethod(Round round) {
         int bet;
-        if (betVariable < 0) bet = settings.getMinBet();
+        return 10;
+       /* if (betVariable < 0) bet = settings.getMinBet();
         else if (betVariable == 1) bet = settings.getMinBet() + (settings.getMaxBet() / 10);
         else if (betVariable == 2) bet = settings.getMinBet() + (settings.getMaxBet() / 5);
         else if (betVariable == 3) bet = settings.getMinBet() + (settings.getMaxBet() / 2);
         else bet = settings.getMaxBet();
 
         return bet;
+
+        */
     }
 
     //körs ifall möjlighet för ett insurance bet finns (dvs. ifall dealern har ett ess)
@@ -221,100 +224,6 @@ public class HumanCardCounting extends PlayMethod {
         } else return "s";
     }
 
-    public String test(Round round, int allowdActions, int handIndx) {
-        String[][] actionArr1 = {
-                //{"2","3","4","5","6","7","8","9","10","11"}
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //2
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //3
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //4
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //5
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //6
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //7
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //8
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //9
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //10
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //11
-                {"h", "h", "s", "s", "s", "h", "h", "h", "h", "h"}, //12
-                {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"}, //13
-                {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"}, //14
-                {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"}, //15
-                {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"}, //16
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"}, //17
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"}, //18
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"}, //19
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"}  //20 (platyer total = rad, dealer card = colum)
-        };
-        String[][] actionArr1Soft = {
-                //{"2","3","4","5","6","7","8","9","10","11"}
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //12
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //13
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //14
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //15
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //16
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //17
-                {"s", "s", "s", "s", "s", "s", "s", "h", "h", "h"}, //18
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"}, //19
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"} //20 (platyer total = rad, dealer card = colum)
-        };
-
-        String[][] actionArr2 = {
-                //{"2","3","4","5","6","7","8","9","10","11"}
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //2
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //3
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //4
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //5
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //6
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //7
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"}, //8
-                {"h", "d", "d", "d", "d", "h", "h", "h", "h", "h"}, //9
-                {"d", "d", "d", "d", "d", "d", "d", "d", "h", "h"}, //10
-                {"d", "d", "d", "d", "d", "d", "d", "d", "d", "d"}, //11
-                {"h", "h", "s", "s", "s", "h", "h", "h", "h", "h"}, //12
-                {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"}, //13
-                {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"}, //14
-                {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"}, //15
-                {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"}, //16
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"}, //17
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"}, //18
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"}, //19
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"}  //20 (platyer total = rad, dealer card = colum)
-        };
-
-        String[][] actionArr2Soft = {
-                //{"2","3","4","5","6","7","8","9","10","11"}
-                {"h", "h", "h", "h", "d", "h", "h", "h", "h", "h"}, //12
-                {"h", "h", "h", "d", "d", "h", "h", "h", "h", "h"}, //13
-                {"h", "h", "h", "d", "d", "h", "h", "h", "h", "h"}, //14
-                {"h", "h", "d", "d", "d", "h", "h", "h", "h", "h"}, //15
-                {"h", "h", "d", "d", "d", "h", "h", "h", "h", "h"}, //16
-                {"h", "d", "d", "d", "d", "h", "h", "h", "h", "h"}, //17
-                {"d", "d", "d", "d", "d", "s", "s", "h", "h", "h"}, //18
-                {"s", "s", "s", "s", "d", "s", "s", "s", "s", "s"}, //19
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"} //20 (platyer total = rad, dealer card = colum)
-        };
-        String[][] actionArrPair = {
-                //{"2","3","4","5","6","7","8","9","10","11"}
-                {"sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp"}, //2(AA) (platyer total = rad, dealer card = colum)
-                {"sp", "sp", "sp", "sp", "sp", "sp", "h", "h", "h", "h"}, //4
-                {"sp", "sp", "sp", "sp", "sp", "sp", "h", "h", "h", "h"}, //6
-                {"h", "h", "h", "sp", "sp", "h", "h", "h", "h", "h"}, //8
-                {"d", "d", "d", "d", "d", "d", "d", "d", "h", "h"}, //10
-                {"sp", "sp", "sp", "sp", "sp", "h", "h", "h", "h", "h"}, //12
-                {"sp", "sp", "sp", "sp", "sp", "sp", "h", "h", "h", "h"}, //14
-                {"sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp"}, //16
-                {"sp", "sp", "sp", "sp", "sp", "s", "sp", "sp", "s", "s"}, //18
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"} //20
-        };
-        if (allowdActions == 3)
-            return actionArrPair[(round.getHands()[handIndx].getTotal() - 2) / 2][round.getDealerCard() - 2];
-        else if (allowdActions == 2 && round.getHands()[handIndx].getAvailabelAces() == 0)
-            return actionArr2[round.getHands()[handIndx].getTotal() - 2][round.getDealerCard() - 2];
-        else if (allowdActions == 2 && round.getHands()[handIndx].getAvailabelAces() > 0)
-            return actionArr2Soft[round.getHands()[handIndx].getTotal() - 12][round.getDealerCard() - 2];
-        else if (allowdActions == 1 && round.getHands()[handIndx].getAvailabelAces() == 0)
-            return actionArr1[round.getHands()[handIndx].getTotal() - 2][round.getDealerCard() - 2];
-        else return actionArr1Soft[round.getHands()[handIndx].getTotal() - 12][round.getDealerCard() - 2];
-    }
 
 
     private String[][] hardTotals1 = {
