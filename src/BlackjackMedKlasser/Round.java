@@ -62,7 +62,7 @@ public class Round {
 
         int insuranceBet = 0;
         if (dealerHand.getCards().getFirst().getValue() == 11) {
-            insuranceBet = playMethod.insuranceBetMethod(this);
+            insuranceBet = Math.min(playMethod.insuranceBetMethod(this),hands[0].getBet()/2);
             game.addBetTotal(insuranceBet);
         }
 

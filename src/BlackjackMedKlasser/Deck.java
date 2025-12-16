@@ -49,13 +49,15 @@ public class Deck {
 
     public Card deal(PlayMethod playMethod, boolean playerIsShownCard) {
         Card card = cards.poll();
-        if(playerIsShownCard) playMethod.cardDealtMethod(card);
+        if (playerIsShownCard) playMethod.cardDealtMethod(card);
         return card;
     }
 
-    public void CheckReshuffle(PlayMethod playMethod){
-        if((double) cards.size() /(52*numberOfDecks)<cutOff) shuffle();
-        playMethod.reshuffleMethod();
+    public void CheckReshuffle(PlayMethod playMethod) {
+        if ((double) cards.size() / (52 * numberOfDecks) < cutOff) {
+            shuffle();
+            playMethod.reshuffleMethod();
+        }
     }
 }
 
