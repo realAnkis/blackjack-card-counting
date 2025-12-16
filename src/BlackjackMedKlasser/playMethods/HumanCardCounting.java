@@ -38,7 +38,7 @@ public class HumanCardCounting extends PlayMethod {
     // får bar d på första kortet
     @Override
     public String actionMethod(Round round, int allowedActions, int handIndex) {
-        return arrMetod(round, allowedActions, handIndex);
+        return basicArrMetod(round, allowedActions, handIndex);
         // after 100 000 000 rounds
         // basicStrategy() Player edge = 1.6378918982228403%      Final balance: -21985200       Total amount bet: -1342286388
         //  test() Player edge: 2.1153516130094316%               Final balance: -32451300       Total amount bet: -1534085388
@@ -316,86 +316,86 @@ public class HumanCardCounting extends PlayMethod {
         else return actionArr1Soft[round.getHands()[handIndx].getTotal() - 12][round.getDealerCard() - 2];
     }
 
-    public String arrMetod(Round round, int allowdActions, int handIndx) {
 
+    private String[][] hardTotals1 = {
+            //{"2","3","4","5","6","7","8","9",10","A"}, //Dealers card
+            {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //3
+            {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //4
+            {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //5
+            {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //6
+            {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //7
+            {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //8
+            {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //9
+            {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //10
+            {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //11
+            {"h", "h", "s", "s", "s", "h", "h", "h", "h", "h"},          //12
+            {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"},          //13
+            {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"},          //14
+            {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"},          //15
+            {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"},          //16
+            {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},          //17
+            {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},          //18
+            {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},          //19
+            {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},          //20
+    };
+    private String[][] hardTotals2 = {
+            {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //3
+            {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //4
+            {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //5
+            {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //6
+            {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //7
+            {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //8
+            {"h", "d", "d", "d", "d", "h", "h", "h", "h", "h"},          //9
+            {"d", "d", "d", "d", "d", "d", "d", "d", "h", "h"},          //10
+            {"d", "d", "d", "d", "d", "d", "d", "d", "d", "d"},          //11
+            {"h", "h", "s", "s", "s", "h", "h", "h", "h", "h"},          //12
+            {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"},          //13
+            {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"},          //14
+            {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"},          //15
+            {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"},          //16
+            {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},          //17
+            {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},          //18
+            {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},          //19
+            {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},          //20
+    };
+    private String[][] softTotals1 = {
+            {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},         //12 AA
+            {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //13 A2
+            {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //14 A3
+            {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //15 A4
+            {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //16 A5
+            {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //17 A6
+            {"s", "s", "s", "s", "s", "s", "s", "h", "h", "h"},          //18 A7
+            {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},          //19 A8
+            {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},          //20 A9
+    };
+    private String[][] softTotals2 = {
+            {"h", "h", "h", "h", "d", "h", "h", "h", "h", "h"},         //12 AA
+            {"h", "h", "h", "d", "d", "h", "h", "h", "h", "h"},          //13 A2
+            {"h", "h", "h", "d", "d", "h", "h", "h", "h", "h"},          //14 A3
+            {"h", "h", "d", "d", "d", "h", "h", "h", "h", "h"},          //15 A4
+            {"h", "h", "d", "d", "d", "h", "h", "h", "h", "h"},          //16 A5
+            {"h", "d", "d", "d", "d", "h", "h", "h", "h", "h"},          //17 A6
+            {"d", "d", "d", "d", "d", "s", "s", "h", "h", "h"},          //18 A7
+            {"s", "s", "s", "s", "d", "s", "s", "s", "s", "s"},          //19 A8
+            {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},          //20 A9
+    };
 
-        String[][] hardTotals1 = {
-                //{"2","3","4","5","6","7","8","9",10","A"}, //Dealers card
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //3
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //4
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //5
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //6
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //7
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //8
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //9
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //10
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //11
-                {"h", "h", "s", "s", "s", "h", "h", "h", "h", "h"},          //12
-                {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"},          //13
-                {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"},          //14
-                {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"},          //15
-                {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"},          //16
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},          //17
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},          //18
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},          //19
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},          //20
-        };
-        String[][] hardTotals2 = {
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //3
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //4
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //5
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //6
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //7
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //8
-                {"h", "d", "d", "d", "d", "h", "h", "h", "h", "h"},          //9
-                {"d", "d", "d", "d", "d", "d", "d", "d", "h", "h"},          //10
-                {"d", "d", "d", "d", "d", "d", "d", "d", "d", "d"},          //11
-                {"h", "h", "s", "s", "s", "h", "h", "h", "h", "h"},          //12
-                {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"},          //13
-                {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"},          //14
-                {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"},          //15
-                {"s", "s", "s", "s", "s", "h", "h", "h", "h", "h"},          //16
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},          //17
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},          //18
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},          //19
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},          //20
-        };
+    private String[][] pairs = {
+            {"sp", "sp", "sp", "sp", "sp", "sp", "h", "h", "h", "h"},        // 4 2 2
+            {"sp", "sp", "sp", "sp", "sp", "sp", "h", "h", "h", "h"},        // 6 3 3
+            {"h", "h", "h", "sp", "sp", "h", "h", "h", "h", "h"},            // 8 4 4
+            {"d", "d", "d", "d", "d", "d", "d", "d", "h", "h"},              //10 5 5
+            {"sp", "sp", "sp", "sp", "sp", "h", "h", "h", "h", "h"},         //12 6 6
+            {"sp", "sp", "sp", "sp", "sp", "sp", "h", "h", "h", "h"},        //14 7 7
+            {"sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp"},    //16 8 8
+            {"sp", "sp", "sp", "sp", "sp", "s", "sp", "sp", "s", "s"},       //18 9 9
+            {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},              //20 10 10
+            {"sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp"},    //12 AA
+    };
 
-        String[][] softTotals1 = {
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},         //12 AA
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //13 A2
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //14 A3
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //15 A4
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //16 A5
-                {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //17 A6
-                {"s", "s", "s", "s", "s", "s", "s", "h", "h", "h"},          //18 A7
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},          //19 A8
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},          //20 A9
-        };
-        String[][] softTotals2 = {
-                {"h", "h", "h", "h", "d", "h", "h", "h", "h", "h"},         //12 AA
-                {"h", "h", "h", "d", "d", "h", "h", "h", "h", "h"},          //13 A2
-                {"h", "h", "h", "d", "d", "h", "h", "h", "h", "h"},          //14 A3
-                {"h", "h", "d", "d", "d", "h", "h", "h", "h", "h"},          //15 A4
-                {"h", "h", "d", "d", "d", "h", "h", "h", "h", "h"},          //16 A5
-                {"h", "d", "d", "d", "d", "h", "h", "h", "h", "h"},          //17 A6
-                {"d", "d", "d", "d", "d", "s", "s", "h", "h", "h"},          //18 A7
-                {"s", "s", "s", "s", "d", "s", "s", "s", "s", "s"},          //19 A8
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},          //20 A9
-        };
+    public String basicArrMetod(Round round, int allowdActions, int handIndx) {
 
-        String[][] pairs = {
-                {"sp", "sp", "sp", "sp", "sp", "sp", "h", "h", "h", "h"},        // 4 2 2
-                {"sp", "sp", "sp", "sp", "sp", "sp", "h", "h", "h", "h"},        // 6 3 3
-                {"h", "h", "h", "sp", "sp", "h", "h", "h", "h", "h"},            // 8 4 4
-                {"d", "d", "d", "d", "d", "d", "d", "d", "h", "h"},              //10 5 5
-                {"sp", "sp", "sp", "sp", "sp", "h", "h", "h", "h", "h"},         //12 6 6
-                {"sp", "sp", "sp", "sp", "sp", "sp", "h", "h", "h", "h"},        //14 7 7
-                {"sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp"},    //16 8 8
-                {"sp", "sp", "sp", "sp", "sp", "s", "sp", "sp", "s", "s"},       //18 9 9
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},              //20 10 10
-                {"sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp"},    //12 AA
-        };
 
         if (allowdActions == 3 && round.getHands()[handIndx].getAvailabelAces() > 0)
             return pairs[9][round.getDealerCard() - 2];

@@ -4,15 +4,15 @@ import BlackjackMedKlasser.playMethods.PlayMethod;
 
 public class Statistics {
 
-    public Statistics(int money, int betTotal, PlayMethod playMethod) {
+    public Statistics(long money, long betTotal, PlayMethod playMethod) {
         printStats(money, betTotal, playMethod);
     }
 
-    private static double calculatePlayerEdge(int money, int betTotal) {
+    private static double calculatePlayerEdge(long money, long betTotal) {
         return 100 * (double)money/betTotal;
     }
 
-    public static void printStats(int money, int betTotal, PlayMethod playMethod) {
+    public static void printStats(long money, long betTotal, PlayMethod playMethod) {
         System.out.println(playMethod.getClass().toString().substring(38) + ":");
 
         System.out.println("Final balance: " + money);

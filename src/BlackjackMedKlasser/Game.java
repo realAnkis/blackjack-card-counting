@@ -6,8 +6,8 @@ import java.util.Scanner;
 
 public class Game {
     private Deck deck;
-    private int money = 0;
-    private int betTotal = 0;
+    private long money = 0;
+    private long betTotal = 0;
 
     public static void main(String[] args) {
         Settings settings = new Settings();
