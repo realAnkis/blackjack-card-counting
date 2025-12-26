@@ -29,6 +29,7 @@ public class SemiOptimal extends PlayMethod {
     //körs när kortleken blandas
     @Override
     public void reshuffleMethod() {
+        predictedGameDeck.shuffle();
     }
 
     //körs när en aktion i spelet behöver bestämmas, bör returna "s", "h", "d" eller "sp"
