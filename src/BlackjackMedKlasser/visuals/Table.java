@@ -5,6 +5,7 @@ import BlackjackMedKlasser.Hand;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -27,10 +28,19 @@ public class Table extends JPanel {
         }
 
         this.setBackground(new Color(44, 128, 8));
-        this.setSize(1400,700);
+        this.setSize(1400, 700);
 
-        cards.add(new DisplayedCard(new double[]{0.5, 0.5},2,2,0));
+        cards.add(new DisplayedCard(new double[]{0.5, 0.5}, 2, 2, 0));
 
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                Point mousePos = getMousePosition().getLocation();
+                cards.getFirst().moveSmooth((double) mousePos.x / screenWidth, (double) mousePos.y / screenHeight, 60, 0);
+                cards.getFirst().flip(25, 10);
+            }
+        });
     }
 
     @Override
@@ -44,9 +54,10 @@ public class Table extends JPanel {
         screenWidth = this.getSize().width;
 
         for (DisplayedCard card : cards) {
-            if(card.isFlipped()) g.drawImage(cardFront,(int)(screenWidth * card.getX() - (cardWidth / 2.0)),(int)(screenHeight * card.getY() - (cardHeight / 2.0)),(int)(screenWidth * card.getX() + (cardWidth / 2.0)),(int)(screenHeight * card.getY() + (cardHeight / 2.0)),card.getValue() * 63, card.getSuit() * 88,(card.getValue() + 1) * 63, (card.getSuit() + 1) * 88, null);
-            else g.drawImage(cardBack,(int)(screenWidth * card.getX() - (cardWidth / 2.0)),(int)(screenHeight * card.getY() - (cardHeight / 2.0)),(int)(screenWidth * card.getX() + (cardWidth / 2.0)),(int)(screenHeight * card.getY() + (cardHeight / 2.0)),0, 0,252, 352, null);
-            card.moveLinear(0.001,0,0,0);
+            if (card.isFlipped())
+                g.drawImage(cardFront, (int) (screenWidth * card.getX() - (cardWidth * card.getFlipWidth() / 2.0)), (int) (screenHeight * card.getY() - (cardHeight / 2.0)), (int) (screenWidth * card.getX() + (cardWidth * card.getFlipWidth() / 2.0)), (int) (screenHeight * card.getY() + (cardHeight / 2.0)), card.getValue() * 63, card.getSuit() * 88, (card.getValue() + 1) * 63, (card.getSuit() + 1) * 88, null);
+            else
+                g.drawImage(cardBack, (int) (screenWidth * card.getX() - (cardWidth * card.getFlipWidth() / 2.0)), (int) (screenHeight * card.getY() - (cardHeight / 2.0)), (int) (screenWidth * card.getX() + (cardWidth * card.getFlipWidth() / 2.0)), (int) (screenHeight * card.getY() + (cardHeight / 2.0)), 0, 0, 252, 352, null);
         }
     }
 }

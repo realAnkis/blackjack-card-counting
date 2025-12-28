@@ -21,5 +21,6 @@ public class Frame {
         Timer frameUpdate = new Timer(16,e-> {
             frame.repaint();
         });
+        frameUpdate.start();
     }
 }
