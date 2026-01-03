@@ -316,6 +316,7 @@ public class HumanCardCounting extends PlayMethod {
     }
 
 
+    // from https://www.casinocenter.com/master-class-the-hi-lo-card-counting-system/
     private String[][] hiLoIndexTabel = {
             //    {player toal, dealer card, index, action, Soft?(t,f),pair?(t,f)}
             {"16", "10", "1", "s", "f", "f"},   // 1
