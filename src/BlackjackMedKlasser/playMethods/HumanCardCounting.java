@@ -22,7 +22,7 @@ public class HumanCardCounting extends PlayMethod {
 
     @Override
     public void cardDealtMethod(Card card) {
-        //count += hiLo(card);
+        count += hiLo(card);
         trueCount = (count / ((int) (deck.getSizeOfDeck() / 52)));
     }
 
@@ -39,14 +39,8 @@ public class HumanCardCounting extends PlayMethod {
     @Override
     public String actionMethod(Round round, int allowedActions, int handIndex) {
         return basicArrMetod(round, allowedActions, handIndex);
-        // after 100 000 000 rounds
-        // basicStrategy() Player edge = 1.6378918982228403%      Final balance: -21985200       Total amount bet: -1342286388
-        //  test() Player edge: 2.1153516130094316%               Final balance: -32451300       Total amount bet: -1534085388
-         //arrMetod() Player edge: 10.83481402087946%             Final balance: -180066850      Total amount bet: -1661928388
-            //(andra test med)arrMetod()  Final balance: 4533550    Player edge: -0.3030819849528216%  Total amount bet: -1495816388
-            // test av arrMetod() med 1 000 000 000 round = Player edge: -1.8157642964957765%      Final balance: 37736450      Total amount bet: -2078268092
-        //vrf är det så stor variation i player edge ?????????????????
     }
+
 
     private double betVariable = trueCount;
 
@@ -54,8 +48,8 @@ public class HumanCardCounting extends PlayMethod {
     @Override
     public int betMethod(Round round) {
         int bet;
-        return 10;
-       /* if (betVariable < 0) bet = settings.getMinBet();
+
+        if (betVariable < 0) bet = settings.getMinBet();
         else if (betVariable == 1) bet = settings.getMinBet() + (settings.getMaxBet() / 10);
         else if (betVariable == 2) bet = settings.getMinBet() + (settings.getMaxBet() / 5);
         else if (betVariable == 3) bet = settings.getMinBet() + (settings.getMaxBet() / 2);
@@ -63,7 +57,7 @@ public class HumanCardCounting extends PlayMethod {
 
         return bet;
 
-        */
+
     }
 
     //körs ifall möjlighet för ett insurance bet finns (dvs. ifall dealern har ett ess)
@@ -225,7 +219,6 @@ public class HumanCardCounting extends PlayMethod {
     }
 
 
-
     private String[][] hardTotals1 = {
             //{"2","3","4","5","6","7","8","9",10","A"}, //Dealers card
             {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //3
@@ -321,5 +314,61 @@ public class HumanCardCounting extends PlayMethod {
 
         return "error";
     }
+
+    private String[][] hiLoIndexTabel = {
+            //    {player toal, dealer card, index, action, Soft?(t,f),pair?(t,f)}
+            {"16", "10", "1", "s", "f", "f"},   // 1
+            {"12", "3", "3", "s", "f", "f"},   // 2
+            {"15", "4", "4", "s", "f", "f"},   // 3
+            {"20", "5", "5", "sp", "f", "t"},  // 4
+            {"20", "6", "5", "sp", "f", "t"},  // 5
+            {"12", "4", "1", "s", "f", "f"},   // 6
+            {"12", "2", "5", "s", "f", "f"},   // 7
+            {"8", "6", "2", "d", "f", "f"},   // 8
+            {"13", "2", "0", "s", "f", "f"},   // 9
+            {"9", "3", "3", "d", "f", "f"},    // 10
+            {"10", "11", "3", "d", "f", "f"},  // 11
+            {"11", "11", "0", "d", "f", "f"},  // 12
+            {"8", "5", "4", "d", "f", "f"},    // 13
+            {"19", "6", "1", "d", "t", "f"},    // 14
+            {"12", "6", "0", "s", "f", "f"},   // 15
+            {"19", "5", "1", "d", "t", "f"},  // 16
+            {"12", "5", "-1", "s", "f", "f"},  // 17
+            {"16", "9", "5", "s", "f", "f"},   // 18
+            {"20", "4", "7", "sp", "f", "t"},   // 19
+            {"13", "3", "-1", "s", "f", "f"},  // 20
+            {"9", "2", "1", "d", "f", "f"},    // 21
+            {"10", "10", "7", "d", "f", "f"},   // 22
+            {"14", "4", "1", "d", "t", "f"},   // 23
+            {"8", "6", "2", "d", "f", "t"},   // 24
+            {"13", "4", "-3", "s", "f", "f"},  // 25
+            {"19", "4", "3", "d", "t", "f"},    // 26
+            {"14", "2", "-3", "s", "f", "f"},  // 27
+            {"18", "2", "0", "d", "t", "f"},    // 28
+            {"10", "9", "-2", "d", "f", "f"},  // 29
+            {"13", "4", "3", "d", "t", "f"},   // 30
+            {"9", "3", "-1", "d", "f", "f"},   // 31
+            {"11", "10", "-5", "d", "f", "f"},  // 32
+            {"8", "5", "4", "d", "f", "t"},    // 33
+            {"20", "6", "5", "d", "t", "f"},   // 34
+            {"20", "5", "5", "d", "t", "f"},    // 35
+            {"8", "4", "6", "d", "f", "f"},    // 36
+            {"15", "9", "8", "s", "f", "f"},   // 37
+            {"16", "11", "8", "s", "f", "f"},   // 38
+            {"20", "3", "9", "sp", "f", "t"},  // 39
+            {"13", "5", "-4", "s", "f", "f"},  // 40
+            {"14", "3", "-5", "s", "f", "f"},   // 41
+            {"19", "3", "5", "d", "t", "f"},  // 42
+            {"13", "5", "-1", "d", "t", "f"},  // 43
+            {"13", "6", "-4", "s", "f", "f"},   // 44
+            {"16", "8", "9", "s", "f", "f"},   // 45
+            {"12", "2", "1", "sp", "f", "t"},   // 46
+            {"9", "4", "-3", "d", "f", "f"},  // 47
+            {"15", "2", "-6", "s", "f", "f"},  // 48
+            {"18", "11", "-1", "s", "t", "f"},  // 49
+
+    };
+
+
 }
 
