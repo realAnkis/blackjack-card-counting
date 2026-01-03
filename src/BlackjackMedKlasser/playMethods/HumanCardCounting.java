@@ -315,6 +315,7 @@ public class HumanCardCounting extends PlayMethod {
         return "error";
     }
 
+
     private String[][] hiLoIndexTabel = {
             //    {player toal, dealer card, index, action, Soft?(t,f),pair?(t,f)}
             {"16", "10", "1", "s", "f", "f"},   // 1
