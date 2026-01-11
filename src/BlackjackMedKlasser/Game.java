@@ -1,6 +1,7 @@
 package BlackjackMedKlasser;
 
 import BlackjackMedKlasser.playMethods.*;
+import BlackjackMedKlasser.playMethods.HumanCardCountingPack.HumanCardCounting;
 
 import java.util.Arrays;
 import java.util.Scanner;
@@ -25,7 +26,6 @@ public class Game {
 
             round.reset();
         }
-        System.out.println(Arrays.toString(playMethod.getTemp()));
         Statistics statistics = new Statistics(money, betTotal, playMethod);
     }
 
