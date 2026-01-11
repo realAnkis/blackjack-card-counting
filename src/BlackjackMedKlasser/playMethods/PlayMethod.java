@@ -25,4 +25,5 @@ public class PlayMethod {
 
     public void gameStatusMethod(Round round) {
     }
+    public int[] getTemp() { return null;}
 }

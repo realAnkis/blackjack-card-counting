@@ -5,6 +5,9 @@ import BlackjackMedKlasser.Deck;
 import BlackjackMedKlasser.Round;
 import BlackjackMedKlasser.Settings;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+
 public class HumanCardCounting extends PlayMethod {
     private Settings settings;
     private Deck deck;
@@ -24,7 +27,9 @@ public class HumanCardCounting extends PlayMethod {
     public void cardDealtMethod(Card card) {
         count += hiLo(card);
         trueCount = (count / ((int) (deck.getSizeOfDeck() / 52)));
+
     }
+
 
     //körs när kortleken blandas
     @Override
@@ -306,7 +311,7 @@ public class HumanCardCounting extends PlayMethod {
         else if (allowdActions == 2 && round.getHands()[handIndx].getAvailabelAces() > 0)
             return softTotals2[round.getHands()[handIndx].getTotal() - 12][round.getDealerCard() - 2];
         else if (allowdActions == 2 && round.getHands()[handIndx].getAvailabelAces() == 0)
-            return hardTotals2[round.getHands()[handIndx].getTotal() - 3][round.getDealerCard() - 2]; // vrf error med -5 istället for -5????
+            return hardTotals2[round.getHands()[handIndx].getTotal() - 3][round.getDealerCard() - 2];
         else if (allowdActions == 1 && round.getHands()[handIndx].getAvailabelAces() == 0)
             return hardTotals1[round.getHands()[handIndx].getTotal() - 3][round.getDealerCard() - 2];
         else if (allowdActions == 1 && round.getHands()[handIndx].getAvailabelAces() > 0)
@@ -317,60 +322,93 @@ public class HumanCardCounting extends PlayMethod {
 
 
     // from https://www.casinocenter.com/master-class-the-hi-lo-card-counting-system/
-    private String[][] hiLoIndexTabel = {
+    private static String[][] hiLoIndexTabel = {
             //    {player toal, dealer card, index, action, Soft?(t,f),pair?(t,f)}
-            {"16", "10", "1", "s", "f", "f"},   // 1
-            {"12", "3", "3", "s", "f", "f"},   // 2
-            {"15", "4", "4", "s", "f", "f"},   // 3
-            {"20", "5", "5", "sp", "f", "t"},  // 4
-            {"20", "6", "5", "sp", "f", "t"},  // 5
-            {"12", "4", "1", "s", "f", "f"},   // 6
-            {"12", "2", "5", "s", "f", "f"},   // 7
-            {"8", "6", "2", "d", "f", "f"},   // 8
-            {"13", "2", "0", "s", "f", "f"},   // 9
-            {"9", "3", "3", "d", "f", "f"},    // 10
-            {"10", "11", "3", "d", "f", "f"},  // 11
-            {"11", "11", "0", "d", "f", "f"},  // 12
-            {"8", "5", "4", "d", "f", "f"},    // 13
-            {"19", "6", "1", "d", "t", "f"},    // 14
-            {"12", "6", "0", "s", "f", "f"},   // 15
-            {"19", "5", "1", "d", "t", "f"},  // 16
-            {"12", "5", "-1", "s", "f", "f"},  // 17
-            {"16", "9", "5", "s", "f", "f"},   // 18
-            {"20", "4", "7", "sp", "f", "t"},   // 19
-            {"13", "3", "-1", "s", "f", "f"},  // 20
-            {"9", "2", "1", "d", "f", "f"},    // 21
-            {"10", "10", "7", "d", "f", "f"},   // 22
-            {"14", "4", "1", "d", "t", "f"},   // 23
-            {"8", "6", "2", "d", "f", "t"},   // 24
-            {"13", "4", "-3", "s", "f", "f"},  // 25
-            {"19", "4", "3", "d", "t", "f"},    // 26
-            {"14", "2", "-3", "s", "f", "f"},  // 27
-            {"18", "2", "0", "d", "t", "f"},    // 28
-            {"10", "9", "-2", "d", "f", "f"},  // 29
-            {"13", "4", "3", "d", "t", "f"},   // 30
-            {"9", "3", "-1", "d", "f", "f"},   // 31
-            {"11", "10", "-5", "d", "f", "f"},  // 32
-            {"8", "5", "4", "d", "f", "t"},    // 33
-            {"20", "6", "5", "d", "t", "f"},   // 34
-            {"20", "5", "5", "d", "t", "f"},    // 35
-            {"8", "4", "6", "d", "f", "f"},    // 36
-            {"15", "9", "8", "s", "f", "f"},   // 37
-            {"16", "11", "8", "s", "f", "f"},   // 38
-            {"20", "3", "9", "sp", "f", "t"},  // 39
-            {"13", "5", "-4", "s", "f", "f"},  // 40
-            {"14", "3", "-5", "s", "f", "f"},   // 41
-            {"19", "3", "5", "d", "t", "f"},  // 42
-            {"13", "5", "-1", "d", "t", "f"},  // 43
-            {"13", "6", "-4", "s", "f", "f"},   // 44
-            {"16", "8", "9", "s", "f", "f"},   // 45
-            {"12", "2", "1", "sp", "f", "t"},   // 46
-            {"9", "4", "-3", "d", "f", "f"},  // 47
-            {"15", "2", "-6", "s", "f", "f"},  // 48
-            {"18", "11", "-1", "s", "t", "f"},  // 49
+            {"16", "10", "1", "s", "f", "f"},   // 0
+            {"12", "3", "3", "s", "f", "f"},   // 1
+            {"15", "4", "4", "s", "f", "f"},   // 2
+            {"20", "5", "5", "sp", "f", "t"},  // 3
+            {"20", "6", "5", "sp", "f", "t"},  // 4
+            {"12", "4", "1", "s", "f", "f"},   // 5
+            {"12", "2", "5", "s", "f", "f"},   // 6
+            {"8", "6", "2", "d", "f", "f"},   // 7
+            {"13", "2", "0", "s", "f", "f"},   //8
+            {"9", "3", "3", "d", "f", "f"},    // 9
+            {"10", "11", "3", "d", "f", "f"},  // 10
+            {"11", "11", "0", "d", "f", "f"},  // 11
+            {"8", "5", "4", "d", "f", "f"},    // 12
+            {"19", "6", "1", "d", "t", "f"},    // 13
+            {"12", "6", "0", "s", "f", "f"},   // 14
+            {"19", "5", "1", "d", "t", "f"},  // 15
+            {"12", "5", "-1", "s", "f", "f"},  // 16
+            {"16", "9", "5", "s", "f", "f"},   // 17
+            {"20", "4", "7", "sp", "f", "t"},   // 18
+            {"13", "3", "-1", "s", "f", "f"},  // 19
+            {"9", "2", "1", "d", "f", "f"},    // 20
+            {"10", "10", "7", "d", "f", "f"},   // 21
+            {"14", "4", "1", "d", "t", "f"},   // 22
+            {"8", "6", "2", "d", "f", "t"},   // 23
+            {"13", "4", "-3", "s", "f", "f"},  // 24
+            {"19", "4", "3", "d", "t", "f"},    // 25
+            {"14", "2", "-3", "s", "f", "f"},  // 26
+            {"18", "2", "0", "d", "t", "f"},    // 27
+            {"10", "9", "-2", "d", "f", "f"},  // 28
+            {"13", "4", "3", "d", "t", "f"},   // 29
+            {"9", "3", "-1", "d", "f", "f"},   // 30
+            {"11", "10", "-5", "d", "f", "f"},  // 31
+            {"8", "5", "4", "d", "f", "t"},    // 32
+            {"20", "6", "5", "d", "t", "f"},   // 33
+            {"20", "5", "5", "d", "t", "f"},    // 34
+            {"8", "4", "6", "d", "f", "f"},    // 35
+            {"15", "9", "8", "s", "f", "f"},   // 36
+            {"16", "11", "8", "s", "f", "f"},   // 37
+            {"20", "3", "9", "sp", "f", "t"},  // 38
+            {"13", "5", "-4", "s", "f", "f"},  // 39
+            {"14", "3", "-5", "s", "f", "f"},   // 40
+            {"19", "3", "5", "d", "t", "f"},  // 41
+            {"13", "5", "-1", "d", "t", "f"},  // 42
+            {"13", "6", "-4", "s", "f", "f"},   // 43
+            {"16", "8", "9", "s", "f", "f"},   // 44
+            {"12", "2", "1", "sp", "f", "t"},   // 45
+            {"9", "4", "-3", "d", "f", "f"},  // 46
+            {"15", "2", "-6", "s", "f", "f"},  // 47
+            {"18", "11", "-1", "s", "t", "f"},  // 48
 
     };
 
+    public static void main(String[] args) {
+        String[][] temp = new String[49][6];
+        int tempT = 0;
+        int tempF = 48;
+        for (int i = 0; i < 49; i++) {
+            if (hiLoIndexTabel[i][5].equals("t")){
+                for (int j = 0; j < 6; j++) {
+                    temp[tempT][j] = hiLoIndexTabel[i][j];
+                }
+            tempT += 1;
+            } else if (hiLoIndexTabel[i][5].equals("f")) {
+                for (int j = 0; j < 6; j++) {
+                    temp[tempF][j] = hiLoIndexTabel[i][j];
+                }
+                tempF -= 1;
+
+            }
+        }
+        for (int i = 0; i < 49; i++) {
+            System.out.print("{"+"\""+temp[i][0]+"\", "+"\""+temp[i][1]+"\", "+"\""+temp[i][2]+"\", "+"\""+temp[i][3]+"\", "+"\""+temp[i][4]+"\", "+"\""+temp[i][5]+"\"},");
+            System.out.println();
+        }
+    }
+
+    public String HiLoCountStrat(Round round, int allowdActions, int handIndx) {
+        if (allowdActions == 3) {
+            LinkedList<Integer> pair = new LinkedList<>();
+            for (int i = 0; i < 48; i++) {
+
+            }
+        }
+        return "error";
+    }
 
 }
 
