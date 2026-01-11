@@ -373,7 +373,6 @@ public class HumanCardCounting extends PlayMethod {
             {"9", "4", "-3", "d", "f", "f"},  // 46
             {"15", "2", "-6", "s", "f", "f"},  // 47
             {"18", "11", "-1", "s", "t", "f"},  // 48
-
     };
 
     public static void main(String[] args) {
@@ -402,10 +401,7 @@ public class HumanCardCounting extends PlayMethod {
 
     public String HiLoCountStrat(Round round, int allowdActions, int handIndx) {
         if (allowdActions == 3) {
-            LinkedList<Integer> pair = new LinkedList<>();
-            for (int i = 0; i < 48; i++) {
 
-            }
         }
         return "error";
     }
