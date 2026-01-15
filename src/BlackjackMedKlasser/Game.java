@@ -38,6 +38,7 @@ public class Game {
     public static PlayMethod selectPlayMethod(Settings settings, Deck deck) {
         System.out.println("Please select one of the following playmethods:");
         System.out.println("- SpelaSjälv");
+        System.out.println("- Visuell");
         System.out.println("- TestMethod");
         System.out.println("- SemiOptimal");
         System.out.println("- HumanCardCounting");
@@ -47,6 +48,7 @@ public class Game {
             String input = scanner.nextLine();
 
             if (input.equals("SpelaSjälv")) return new SpelaSjälv(settings);
+            if (input.equals("Visuell")) return new SpelaSjälvVisuell(settings);
             if (input.equals("TestMethod")) return new TestMethod(settings);
             if (input.equals("SemiOptimal")) return new SemiOptimal(settings);
             if (input.equals("HumanCardCounting")) return new HumanCardCounting(settings, deck);

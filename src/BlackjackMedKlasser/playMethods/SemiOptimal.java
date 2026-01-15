@@ -17,7 +17,7 @@ public class SemiOptimal extends PlayMethod {
         this.settings = settings;
         simulatedDeck = new Deck(settings);
         predictedGameDeck = new Deck(settings);
-        simulatedRound = new Round(simulatedDeck,new SimulatedRound(settings, this),new Game());
+        simulatedRound = new Round(simulatedDeck,new SimulatedRound(settings),new Game());
     }
 
     //körs när ett kort delas ut från kortleken
@@ -58,6 +58,11 @@ public class SemiOptimal extends PlayMethod {
     //körs ifall möjlighet för ett insurance bet finns (dvs. ifall dealern har ett ess)
     @Override
     public int insuranceBetMethod(Round round) {
+        int cardsWithValue10 = 0;
+        for(Card card : predictedGameDeck.getCards()) {
+            if(card.getValue() == 10) cardsWithValue10++;
+        }
+        if((double)(cardsWithValue10) / predictedGameDeck.getSizeOfDeck() > 0.5) return settings.getMaxBet();
         return 0;
     }
 

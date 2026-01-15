@@ -14,10 +14,13 @@ public class Card {
     }
 
     public int getValue() {
-        if(value == 1) return 11;
-        return Math.min(value,10);
+        if (value == 1) return 11;
+        return Math.min(value, 10);
     }
 
+    public int getActualValue() {
+        return value;
+    }
 
 
 }
