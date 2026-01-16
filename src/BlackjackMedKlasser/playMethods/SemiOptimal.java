@@ -37,8 +37,17 @@ public class SemiOptimal extends PlayMethod {
     //handIndex är den hand som just nu spelas, bör användas i till exempel: round.getHands()[handIndex].getTotal()
     @Override
     public String actionMethod(Round round, int allowedActions, int handIndex) {
+        int simulatedHitWinnings = 0;
+        for (int i = 0; i < actionSimulationAmount; i++) {
+
+        }
+
         if(round.getHands()[handIndex].getTotal() <= 10) return "h";
         return "s";
+    }
+
+    public int tryActions() {
+
     }
 
     //körs när det ursprungliga bettet ska bestämmas
