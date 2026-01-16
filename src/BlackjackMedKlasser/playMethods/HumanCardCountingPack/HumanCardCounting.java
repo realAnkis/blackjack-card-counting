@@ -14,7 +14,6 @@ public class HumanCardCounting extends PlayMethod {
 
 
     //körs när ett kort delas ut från kortleken
-
     public HumanCardCounting(Settings settings, Deck deck) {
         this.settings = settings;
         this.deck = deck;
@@ -23,7 +22,7 @@ public class HumanCardCounting extends PlayMethod {
 
     @Override
     public void cardDealtMethod(Card card) {
-        count += hiLo(card);
+        count += hiOpt2(card);
         trueCount = (count / ((int) (deck.getSizeOfDeck() / 52)));
 
     }
@@ -46,7 +45,6 @@ public class HumanCardCounting extends PlayMethod {
 
 
     private double betVariable = trueCount;
-
     //körs när det ursprungliga bettet ska bestämmas
     @Override
     public int betMethod(Round round) {
@@ -76,15 +74,11 @@ public class HumanCardCounting extends PlayMethod {
         else if (card.getValue() < 7) return 1;
         else return 0;
     }
-
-
     public int hiOpt1(Card card) {
         if (card.getValue() == 10) return -1;
         else if (card.getValue() < 7 && card.getValue() != 2) return 1;
         else return 0;
     }
-
-
     public int hiOpt2(Card card) {
         if (card.getValue() == 10) return -2;
         else if (card.getValue() < 8) {
@@ -93,13 +87,11 @@ public class HumanCardCounting extends PlayMethod {
                 return 1;
         } else return 0;
     }
-
     public int kO(Card card) {
         if (card.getValue() > 9) return -1;
         else if (card.getValue() < 8) return 1;
         else return 0;
     }
-
     public int omega2(Card card) {
         if (card.getValue() == 10) return -2;
         else if (card.getValue() > 7) {
@@ -108,7 +100,6 @@ public class HumanCardCounting extends PlayMethod {
         } else if (card.getValue() == 4 || card.getValue() == 5 || card.getValue() == 6) return +2;
         else return 1;
     }
-
     public int red7(Card card) {
         if (card.getValue() > 9) return -1;
         else if (card.getValue() < 7) return 1;
@@ -116,7 +107,6 @@ public class HumanCardCounting extends PlayMethod {
             // givet att Suit 0 och 1 är hjäter och ruter
         else return 0;
     }
-
     public double halvs(Card card) {
         if (card.getValue() > 9) return -1;
         else if (card.getValue() == 3 || card.getValue() == 4 || card.getValue() == 6) return +1;
@@ -125,7 +115,6 @@ public class HumanCardCounting extends PlayMethod {
         else if (card.getValue() == 5) return 1.5;
         else return 0.5;
     }
-
     public int zenCount(Card card) {
         if (card.getValue() == 10) return -2;
         else if (card.getValue() < 8) {
@@ -134,7 +123,6 @@ public class HumanCardCounting extends PlayMethod {
         } else if (card.getValue() < 10) return 0;
         else return -1;
     }
-
     public int tenCount(Card card) {
         if (card.getValue() == 10) return -2;
         else return 1;
