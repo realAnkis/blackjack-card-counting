@@ -3,6 +3,7 @@ package BlackjackMedKlasser.playMethods;
 import BlackjackMedKlasser.*;
 import BlackjackMedKlasser.playMethods.SemiOptimalSubclasses.SimulatedRound;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 
@@ -10,7 +11,6 @@ public class SemiOptimal extends PlayMethod {
     private final int betSimulationAmount = 1000;
     private final int actionSimulationAmount = 100;
     private final int actionDepthSimulationAmount = 1;
-    private int looping;
 
     private Settings settings;
     private Deck predictedGameDeck;
@@ -55,12 +55,15 @@ public class SemiOptimal extends PlayMethod {
 
         String[] actions = new String[]{"s","h","d","sp"};
 
+        System.out.println(Arrays.toString(winnings) + " " + actions[indexWithHighestValue(winnings)]);
+
         return actions[indexWithHighestValue(winnings)];
     }
 
     public int[] tryActions(Round round, int allowedActions, int iterationsPerAction, LinkedList<Card> startingCards) {
         prepareForAction(startingCards);
 
+        if(simulatedPlayerHand.getTotal() > 21) return new int[]{0,0,0,0};
 
         int[] winnings = new int[4]; //index 0 = stand, 1 = hit, 2 = double, 3 = split
 
@@ -73,9 +76,7 @@ public class SemiOptimal extends PlayMethod {
             prepareForAction(startingCards);
 
             simulatedPlayerHand.addCard(simulatedDeck.deal(this, false));
-            System.out.println(looping++);
             int[] hitWinnings = tryActions(round, 1, actionDepthSimulationAmount, new LinkedList<>(simulatedPlayerHand.getCards()));
-
             winnings[1] += iterationsPerAction * hitWinnings[indexWithHighestValue(hitWinnings)] / actionDepthSimulationAmount;
         }
         if(allowedActions == 1) {
@@ -85,7 +86,6 @@ public class SemiOptimal extends PlayMethod {
         }
         for (int i = 0; i < iterationsPerAction; i++) {
             prepareForAction(startingCards);
-            if(simulatedPlayerHand.getTotal() > 21) return new int[]{0,0,0,0};
 
             simulatedPlayerHand.addCard(simulatedDeck.deal(this, false));
 
@@ -152,6 +152,8 @@ public class SemiOptimal extends PlayMethod {
     //körs när det ursprungliga bettet ska bestämmas
     @Override
     public int betMethod(Round round) {
+        return settings.getMinBet();
+        /*
         int simulatedWinnings = 0;
         for (int i = 0; i < betSimulationAmount; i++) {
             betDeck.setCards(predictedGameDeck.getCards());
@@ -161,6 +163,8 @@ public class SemiOptimal extends PlayMethod {
         }
         if (simulatedWinnings > 0) return settings.getMaxBet();
         return settings.getMinBet();
+
+         */
     }
 
     //körs ifall möjlighet för ett insurance bet finns (dvs. ifall dealern har ett ess)
