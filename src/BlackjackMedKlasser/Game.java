@@ -2,7 +2,7 @@ package BlackjackMedKlasser;
 
 import BlackjackMedKlasser.playMethods.*;
 import BlackjackMedKlasser.playMethods.HumanCardCountingPack.HumanCardCounting;
-
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -17,6 +17,7 @@ public class Game {
     }
 
     public Game(Settings settings) {
+        LocalDateTime startTime = LocalDateTime.now();
         deck = new Deck(settings);
         PlayMethod playMethod = selectPlayMethod(settings,deck);
         Round round = new Round(deck, playMethod, this);
@@ -26,7 +27,8 @@ public class Game {
 
             round.reset();
         }
-        Statistics statistics = new Statistics(money, betTotal, playMethod);
+        LocalDateTime endTime = LocalDateTime.now();
+        Statistics statistics = new Statistics(money, betTotal, playMethod,startTime,endTime);
     }
 
     public Game() {}
