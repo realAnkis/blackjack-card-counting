@@ -51,7 +51,7 @@ public class SemiOptimal extends PlayMethod {
     //handIndex är den hand som just nu spelas, bör användas i till exempel: round.getHands()[handIndex].getTotal()
     @Override
     public String actionMethod(Round round, int allowedActions, int handIndex) {
-        double[] winnings = tryActions(round, allowedActions, actionSimulationAmount, new LinkedList<>(round.getHands()[handIndex].getCards()));
+        double[] winnings = tryActions(round, allowedActions, actionSimulationAmount, new LinkedList<>(round.getHands()[handIndex].getCards()), predictedGameDeck);
 
         String[] actions = new String[]{"s","h","d","sp"};
 
@@ -60,8 +60,8 @@ public class SemiOptimal extends PlayMethod {
         return actions[indexWithHighestValue(winnings)];
     }
 
-    public double[] tryActions(Round round, int allowedActions, int iterationsPerAction, LinkedList<Card> startingCards) {
-        prepareForAction(startingCards);
+    public double[] tryActions(Round round, int allowedActions, int iterationsPerAction, LinkedList<Card> startingCards, Deck startingDeck) {
+        prepareForAction(startingCards, startingDeck);
 
         if(simulatedPlayerHand.getTotal() > 21) return new double[]{-2,-2,-2,-2};
 
@@ -69,17 +69,19 @@ public class SemiOptimal extends PlayMethod {
 
         //stand
         for (int i = 0; i < iterationsPerAction; i++) {
-            prepareForAction(startingCards);
+            prepareForAction(startingCards, startingDeck);
 
             winnings[0] += playSimulatedDealerHand(round, 1);
         }
         winnings[0] /= iterationsPerAction;
         //hit
         for (int i = 0; i < iterationsPerAction; i++) {
-            prepareForAction(startingCards);
+            prepareForAction(startingCards, startingDeck);
 
             simulatedPlayerHand.addCard(simulatedDeck.deal(this, false));
-            double[] hitWinnings = tryActions(round, 1, actionDepthSimulationAmount, new LinkedList<>(simulatedPlayerHand.getCards()));
+            Deck newPredictedDeck = new Deck(settings);
+            newPredictedDeck.setCards(simulatedDeck.getCards());
+            double[] hitWinnings = tryActions(round, 1, actionDepthSimulationAmount, new LinkedList<>(simulatedPlayerHand.getCards()),newPredictedDeck);
             winnings[1] += hitWinnings[indexWithHighestValue(hitWinnings)];
         }
         winnings[1] /= iterationsPerAction;
@@ -91,7 +93,7 @@ public class SemiOptimal extends PlayMethod {
         }
         //double
         for (int i = 0; i < iterationsPerAction; i++) {
-            prepareForAction(startingCards);
+            prepareForAction(startingCards, startingDeck);
 
             simulatedPlayerHand.addCard(simulatedDeck.deal(this, false));
 
@@ -105,14 +107,27 @@ public class SemiOptimal extends PlayMethod {
         }
         //split
         for (int i = 0; i < iterationsPerAction; i++) {
-            prepareForAction(startingCards);
+            prepareForAction(startingCards, startingDeck);
 
             simulatedPlayerHand.pollCard();
             simulatedPlayerHand.setTotal(simulatedPlayerHand.getCards().getFirst().getValue());
+            simulatedPlayerHand.addCard(simulatedDeck.deal(this, false));
 
-            double[] splitWinnings = tryActions(round, 2, actionDepthSimulationAmount, new LinkedList<>(simulatedPlayerHand.getCards()));
+            Card secondCard = simulatedDeck.deal(this, false);
 
-            winnings[3] += 2 * splitWinnings[indexWithHighestValue(splitWinnings)];
+            Deck newPredictedDeck = new Deck(settings);
+            newPredictedDeck.setCards(simulatedDeck.getCards());
+            double[] splitWinnings = tryActions(round, 2, actionDepthSimulationAmount, new LinkedList<>(simulatedPlayerHand.getCards()),newPredictedDeck);
+
+            winnings[3] += splitWinnings[indexWithHighestValue(splitWinnings)];
+
+            simulatedPlayerHand.pollCard();
+            simulatedPlayerHand.setTotal(simulatedPlayerHand.getCards().getFirst().getValue());
+            simulatedPlayerHand.addCard(secondCard);
+
+            splitWinnings = tryActions(round, 2, actionDepthSimulationAmount, new LinkedList<>(simulatedPlayerHand.getCards()),newPredictedDeck);
+
+            winnings[3] += splitWinnings[indexWithHighestValue(splitWinnings)];
         }
         winnings[3] /= iterationsPerAction;
         return winnings;
@@ -152,14 +167,14 @@ public class SemiOptimal extends PlayMethod {
         return -2 * betMultiplier;
     }
 
-    public void prepareForAction(LinkedList<Card> startingCards) {
+    public void prepareForAction(LinkedList<Card> startingCards, Deck startingDeck) {
         //set starting cards
         simulatedPlayerHand.clear();
         for(Card card : startingCards) {
             simulatedPlayerHand.addCard(card);
         }
         //reset simulated deck and reshuffle the containing cards
-        simulatedDeck.setCards(predictedGameDeck.getCards());
+        simulatedDeck.setCards(startingDeck.getCards());
         Collections.shuffle(simulatedDeck.getCards());
     }
 

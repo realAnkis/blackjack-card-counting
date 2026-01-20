@@ -17,10 +17,10 @@ public class Game {
     }
 
     public Game(Settings settings) {
-        LocalDateTime startTime = LocalDateTime.now();
         deck = new Deck(settings);
         PlayMethod playMethod = selectPlayMethod(settings,deck);
         Round round = new Round(deck, playMethod, this);
+        LocalDateTime startTime = LocalDateTime.now();
 
         for (int i = 0; i < settings.getNumberOfGames(); i++) {
             money += round.playRound();

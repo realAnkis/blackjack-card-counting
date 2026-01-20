@@ -17,9 +17,6 @@ public class Statistics {
     private double[] calculateTime(LocalDateTime startTime, LocalDateTime endTime) {
         double[] timeInfo = new double[4];
         Settings settings = new Settings();
-        endTime = endTime.minusYears(startTime.getYear());
-        endTime = endTime.minusMonths(startTime.getMonthValue());
-        endTime = endTime.minusDays(startTime.getDayOfMonth());
         endTime = endTime.minusHours(startTime.getHour());
         endTime = endTime.minusMinutes(startTime.getMinute());
         endTime = endTime.minusSeconds(startTime.getSecond());
@@ -27,8 +24,7 @@ public class Statistics {
         double totalSeconds = endTime.getSecond();
         totalSeconds += endTime.getMinute() * 60;
         totalSeconds += endTime.getHour() * 60 * 60;
-        //totalSeconds += endTime.getDayOfMonth() * 60 * 60 * 24;
-        //totalSeconds += endTime.getNano() * 0.000000001;
+        totalSeconds += endTime.getNano() * 0.000000001;
 
         System.out.println(totalSeconds);
 
@@ -43,7 +39,7 @@ public class Statistics {
     public static void printStats(long money, long betTotal, PlayMethod playMethod, double[] timeInfo) {
         System.out.println(playMethod.getClass().toString().substring(38) + ":");
 
-        System.out.println("Total time: " + timeInfo[1] + "s " + timeInfo[2] + "m " + timeInfo[3] + "h (" + timeInfo[0] + " rounds/s)");
+        System.out.println("Total time: " + (int)timeInfo[1] + "s " + (int)timeInfo[2] + "m " + (int)timeInfo[3] + "h (" + timeInfo[0] + " rounds/s)");
 
         System.out.println("Final balance: " + money);
         System.out.println("Total amount bet: " + betTotal);
