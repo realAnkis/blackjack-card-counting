@@ -10,7 +10,7 @@ import java.util.LinkedList;
 public class SemiOptimal extends PlayMethod {
     private final int betSimulationAmount = 1000;
     private final int actionSimulationAmount = 100;
-    private final int actionDepthSimulationAmount = 1;
+    private final int actionDepthSimulationAmount = 10;
 
     private Settings settings;
     private Deck predictedGameDeck;
@@ -119,14 +119,31 @@ public class SemiOptimal extends PlayMethod {
             newPredictedDeck.setCards(simulatedDeck.getCards());
             double[] splitWinnings = tryActions(round, 2, actionDepthSimulationAmount, new LinkedList<>(simulatedPlayerHand.getCards()),newPredictedDeck);
 
+            /*
+            System.out.println();
+            for (Card card : simulatedPlayerHand.getCards()) {
+                System.out.print(card.getValue() + " ");
+            }
+            System.out.println(Arrays.toString(splitWinnings));
+
+             */
+
             winnings[3] += splitWinnings[indexWithHighestValue(splitWinnings)];
 
+            prepareForAction(startingCards, startingDeck);
             simulatedPlayerHand.pollCard();
             simulatedPlayerHand.setTotal(simulatedPlayerHand.getCards().getFirst().getValue());
             simulatedPlayerHand.addCard(secondCard);
+            /*
+            System.out.println();
+            for (Card card : simulatedPlayerHand.getCards()) {
+                System.out.print(card.getValue() + " ");
+            }
+            System.out.println(Arrays.toString(splitWinnings));
+
+             */
 
             splitWinnings = tryActions(round, 2, actionDepthSimulationAmount, new LinkedList<>(simulatedPlayerHand.getCards()),newPredictedDeck);
-
             winnings[3] += splitWinnings[indexWithHighestValue(splitWinnings)];
         }
         winnings[3] /= iterationsPerAction;
