@@ -7,6 +7,9 @@ public class Settings {
     //                  10000000  = 10 000 000
     int maxBet = 100;
     int minBet = 10;
+    boolean blackjackAfterSplit = true;
+    double blackjackPayout = 1.5;
+
 
     public int getMaxBet() {
         return maxBet;
