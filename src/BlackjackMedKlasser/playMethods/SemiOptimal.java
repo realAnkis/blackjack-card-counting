@@ -25,7 +25,7 @@ public class SemiOptimal extends PlayMethod {
         betDeck = new Deck(settings);
         simulatedDeck = new Deck(settings);
         predictedGameDeck = new Deck(settings);
-        if(!isSimulated()) simulatedRound = new Round(betDeck, new SimulatedRound(settings), new Game());
+        if (!isSimulated()) simulatedRound = new Round(betDeck, new SimulatedRound(settings), new Game());
         simulatedDealerHand = new Hand();
         simulatedPlayerHand = new Hand();
     }
@@ -51,9 +51,14 @@ public class SemiOptimal extends PlayMethod {
     //handIndex är den hand som just nu spelas, bör användas i till exempel: round.getHands()[handIndex].getTotal()
     @Override
     public String actionMethod(Round round, int allowedActions, int handIndex) {
+        String obviousAction = checkIfActionIsObvious(round.getHands()[handIndex].getTotal(), allowedActions);
+        if (!obviousAction.equals("none")) {
+            return obviousAction;
+        }
+
         double[] winnings = tryActions(round, allowedActions, actionSimulationAmount, new LinkedList<>(round.getHands()[handIndex].getCards()), predictedGameDeck);
 
-        String[] actions = new String[]{"s","h","d","sp"};
+        String[] actions = new String[]{"s", "h", "d", "sp"};
 
         System.out.println(Arrays.toString(winnings) + " " + round.getHands()[handIndex].getAvailabelAces() + " " + actions[indexWithHighestValue(winnings)] + " p: " + round.getHands()[handIndex].getTotal() + " d: " + round.getDealerCard());
 
@@ -63,17 +68,27 @@ public class SemiOptimal extends PlayMethod {
     public double[] tryActions(Round round, int allowedActions, int iterationsPerAction, LinkedList<Card> startingCards, Deck startingDeck) {
         prepareForAction(startingCards, startingDeck);
 
-        if(simulatedPlayerHand.getTotal() > 21) return new double[]{-2,-2,-2,-2};
+        String obviousAction = checkIfActionIsObvious(simulatedPlayerHand.getTotal(), allowedActions);
+
+        if (simulatedPlayerHand.getTotal() > 21) return new double[]{-2, -2, -2, -2};
 
         double[] winnings = new double[4]; //index 0 = stand, 1 = hit, 2 = double, 3 = split
 
         //stand
+        if(obviousAction.equals("s") || obviousAction.equals("none")) {
         for (int i = 0; i < iterationsPerAction; i++) {
             prepareForAction(startingCards, startingDeck);
 
             winnings[0] += playSimulatedDealerHand(round, 1);
         }
+    }
         winnings[0] /= iterationsPerAction;
+        if (obviousAction.equals("s")) {
+            winnings[1] = -100000000;
+            winnings[2] = -100000000;
+            winnings[3] = -100000000;
+            return winnings;
+        }
         //hit
         for (int i = 0; i < iterationsPerAction; i++) {
             prepareForAction(startingCards, startingDeck);
@@ -81,12 +96,12 @@ public class SemiOptimal extends PlayMethod {
             simulatedPlayerHand.addCard(simulatedDeck.deal(this, false));
             Deck newPredictedDeck = new Deck(settings);
             newPredictedDeck.setCards(simulatedDeck.getCards());
-            double[] hitWinnings = tryActions(round, 1, actionDepthSimulationAmount, new LinkedList<>(simulatedPlayerHand.getCards()),newPredictedDeck);
+            double[] hitWinnings = tryActions(round, 1, actionDepthSimulationAmount, new LinkedList<>(simulatedPlayerHand.getCards()), newPredictedDeck);
             winnings[1] += hitWinnings[indexWithHighestValue(hitWinnings)];
         }
         winnings[1] /= iterationsPerAction;
 
-        if(allowedActions == 1) {
+        if (allowedActions == 1 || obviousAction.equals("h")) {
             winnings[2] = -100000000;
             winnings[3] = -100000000;
             return winnings;
@@ -101,7 +116,7 @@ public class SemiOptimal extends PlayMethod {
         }
         winnings[2] /= iterationsPerAction;
 
-        if(allowedActions == 2) {
+        if (allowedActions == 2 || obviousAction.equals("d")) {
             winnings[3] = -100000000;
             return winnings;
         }
@@ -117,7 +132,7 @@ public class SemiOptimal extends PlayMethod {
 
             Deck newPredictedDeck = new Deck(settings);
             newPredictedDeck.setCards(simulatedDeck.getCards());
-            double[] splitWinnings = tryActions(round, 2, actionDepthSimulationAmount, new LinkedList<>(simulatedPlayerHand.getCards()),newPredictedDeck);
+            double[] splitWinnings = tryActions(round, 2, actionDepthSimulationAmount, new LinkedList<>(simulatedPlayerHand.getCards()), newPredictedDeck);
 
             /*
             System.out.println();
@@ -143,7 +158,7 @@ public class SemiOptimal extends PlayMethod {
 
              */
 
-            splitWinnings = tryActions(round, 2, actionDepthSimulationAmount, new LinkedList<>(simulatedPlayerHand.getCards()),newPredictedDeck);
+            splitWinnings = tryActions(round, 2, actionDepthSimulationAmount, new LinkedList<>(simulatedPlayerHand.getCards()), newPredictedDeck);
             winnings[3] += splitWinnings[indexWithHighestValue(splitWinnings)];
         }
         winnings[3] /= iterationsPerAction;
@@ -158,6 +173,14 @@ public class SemiOptimal extends PlayMethod {
         }
 
         return highestIndex;
+    }
+
+    public String checkIfActionIsObvious(int total, int allowedActions) {
+        if (allowedActions != 3 && total > 17) return "s";
+        if (allowedActions == 1 && total <= 11) return "h";
+        if (total == 20) return "s";
+
+        return "none";
     }
 
     public int playSimulatedDealerHand(Round round, int betMultiplier) {
@@ -178,16 +201,17 @@ public class SemiOptimal extends PlayMethod {
             simulatedDealerHand.addCard(simulatedDeck.deal(this, false));
         }
         //if dealer busted or player has higher total
-        if (simulatedDealerHand.getTotal() > 21 || simulatedDealerHand.getTotal() < simulatedPlayerHand.getTotal()) return 2 * betMultiplier;
+        if (simulatedDealerHand.getTotal() > 21 || simulatedDealerHand.getTotal() < simulatedPlayerHand.getTotal())
+            return 2 * betMultiplier;
         //tie
-        if(simulatedDealerHand.getTotal() == simulatedPlayerHand.getTotal()) return 0;
+        if (simulatedDealerHand.getTotal() == simulatedPlayerHand.getTotal()) return 0;
         return -2 * betMultiplier;
     }
 
     public void prepareForAction(LinkedList<Card> startingCards, Deck startingDeck) {
         //set starting cards
         simulatedPlayerHand.clear();
-        for(Card card : startingCards) {
+        for (Card card : startingCards) {
             simulatedPlayerHand.addCard(card);
         }
         //reset simulated deck and reshuffle the containing cards
