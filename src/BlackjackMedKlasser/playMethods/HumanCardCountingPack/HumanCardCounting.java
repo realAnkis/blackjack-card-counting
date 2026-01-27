@@ -22,7 +22,7 @@ public class HumanCardCounting extends PlayMethod {
 
     @Override
     public void cardDealtMethod(Card card) {
-        count += hiOpt2(card);
+        count += hiLo(card);
         trueCount = (count / ((int) (deck.getSizeOfDeck() / 52)));
 
     }
@@ -45,6 +45,7 @@ public class HumanCardCounting extends PlayMethod {
 
 
     private double betVariable = trueCount;
+
     //körs när det ursprungliga bettet ska bestämmas
     @Override
     public int betMethod(Round round) {
@@ -74,11 +75,13 @@ public class HumanCardCounting extends PlayMethod {
         else if (card.getValue() < 7) return 1;
         else return 0;
     }
+
     public int hiOpt1(Card card) {
         if (card.getValue() == 10) return -1;
         else if (card.getValue() < 7 && card.getValue() != 2) return 1;
         else return 0;
     }
+
     public int hiOpt2(Card card) {
         if (card.getValue() == 10) return -2;
         else if (card.getValue() < 8) {
@@ -87,11 +90,13 @@ public class HumanCardCounting extends PlayMethod {
                 return 1;
         } else return 0;
     }
+
     public int kO(Card card) {
         if (card.getValue() > 9) return -1;
         else if (card.getValue() < 8) return 1;
         else return 0;
     }
+
     public int omega2(Card card) {
         if (card.getValue() == 10) return -2;
         else if (card.getValue() > 7) {
@@ -100,6 +105,7 @@ public class HumanCardCounting extends PlayMethod {
         } else if (card.getValue() == 4 || card.getValue() == 5 || card.getValue() == 6) return +2;
         else return 1;
     }
+
     public int red7(Card card) {
         if (card.getValue() > 9) return -1;
         else if (card.getValue() < 7) return 1;
@@ -107,6 +113,7 @@ public class HumanCardCounting extends PlayMethod {
             // givet att Suit 0 och 1 är hjäter och ruter
         else return 0;
     }
+
     public double halvs(Card card) {
         if (card.getValue() > 9) return -1;
         else if (card.getValue() == 3 || card.getValue() == 4 || card.getValue() == 6) return +1;
@@ -115,6 +122,7 @@ public class HumanCardCounting extends PlayMethod {
         else if (card.getValue() == 5) return 1.5;
         else return 0.5;
     }
+
     public int zenCount(Card card) {
         if (card.getValue() == 10) return -2;
         else if (card.getValue() < 8) {
@@ -123,6 +131,7 @@ public class HumanCardCounting extends PlayMethod {
         } else if (card.getValue() < 10) return 0;
         else return -1;
     }
+
     public int tenCount(Card card) {
         if (card.getValue() == 10) return -2;
         else return 1;
@@ -374,42 +383,44 @@ public class HumanCardCounting extends PlayMethod {
     public String hiLoCountStrat(Round round, int allowdActions, int handIndx) {
         if (allowdActions == 3) {
             for (int i = 0; i < 7; i++) {
-                if ((int) trueCount == Integer.parseInt(sortedHiLoIndexTabel[i][2]) && round.getHands()[handIndx].getTotal() == Integer.parseInt(sortedHiLoIndexTabel[i][0]) && round.getDealerCard() == Integer.parseInt(sortedHiLoIndexTabel[i][1]))
+                if ((int) trueCount >= Integer.parseInt(sortedHiLoIndexTabel[i][2]) && round.getHands()[handIndx].getTotal() == Integer.parseInt(sortedHiLoIndexTabel[i][0]) && round.getDealerCard() == Integer.parseInt(sortedHiLoIndexTabel[i][1]))
                     return sortedHiLoIndexTabel[i][3];
             }
             return basicArrMetod(round, allowdActions, handIndx);
         } else if (allowdActions == 2 && round.getHands()[handIndx].getAvailabelAces() > 0) {
+
             for (int i = 7; i < 49; i++) {
-                if ((int) trueCount == Integer.parseInt(sortedHiLoIndexTabel[i][2]) && round.getHands()[handIndx].getTotal() == Integer.parseInt(sortedHiLoIndexTabel[i][0])
+                if ((int) trueCount >= Integer.parseInt(sortedHiLoIndexTabel[i][2]) && round.getHands()[handIndx].getTotal() == Integer.parseInt(sortedHiLoIndexTabel[i][0])
                         && round.getDealerCard() == Integer.parseInt(sortedHiLoIndexTabel[i][1]) && sortedHiLoIndexTabel[i][4].equals("t"))
                     return sortedHiLoIndexTabel[i][3];
             }
             return basicArrMetod(round, allowdActions, handIndx);
         } else if (allowdActions == 2) {
             for (int i = 7; i < 49; i++) {
-                if ((int) trueCount == Integer.parseInt(sortedHiLoIndexTabel[i][2]) && round.getHands()[handIndx].getTotal() == Integer.parseInt(sortedHiLoIndexTabel[i][0])
+                if ((int) trueCount >= Integer.parseInt(sortedHiLoIndexTabel[i][2]) && round.getHands()[handIndx].getTotal() == Integer.parseInt(sortedHiLoIndexTabel[i][0])
                         && round.getDealerCard() == Integer.parseInt(sortedHiLoIndexTabel[i][1]) && sortedHiLoIndexTabel[i][4].equals("f"))
                     return sortedHiLoIndexTabel[i][3];
             }
             return basicArrMetod(round, allowdActions, handIndx);
+
         } else if (allowdActions == 1 && round.getHands()[handIndx].getAvailabelAces() > 0) {
+
             for (int i = 7; i < 49; i++) {
-                if ((int) trueCount == Integer.parseInt(sortedHiLoIndexTabel[i][2]) && round.getHands()[handIndx].getTotal() == Integer.parseInt(sortedHiLoIndexTabel[i][0])
+                if ((int) trueCount >= Integer.parseInt(sortedHiLoIndexTabel[i][2]) && round.getHands()[handIndx].getTotal() == Integer.parseInt(sortedHiLoIndexTabel[i][0])
                         && round.getDealerCard() == Integer.parseInt(sortedHiLoIndexTabel[i][1]) && sortedHiLoIndexTabel[i][4].equals("t") && !sortedHiLoIndexTabel[i][3].equals("d"))
                     return sortedHiLoIndexTabel[i][3];
             }
             return basicArrMetod(round, allowdActions, handIndx);
         } else if (allowdActions == 1) {
+
             for (int i = 7; i < 49; i++) {
-                if ((int) trueCount == Integer.parseInt(sortedHiLoIndexTabel[i][2]) && round.getHands()[handIndx].getTotal() == Integer.parseInt(sortedHiLoIndexTabel[i][0])
+                if ((int) trueCount >= Integer.parseInt(sortedHiLoIndexTabel[i][2]) && round.getHands()[handIndx].getTotal() == Integer.parseInt(sortedHiLoIndexTabel[i][0])
                         && round.getDealerCard() == Integer.parseInt(sortedHiLoIndexTabel[i][1]) && sortedHiLoIndexTabel[i][4].equals("f") && !sortedHiLoIndexTabel[i][3].equals("d"))
                     return sortedHiLoIndexTabel[i][3];
             }
             return basicArrMetod(round, allowdActions, handIndx);
         }
-
-        return "sp";
-
+        return basicArrMetod(round, allowdActions, handIndx);
     }
 
 }
