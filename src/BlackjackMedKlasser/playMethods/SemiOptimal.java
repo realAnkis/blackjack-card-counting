@@ -51,7 +51,7 @@ public class SemiOptimal extends PlayMethod {
     //handIndex är den hand som just nu spelas, bör användas i till exempel: round.getHands()[handIndex].getTotal()
     @Override
     public String actionMethod(Round round, int allowedActions, int handIndex) {
-        String obviousAction = checkIfActionIsObvious(round.getHands()[handIndex].getTotal(), allowedActions);
+        String obviousAction = checkIfActionIsObvious(round.getHands()[handIndex].getTotal(), allowedActions, round.getHands()[handIndex].getAvailabelAces());
         if (!obviousAction.equals("none")) {
             return obviousAction;
         }
@@ -68,20 +68,21 @@ public class SemiOptimal extends PlayMethod {
     public double[] tryActions(Round round, int allowedActions, int iterationsPerAction, LinkedList<Card> startingCards, Deck startingDeck) {
         prepareForAction(startingCards, startingDeck);
 
-        String obviousAction = checkIfActionIsObvious(simulatedPlayerHand.getTotal(), allowedActions);
-
         if (simulatedPlayerHand.getTotal() > 21) return new double[]{-2, -2, -2, -2};
+
+        String obviousAction = checkIfActionIsObvious(simulatedPlayerHand.getTotal(), allowedActions, simulatedPlayerHand.getAvailabelAces());
+
 
         double[] winnings = new double[4]; //index 0 = stand, 1 = hit, 2 = double, 3 = split
 
         //stand
-        if(obviousAction.equals("s") || obviousAction.equals("none")) {
-        for (int i = 0; i < iterationsPerAction; i++) {
-            prepareForAction(startingCards, startingDeck);
+        if (obviousAction.equals("s") || obviousAction.equals("none")) {
+            for (int i = 0; i < iterationsPerAction; i++) {
+                prepareForAction(startingCards, startingDeck);
 
-            winnings[0] += playSimulatedDealerHand(round, 1);
+                winnings[0] += playSimulatedDealerHand(round, 1);
+            }
         }
-    }
         winnings[0] /= iterationsPerAction;
         if (obviousAction.equals("s")) {
             winnings[1] = -100000000;
@@ -175,10 +176,13 @@ public class SemiOptimal extends PlayMethod {
         return highestIndex;
     }
 
-    public String checkIfActionIsObvious(int total, int allowedActions) {
-        if (allowedActions != 3 && total > 17) return "s";
-        if (allowedActions == 1 && total <= 11) return "h";
+    public String checkIfActionIsObvious(int total, int allowedActions, int availableAces) {
         if (total == 20) return "s";
+        if (allowedActions != 3) {
+            if (total > 17 && availableAces != 1) return "s";
+            if (total < 8) return "h";
+        }
+        if (allowedActions == 1 && total <= 11) return "h";
 
         return "none";
     }
