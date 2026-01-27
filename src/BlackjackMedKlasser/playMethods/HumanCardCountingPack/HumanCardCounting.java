@@ -22,7 +22,7 @@ public class HumanCardCounting extends PlayMethod {
 
     @Override
     public void cardDealtMethod(Card card) {
-        count += halvs(card);
+        count += hiLo(card);
         trueCount = (count / ((double) deck.getSizeOfDeck() / 52));
 
     }
@@ -41,11 +41,11 @@ public class HumanCardCounting extends PlayMethod {
     /*===========================================================================================*/
     @Override
     public String actionMethod(Round round, int allowedActions, int handIndex) {
-        return halvsCountStrat(round, allowedActions, handIndex);
+        return hiLoCountStrat(round, allowedActions, handIndex);
     }
     /*===========================================================================================*/
 
-    private double betVariable = trueCount;
+    private final double betVariable = trueCount;
     //körs när det ursprungliga bettet ska bestämmas
     @Override
     public int betMethod(Round round) {
@@ -56,10 +56,7 @@ public class HumanCardCounting extends PlayMethod {
         else if (betVariable <= 4) bet = (settings.getMinBet() *6) ;
         else if (betVariable <= 5) bet = (settings.getMinBet() *8) ;
         else bet = settings.getMaxBet();
-
         return bet;
-
-
     }
 
     //körs ifall möjlighet för ett insurance bet finns (dvs. ifall dealern har ett ess)
@@ -449,7 +446,7 @@ public class HumanCardCounting extends PlayMethod {
     public String halvsCountStrat(Round round, int allowdActions, int handIndx) {
         int playerTotal = round.getHands()[handIndx].getTotal();
         int dealersCard= round.getDealerCard();
-        int tC= (int)trueCount;
+        int tC= (int)Math.floor(trueCount);
 
         if (allowdActions == 3) {
             for (int i = 44; i <55 ; i++) { /* Pairs */
