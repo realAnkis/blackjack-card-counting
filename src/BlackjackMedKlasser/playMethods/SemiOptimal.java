@@ -60,7 +60,7 @@ public class SemiOptimal extends PlayMethod {
 
         String[] actions = new String[]{"s", "h", "d", "sp"};
 
-        System.out.println(Arrays.toString(winnings) + " " + round.getHands()[handIndex].getAvailabelAces() + " " + actions[indexWithHighestValue(winnings)] + " p: " + round.getHands()[handIndex].getTotal() + " d: " + round.getDealerCard());
+        //System.out.println(Arrays.toString(winnings) + " " + round.getHands()[handIndex].getAvailabelAces() + " " + actions[indexWithHighestValue(winnings)] + " p: " + round.getHands()[handIndex].getTotal() + " d: " + round.getDealerCard());
 
         return actions[indexWithHighestValue(winnings)];
     }
@@ -71,16 +71,17 @@ public class SemiOptimal extends PlayMethod {
         if (simulatedPlayerHand.getTotal() > 21) return new double[]{-2, -2, -2, -2};
 
         String obviousAction = checkIfActionIsObvious(simulatedPlayerHand.getTotal(), allowedActions, simulatedPlayerHand.getAvailabelAces());
-
+        obviousAction = "s";
 
         double[] winnings = new double[4]; //index 0 = stand, 1 = hit, 2 = double, 3 = split
 
         //stand
         if (obviousAction.equals("s") || obviousAction.equals("none")) {
             for (int i = 0; i < iterationsPerAction; i++) {
-                prepareForAction(startingCards, startingDeck);
+                //prepareForAction(startingCards, startingDeck);
 
-                winnings[0] += playSimulatedDealerHand(round, 1);
+                //winnings[0] += playSimulatedDealerHand(round, 1);
+                winnings[0] += playSimulatedDealerHandTest(round, 1,startingCards,startingDeck);
             }
         }
         winnings[0] /= iterationsPerAction;
@@ -135,29 +136,12 @@ public class SemiOptimal extends PlayMethod {
             newPredictedDeck.setCards(simulatedDeck.getCards());
             double[] splitWinnings = tryActions(round, 2, actionDepthSimulationAmount, new LinkedList<>(simulatedPlayerHand.getCards()), newPredictedDeck);
 
-            /*
-            System.out.println();
-            for (Card card : simulatedPlayerHand.getCards()) {
-                System.out.print(card.getValue() + " ");
-            }
-            System.out.println(Arrays.toString(splitWinnings));
-
-             */
-
             winnings[3] += splitWinnings[indexWithHighestValue(splitWinnings)];
 
             prepareForAction(startingCards, startingDeck);
             simulatedPlayerHand.pollCard();
             simulatedPlayerHand.setTotal(simulatedPlayerHand.getCards().getFirst().getValue());
             simulatedPlayerHand.addCard(secondCard);
-            /*
-            System.out.println();
-            for (Card card : simulatedPlayerHand.getCards()) {
-                System.out.print(card.getValue() + " ");
-            }
-            System.out.println(Arrays.toString(splitWinnings));
-
-             */
 
             splitWinnings = tryActions(round, 2, actionDepthSimulationAmount, new LinkedList<>(simulatedPlayerHand.getCards()), newPredictedDeck);
             winnings[3] += splitWinnings[indexWithHighestValue(splitWinnings)];
@@ -209,6 +193,38 @@ public class SemiOptimal extends PlayMethod {
             return 2 * betMultiplier;
         //tie
         if (simulatedDealerHand.getTotal() == simulatedPlayerHand.getTotal()) return 0;
+        return -2 * betMultiplier;
+    }
+    public int playSimulatedDealerHandTest(Round round, int betMultiplier, LinkedList<Card> startingCards, Deck startingDeck) {
+        //plays the dealer hand and then returns winnings for given hand
+        Hand dealerHand = new Hand();
+        Hand hand = new Hand();
+        dealerHand.addCard(round.getDealerHand().getCards().getFirst());
+
+        for(Card card : startingCards) {
+        hand.addCard(card);
+        }
+
+        Deck deck = new Deck(settings);
+        deck.setCards(startingDeck.getCards());
+
+        dealerHand.addCard(deck.deal(this, false));
+
+        //dealer blackjack or hand busted
+        if (dealerHand.getTotal() == 21 || hand.getTotal() > 21) return -2 * betMultiplier;
+        //player blackjack
+        if (hand.getTotal() == 21 && hand.getCards().size() == 2)
+            return 3 * betMultiplier;
+
+        //deal dealer cards
+        while (dealerHand.getTotal() < 17) {
+            dealerHand.addCard(deck.deal(this, false));
+        }
+        //if dealer busted or player has higher total
+        if (dealerHand.getTotal() > 21 || dealerHand.getTotal() < hand.getTotal())
+            return 2 * betMultiplier;
+        //tie
+        if (dealerHand.getTotal() == hand.getTotal()) return 0;
         return -2 * betMultiplier;
     }
 
