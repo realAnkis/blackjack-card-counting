@@ -54,8 +54,7 @@ public class Game {
             if (input.equals("TestMethod")) return new TestMethod(settings);
             if (input.equals("SemiOptimal")) return new SemiOptimal(settings);
             if (input.equals("HumanCardCounting")) {
-                System.out.println("Starting"); return new HumanCardCounting(settings, deck);}
-
+                System.out.println("Stating"); return new HumanCardCounting(settings, deck);}
         }
     }
 }
