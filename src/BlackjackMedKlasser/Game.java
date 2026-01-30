@@ -53,7 +53,8 @@ public class Game {
             if (input.equals("Visuell")) return new SpelaSjälvVisuell(settings);
             if (input.equals("TestMethod")) return new TestMethod(settings);
             if (input.equals("SemiOptimal")) return new SemiOptimal(settings);
-            if (input.equals("HumanCardCounting")) return new HumanCardCounting(settings, deck);
+            if (input.equals("HumanCardCounting")) {
+                System.out.println("Stating"); return new HumanCardCounting(settings, deck);}
         }
     }
 }
