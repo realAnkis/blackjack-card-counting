@@ -11,7 +11,7 @@ public class HumanCardCounting extends PlayMethod {
     private Deck deck;
     private double count = 0;
     private double trueCount;
-
+//test
 
     //körs när ett kort delas ut från kortleken
     public HumanCardCounting(Settings settings, Deck deck) {
