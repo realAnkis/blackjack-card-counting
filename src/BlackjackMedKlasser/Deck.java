@@ -2,15 +2,14 @@ package BlackjackMedKlasser;
 
 import BlackjackMedKlasser.playMethods.PlayMethod;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 
 public class Deck {
     private final int numberOfDecks;
     private LinkedList<Card> cards = new LinkedList<>();
-    double[] reshufflePercentInterval = new double[]{0.25, 0.55};
-    double cutOff = 0;
+    double[] reshufflePercentInterval;
+    double cutoff = 0;
 
 
     public Deck(Settings settings) {
@@ -44,7 +43,7 @@ public class Deck {
             }
         }
         Collections.shuffle(cards);
-        cutOff = reshufflePercentInterval[0] + Math.random() * (reshufflePercentInterval[1] - reshufflePercentInterval[0]);
+        cutoff = reshufflePercentInterval[0] + (Math.random() * (reshufflePercentInterval[1] - reshufflePercentInterval[0]));
     }
 
     public Card deal(PlayMethod playMethod, boolean playerIsShownCard) {
@@ -54,7 +53,7 @@ public class Deck {
     }
 
     public void CheckReshuffle(PlayMethod playMethod) {
-        if ((double) cards.size() / (52 * numberOfDecks) < cutOff) {
+        if ((double) cards.size() / (52 * numberOfDecks) < cutoff) {
             shuffle();
             playMethod.reshuffleMethod();
         }

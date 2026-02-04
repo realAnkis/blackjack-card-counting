@@ -11,7 +11,7 @@ public class HumanCardCounting extends PlayMethod {
     private Deck deck;
     private double count = 0;
     private double trueCount;
-
+//test
 
     //körs när ett kort delas ut från kortleken
     public HumanCardCounting(Settings settings, Deck deck) {
@@ -22,8 +22,10 @@ public class HumanCardCounting extends PlayMethod {
 
     @Override
     public void cardDealtMethod(Card card) {
-        count += hiLo(card);
-        trueCount = (count / ((double) deck.getSizeOfDeck() / 52));
+        count += halvs(card);
+        int deckSize = deck.getSizeOfDeck();
+        if(deckSize<1) deckSize=1;
+        trueCount = (count / ((double) deckSize / 52));
 
     }
 
@@ -41,7 +43,7 @@ public class HumanCardCounting extends PlayMethod {
     /*===========================================================================================*/
     @Override
     public String actionMethod(Round round, int allowedActions, int handIndex) {
-        return hiLoCountStrat(round, allowedActions, handIndex);
+        return halvsCountStrat(round, allowedActions, handIndex);
     }
     /*===========================================================================================*/
 
@@ -50,11 +52,11 @@ public class HumanCardCounting extends PlayMethod {
     @Override
     public int betMethod(Round round) {
         int bet;
-        if (betVariable <= 1) bet = (settings.getMinBet() * 1);
-        else if (betVariable <= 2) bet = (settings.getMinBet() *2) ;
-        else if (betVariable <= 3) bet = (settings.getMinBet() *4) ;
-        else if (betVariable <= 4) bet = (settings.getMinBet() *6) ;
-        else if (betVariable <= 5) bet = (settings.getMinBet() *8) ;
+        if (betVariable <= 1) bet = settings.getMinBet();
+        else if (betVariable <= 2) bet = (settings.getMaxBet()/10 *2) ;
+        else if (betVariable <= 3) bet = (settings.getMaxBet()/10 *4) ;
+        else if (betVariable <= 4) bet = (settings.getMaxBet()/10 *6) ;
+        else if (betVariable <= 5) bet = (settings.getMaxBet()/10 *8) ;
         else bet = settings.getMaxBet();
         return bet;
     }
@@ -452,17 +454,17 @@ public class HumanCardCounting extends PlayMethod {
             for (int i = 44; i <55 ; i++) { /* Pairs */
                 if (playerTotal == Integer.parseInt(halvsTabel[i][0]) && dealersCard == Integer.parseInt(halvsTabel[i][1]) && tC >= Integer.parseInt(halvsTabel[i][2])) return halvsTabel[i][3];
             }
-            for (int i = 18; i <26 ; i++) { /* Hard doubles or Stand */
+           /* for (int i = 18; i <26 ; i++) { /* Hard doubles or Stand /
                 if (playerTotal == Integer.parseInt(halvsTabel[i][0]) && dealersCard==Integer.parseInt(halvsTabel[i][1]) && tC>= Integer.parseInt(halvsTabel[i][2])
                         &&halvsTabel[i][4].equals("f")) return halvsTabel[i][3];
             }
-            for (int i = 26; i <44 ; i++) { /* Soft doubles or Stand */
+            for (int i = 26; i <44 ; i++) { /* Soft doubles or Stand /
                 if (playerTotal == Integer.parseInt(halvsTabel[i][0]) && dealersCard==Integer.parseInt(halvsTabel[i][1]) && tC>= Integer.parseInt(halvsTabel[i][2])
                         &&halvsTabel[i][4].equals("t")) return halvsTabel[i][3];
             }
-            for (int i = 0; i < 18; i++) { /*Hit or Stand */
+            for (int i = 0; i < 18; i++) { /*Hit or Stand /
                 if (playerTotal == Integer.parseInt(halvsTabel[i][0]) && dealersCard==Integer.parseInt(halvsTabel[i][1]) && tC>= Integer.parseInt(halvsTabel[i][2])) return halvsTabel[i][3];
-            }
+            }*/
             return basicArrMetod(round, allowdActions, handIndx);
         } else if (allowdActions == 2 && round.getHands()[handIndx].getAvailabelAces() > 0) {/*===========================================================================================*/
             for (int i = 26; i <44 ; i++) { /* Soft doubles or Stand */

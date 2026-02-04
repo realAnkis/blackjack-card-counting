@@ -47,7 +47,7 @@ public class Hand {
     }
 
     public Card pollCard() {
-        return cards.pollLast();
+            return cards.pollLast();
     }
 
     public boolean hasBlackjack() {
