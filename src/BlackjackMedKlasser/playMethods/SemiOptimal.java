@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 public class SemiOptimal extends PlayMethod {
-    private final int betSimulationAmount = 1000;
+    private final int betSimulationAmount = 100;
     private final int actionSimulationAmount = 100;
     private final int actionDepthSimulationAmount = 10;
 
@@ -56,7 +56,7 @@ public class SemiOptimal extends PlayMethod {
         if (!obviousAction.equals("none")) {
             return obviousAction;
         }
-
+            if(allowedActions == 3 && round.getHands()[handIndex].getCards().getFirst().getValue() <= 6 && round.getDealerCard() >= 8) allowedActions = 2;
         dealerhss = new HandSaveState(1, round.getDealerCard(), round.getDealerCard(), round.getDealerHand().getAvailabelAces());
         HandSaveState hss = new HandSaveState(round.getHands()[handIndex].getCards().size(), round.getHands()[handIndex].getTotal(), round.getHands()[handIndex].getCards().getFirst().getValue(), round.getHands()[handIndex].getAvailabelAces());
         DeckSaveState dss = new DeckSaveState(predictedGameDeck.getCards());
@@ -85,8 +85,8 @@ public class SemiOptimal extends PlayMethod {
                 simulatedDeckTest.setState(dss);
                 winnings[0] += playSimulatedDealerHandTest(1);
             }
-        }
         winnings[0] /= iterationsPerAction;
+        } else winnings[0] = -100000000;
         if (obviousAction.equals("s")) {
             winnings[1] = -100000000;
             winnings[2] = -100000000;
@@ -94,35 +94,36 @@ public class SemiOptimal extends PlayMethod {
             return winnings;
         }
         //hit
-        for (int i = 0; i < iterationsPerAction; i++) {
-            //prepareForAction(startingCards, startingDeck);
-            simulatedDeckTest.setState(dss);
-            simulatedPlayerHandTest.setState(hss);
+        if (obviousAction.equals("h") || obviousAction.equals("none")) {
+            for (int i = 0; i < iterationsPerAction; i++) {
+                simulatedDeckTest.setState(dss);
+                simulatedPlayerHandTest.setState(hss);
 
-            simulatedPlayerHandTest.addCard(simulatedDeckTest.deal());
-            DeckSaveState newPredictedDeck = simulatedDeckTest.saveState();
-            HandSaveState newHand = simulatedPlayerHandTest.saveState();
-            double[] hitWinnings = tryActions(1, actionDepthSimulationAmount, newHand, newPredictedDeck);
-            winnings[1] += hitWinnings[indexWithHighestValue(hitWinnings)];
-        }
-        winnings[1] /= iterationsPerAction;
-
+                simulatedPlayerHandTest.addCard(simulatedDeckTest.deal());
+                DeckSaveState newPredictedDeck = simulatedDeckTest.saveState();
+                HandSaveState newHand = simulatedPlayerHandTest.saveState();
+                double[] hitWinnings = tryActions(1, actionDepthSimulationAmount, newHand, newPredictedDeck);
+                winnings[1] += hitWinnings[indexWithHighestValue(hitWinnings)];
+            }
+            winnings[1] /= iterationsPerAction;
+        } else winnings[1] = -100000000;
         if (allowedActions == 1 || obviousAction.equals("h")) {
             winnings[2] = -100000000;
             winnings[3] = -100000000;
             return winnings;
         }
         //double
-        for (int i = 0; i < iterationsPerAction; i++) {
-            simulatedDeckTest.setState(dss);
-            simulatedPlayerHandTest.setState(hss);
+        if (obviousAction.equals("d") || obviousAction.equals("none")) {
+            for (int i = 0; i < iterationsPerAction; i++) {
+                simulatedDeckTest.setState(dss);
+                simulatedPlayerHandTest.setState(hss);
 
-            simulatedPlayerHandTest.addCard(simulatedDeckTest.deal());
+                simulatedPlayerHandTest.addCard(simulatedDeckTest.deal());
 
-            winnings[2] += playSimulatedDealerHandTest(2);
-        }
-        winnings[2] /= iterationsPerAction;
-
+                winnings[2] += playSimulatedDealerHandTest(2);
+            }
+            winnings[2] /= iterationsPerAction;
+        } else winnings[2] = -100000000;
         if (allowedActions == 2 || obviousAction.equals("d")) {
             winnings[3] = -100000000;
             return winnings;

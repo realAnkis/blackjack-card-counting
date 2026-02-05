@@ -31,7 +31,7 @@ public class SODeck {
     }
 
     public Card deal() {
-        int selectedIndex = (int)(Math.random() * cardAmount);
+        int selectedIndex = (int) (Math.random() * cardAmount);
         Card card = cards[selectedIndex];
         cards[selectedIndex] = cards[--cardAmount];
         return card;
