@@ -1,25 +1,8 @@
 package BlackjackMedKlasser.playMethods.SemiOptimalSubclasses;
 
-import BlackjackMedKlasser.Card;
-import BlackjackMedKlasser.Settings;
-import BlackjackMedKlasser.playMethods.PlayMethod;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-
 public class SODeck {
-    private Card[] cards;
+    private int[] cards = new int[10];
     private int cardAmount;
-
-    public void setCardsFromList(LinkedList<Card> list) {
-        cardAmount = list.size();
-        cards = new Card[cardAmount];
-
-        for (int i = 0; i < cardAmount; i++) {
-            cards[i] = list.get(i);
-        }
-    }
 
     public DeckSaveState saveState() {
         return new DeckSaveState(cards,cardAmount);
@@ -30,10 +13,19 @@ public class SODeck {
         cardAmount = ss.getCardAmount();
     }
 
-    public Card deal() {
+    public int deal() {
         int selectedIndex = (int) (Math.random() * cardAmount);
-        Card card = cards[selectedIndex];
-        cards[selectedIndex] = cards[--cardAmount];
-        return card;
+        for (int i = 9; i >= 0; i--) {
+            selectedIndex -= cards[i];
+            if (selectedIndex >= 0) continue;
+            return removeCard(i);
+        }
+        return removeCard(0);
+    }
+
+    private int removeCard(int index) {
+        cards[index]--;
+        cardAmount--;
+        return index + 2;
     }
 }

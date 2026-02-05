@@ -54,6 +54,16 @@ public class SOHand {
         return total;
     }
 
+    public void addCard(int card) {
+        cardAmount++;
+        total += card;
+        if (card == 11) availabelAces++;
+        if (total > 21 && availabelAces != 0) {
+            total -= 10;
+            availabelAces -= 1;
+        }
+    }
+
     public boolean hasBlackjack() {
         return cardAmount == 2 && total == 21;
     }

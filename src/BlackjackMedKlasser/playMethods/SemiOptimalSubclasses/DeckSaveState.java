@@ -5,26 +5,26 @@ import BlackjackMedKlasser.Card;
 import java.util.LinkedList;
 
 public class DeckSaveState {
-    private Card[] cards;
+    private int[] cards;
     private int cardAmount;
 
-    public DeckSaveState(Card[] cards, int cardAmount) {
+    public DeckSaveState(int[] cards, int cardAmount) {
         this.cards = cards;
         this.cardAmount = cardAmount;
     }
 
     public DeckSaveState(LinkedList<Card> list) {
         cardAmount = list.size();
-        cards = new Card[cardAmount];
+        cards = new int[10];
 
-        for (int i = 0; i < cardAmount; i++) {
-            cards[i] = list.get(i);
+        for (Card card : list) {
+            cards[card.getValue()-2]++;
         }
     }
 
-    public Card[] getCards() {
-        Card[] newCards = new Card[cardAmount];
-        System.arraycopy(cards, 0, newCards, 0, cardAmount);
+    public int[] getCards() {
+        int[] newCards = new int[10];
+        System.arraycopy(cards, 0, newCards, 0, 10);
         return newCards;
     }
 
