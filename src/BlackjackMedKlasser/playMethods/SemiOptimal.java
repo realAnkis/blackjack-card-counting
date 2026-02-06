@@ -48,7 +48,7 @@ public class SemiOptimal extends PlayMethod {
     //handIndex är den hand som just nu spelas, bör användas i till exempel: round.getHands()[handIndex].getTotal()
     @Override
     public String actionMethod(Round round, int allowedActions, int handIndex) {
-        String obviousAction = checkIfActionIsObvious(round.getHands()[handIndex].getTotal(), allowedActions, round.getHands()[handIndex].getAvailabelAces());
+        String obviousAction = checkIfActionIsObvious(round.getHands()[handIndex].getTotal(), allowedActions, round.getHands()[handIndex].getAvailabelAces(),round.getDealerCard());
         if (!obviousAction.equals("none")) {
             return obviousAction;
         }
@@ -71,12 +71,12 @@ public class SemiOptimal extends PlayMethod {
 
         if (simulatedPlayerHand.getTotal() > 21) return new double[]{-2, -2, -2, -2};
 
-        String obviousAction = checkIfActionIsObvious(simulatedPlayerHand.getTotal(), allowedActions, simulatedPlayerHand.getAvailabelAces());
+        String obviousAction = checkIfActionIsObvious(simulatedPlayerHand.getTotal(), allowedActions, simulatedPlayerHand.getAvailabelAces(), simulatedDealerHand.getFirstCardValue());
 
         double[] winnings = new double[4]; //index 0 = stand, 1 = hit, 2 = double, 3 = split
 
         //stand
-        if (obviousAction.equals("s") || obviousAction.equals("none")) {
+        if ((obviousAction.equals("s") || obviousAction.equals("none")) || simulatedPlayerHand.getTotal() >= 12) {
             for (int i = 0; i < iterationsPerAction; i++) {
                 simulatedDeck.setState(dss);
                 winnings[0] += playSimulatedDealerHandTest(1);
@@ -162,8 +162,9 @@ public class SemiOptimal extends PlayMethod {
         return highestIndex;
     }
 
-    public String checkIfActionIsObvious(int total, int allowedActions, int availableAces) {
+    public String checkIfActionIsObvious(int total, int allowedActions, int availableAces, int dealerCard) {
         if (total == 20) return "s";
+        if (total > 13 && dealerCard < 6 && availableAces != 1) return "s";
         if (allowedActions != 3) {
             if (total > 17 && availableAces != 1) return "s";
             if (total < 8) return "h";
