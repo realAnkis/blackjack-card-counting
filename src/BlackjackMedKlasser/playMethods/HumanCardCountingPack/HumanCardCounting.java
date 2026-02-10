@@ -580,7 +580,15 @@ public class HumanCardCounting extends PlayMethod {
                     else if (tC == Integer.parseInt(proBJ[i][2]) && Math.random() > 0.5) return proBJ[i][3];
                     else return basicArrMetod(round, allowdActions, handIndx);
                 }
-            }return basicArrMetod(round, allowdActions, handIndx);
+            }
+            for (int i = 11; i < 43; i++) {
+                if (playerTotal == Integer.parseInt(proBJ[i][0]) && dealersCard == Integer.parseInt(proBJ[i][1]) && tC >= Integer.parseInt(proBJ[i][2])){
+                    if (tC > Integer.parseInt(proBJ[i][2])) return proBJ[i][3];
+                    else if (tC == Integer.parseInt(proBJ[i][2]) && Math.random() > 0.5) return proBJ[i][3];
+                    else return basicArrMetod(round, allowdActions, handIndx);
+                }
+            }
+            return basicArrMetod(round, allowdActions, handIndx);
         } else if (allowdActions == 2 && playerAces > 0) {
             for (int i = 11; i < 43; i++) {
                 if (playerTotal == Integer.parseInt(proBJ[i][0]) && dealersCard == Integer.parseInt(proBJ[i][1]) && tC >= Integer.parseInt(proBJ[i][2]) && proBJ[i][4].equals("t")){
@@ -617,5 +625,67 @@ public class HumanCardCounting extends PlayMethod {
 
         return "sp";
     }
+
+
+    public String[][] ProBasicStategy ={
+            // x axel =action vs Dealer card  + soft t/f?
+            // y axel =player total
+            // {"2", "3", "4", "5", "6", "7", "8", "9", "10","11","t/f",player total},
+            {"sp","sp","sp","sp","sp","sp","sp","sp","sp","sp","t","12"},     //0     A-A
+            {"sp","sp","sp","sp","sp","--","sp","sp","--","--","f","18"},     //1     9-9
+            {"sp","sp","sp","sp","sp","sp","sp","sp","sp","sp","f","16"},     //2     8-8
+            {"sp","sp","sp","sp","sp","sp","--","--","--","--","f","14"},     //3     7-7
+            {"sp","sp","sp","sp","sp","--","--","--","--","--","f","12"},     //4     6-6
+            {"--","--","--","sp","sp","--","--","--","--","--","f","8" },     //5     4-4
+            {"--","--","sp","sp","sp","sp","--","--","--","--","f","6" },     //6     3-3
+            {"--","--","sp","sp","sp","sp","--","--","--","--","f","4" },     //7     2-2
+            // Hard >=12  ->inte double
+            {"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"-" ,"f","11"},     //8
+            {"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"-" ,"-" ,"f","10"},     //9
+            {"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"-" ,"-" ,"f","9" },     //10
+            // Hard <=8   -> inte double
+            // Soft >=19  -> inte double
+            {"-" ,"d" ,"d" ,"d" ,"d" ,"-" ,"-" ,"-" ,"-" ,"-" ,"t","18"},     //11
+            {"-" ,"d" ,"d" ,"d" ,"d" ,"-" ,"-" ,"-" ,"-" ,"-" ,"t","17"},     //12
+            {"-" ,"-" ,"d" ,"d" ,"d" ,"-" ,"-" ,"-" ,"-" ,"-" ,"t","16"},     //13
+            {"-" ,"-" ,"d" ,"d" ,"d" ,"-" ,"-" ,"-" ,"-" ,"-" ,"t","15"},     //14
+            {"-" ,"-" ,"d" ,"d" ,"d" ,"-" ,"-" ,"-" ,"-" ,"-" ,"t","14"},     //15
+            {"-" ,"-" ,"-" ,"d" ,"d" ,"-" ,"-" ,"-" ,"-" ,"-" ,"t","13"},     //16
+
+            {"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"t","20"},     //17
+            {"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"t","19"},     //18
+            {"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"h" ,"h" ,"h" ,"t","18"},     //19
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"t","17"},     //20
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"t","16"},     //21
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"t","15"},     //22
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"t","14"},     //23
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"t","13"},     //24
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"t","12"},     //25
+            {"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"f","20"},     //26
+            {"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"f","19"},     //27
+            {"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"f","18"},     //28
+            {"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"f","17"},     //29
+            {"s" ,"s" ,"s" ,"s" ,"s" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","16"},     //30
+            {"s" ,"s" ,"s" ,"s" ,"s" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","15"},     //31
+            {"s" ,"s" ,"s" ,"s" ,"s" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","14"},     //32
+            {"s" ,"s" ,"s" ,"s" ,"s" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","13"},     //33
+            {"h" ,"h" ,"s" ,"s" ,"s" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","12"},     //34
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","11"},     //35
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","10"},     //36
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","9" },     //37
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","8" },     //38
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","7" },     //39
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","6" },     //40
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","5" },     //41
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","4" },     //42
+
+
+
+
+
+
+
+
+    };
 }
 
