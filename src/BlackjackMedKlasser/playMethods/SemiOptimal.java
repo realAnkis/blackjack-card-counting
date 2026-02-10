@@ -56,7 +56,7 @@ public class SemiOptimal extends PlayMethod {
         dealerhss = new HandSaveState(1, round.getDealerCard(), round.getDealerCard(), round.getDealerHand().getAvailabelAces());
         HandSaveState hss = new HandSaveState(round.getHands()[handIndex].getCards().size(), round.getHands()[handIndex].getTotal(), round.getHands()[handIndex].getCards().getFirst().getValue(), round.getHands()[handIndex].getAvailabelAces());
         DeckSaveState dss = new DeckSaveState(predictedGameDeck.getCards());
-        double[] winnings = tryActions(allowedActions, actionSimulationAmount, hss, dss);
+        float[] winnings = tryActions(allowedActions, actionSimulationAmount, hss, dss);
 
         String[] actions = new String[]{"s", "h", "d", "sp"};
 
@@ -65,15 +65,15 @@ public class SemiOptimal extends PlayMethod {
         return actions[indexWithHighestValue(winnings)];
     }
 
-    public double[] tryActions(int allowedActions, int iterationsPerAction, HandSaveState hss, DeckSaveState dss) {
+    public float[] tryActions(int allowedActions, int iterationsPerAction, HandSaveState hss, DeckSaveState dss) {
         simulatedDeck.setState(dss);
         simulatedPlayerHand.setState(hss);
 
-        if (simulatedPlayerHand.getTotal() > 21) return new double[]{-2, -2, -2, -2};
+        if (simulatedPlayerHand.getTotal() > 21) return new float[]{-2, -2, -2, -2};
 
         String obviousAction = checkIfActionIsObvious(simulatedPlayerHand.getTotal(), allowedActions, simulatedPlayerHand.getAvailabelAces(), simulatedDealerHand.getFirstCardValue());
 
-        double[] winnings = new double[4]; //index 0 = stand, 1 = hit, 2 = double, 3 = split
+        float[] winnings = new float[4]; //index 0 = stand, 1 = hit, 2 = double, 3 = split
 
         //stand
         if ((obviousAction.equals("s") || obviousAction.equals("none")) || simulatedPlayerHand.getTotal() >= 12) {
@@ -98,7 +98,7 @@ public class SemiOptimal extends PlayMethod {
                 simulatedPlayerHand.addCard(simulatedDeck.deal());
                 DeckSaveState newPredictedDeck = simulatedDeck.saveState();
                 HandSaveState newHand = simulatedPlayerHand.saveState();
-                double[] hitWinnings = tryActions(1, actionDepthSimulationAmount, newHand, newPredictedDeck);
+                float[] hitWinnings = tryActions(1, actionDepthSimulationAmount, newHand, newPredictedDeck);
                 winnings[1] += hitWinnings[indexWithHighestValue(hitWinnings)];
             }
             winnings[1] /= iterationsPerAction;
@@ -137,7 +137,7 @@ public class SemiOptimal extends PlayMethod {
 
             DeckSaveState newdss = simulatedDeck.saveState();
 
-            double[] splitWinnings = tryActions(2, actionDepthSimulationAmount, simulatedPlayerHand.saveState(), newdss);
+            float[] splitWinnings = tryActions(2, actionDepthSimulationAmount, simulatedPlayerHand.saveState(), newdss);
 
             winnings[3] += splitWinnings[indexWithHighestValue(splitWinnings)];
 
@@ -152,7 +152,7 @@ public class SemiOptimal extends PlayMethod {
         return winnings;
     }
 
-    public int indexWithHighestValue(double[] array) {
+    public int indexWithHighestValue(float[] array) {
         int highestIndex = 0;
 
         for (int i = 1; i < array.length; i++) {

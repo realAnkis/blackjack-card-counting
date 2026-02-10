@@ -10,6 +10,7 @@ public class Game {
     private Deck deck;
     private long money = 0;
     private long betTotal = 0;
+    private final int threadAmount = 4;
 
     public static void main(String[] args) {
         Settings settings = new Settings();
