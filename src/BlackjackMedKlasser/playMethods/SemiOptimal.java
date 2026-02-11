@@ -164,13 +164,17 @@ public class SemiOptimal extends PlayMethod {
 
     public String checkIfActionIsObvious(int total, int allowedActions, int availableAces, int dealerCard) {
         if (total == 20) return "s";
-        if (total > 13 && dealerCard < 6 && availableAces != 1) return "s";
         if (allowedActions != 3) {
+            if (total > 13 && dealerCard < 6 && availableAces != 1) return "s";
             if (total > 17 && availableAces != 1) return "s";
             if (total < 8) return "h";
         }
         if (allowedActions == 1 && total <= 11) return "h";
-
+        if (availableAces == 1 && dealerCard <= 6 && allowedActions == 2) {
+            if (total < 17) {
+                if ((total + 1) / 2 + dealerCard > 12) return "d";
+            } else if (total < 19 && total + dealerCard > 20) return "d";
+        }
         return "none";
     }
 
