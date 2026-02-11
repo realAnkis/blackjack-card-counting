@@ -10,7 +10,11 @@ public class Game {
     private Deck deck;
     private long money = 0;
     private long betTotal = 0;
-    private final int threadAmount = 4;
+    private final int threadAmount;
+    private LocalDateTime startTime;
+    private static boolean createThreads = false;
+    private PlayMethod playMethod;
+    private int threadsCompleted;
 
     public static void main(String[] args) {
         Settings settings = new Settings();
@@ -18,10 +22,20 @@ public class Game {
     }
 
     public Game(Settings settings) {
+        threadAmount = settings.threadAmount;
         deck = new Deck(settings);
-        PlayMethod playMethod = selectPlayMethod(settings,deck);
+        playMethod = selectPlayMethod(settings,deck);
+        startTime = LocalDateTime.now();
+
+        if(createThreads) {
+            for (int i = 0; i < threadAmount; i++) {
+                Thread thread = new RoundRunner(settings, this);
+                thread.start();
+            }
+            return;
+        }
+
         Round round = new Round(deck, playMethod, this);
-        LocalDateTime startTime = LocalDateTime.now();
 
         for (int i = 0; i < settings.getNumberOfGames(); i++) {
             money += round.playRound();
@@ -32,7 +46,17 @@ public class Game {
         Statistics statistics = new Statistics(money, betTotal, playMethod,startTime,endTime);
     }
 
-    public Game() {}
+    public Game() {
+        threadAmount = 0;
+    }
+
+    public void gatherResults(long money) {
+        this.money += money;
+        if(++threadsCompleted == threadAmount) {
+        LocalDateTime endTime = LocalDateTime.now();
+        Statistics statistics = new Statistics(money, betTotal, playMethod,startTime,endTime);
+        }
+    }
 
     public void addBetTotal(int addedAmount) {
         betTotal += addedAmount;
@@ -50,12 +74,25 @@ public class Game {
         while (true) {
             String input = scanner.nextLine();
 
-            if (input.equals("SpelaSjälv")) return new SpelaSjälv(settings);
-            if (input.equals("Visuell")) return new SpelaSjälvVisuell(settings);
-            if (input.equals("TestMethod")) return new TestMethod(settings);
-            if (input.equals("SemiOptimal")) return new SemiOptimal(settings);
-            if (input.equals("HumanCardCounting")) {
-                System.out.println("Stating"); return new HumanCardCounting(settings, deck);}
+            switch (input) {
+                case "SpelaSjälv" -> {
+                    return new SpelaSjälv(settings);
+                }
+                case "Visuell" -> {
+                    return new SpelaSjälvVisuell(settings);
+                }
+                case "TestMethod" -> {
+                    return new TestMethod(settings);
+                }
+                case "SemiOptimal" -> {
+                    createThreads = true;
+                    return new SemiOptimal(settings);
+                }
+                case "HumanCardCounting" -> {
+                    System.out.println("Stating");
+                    return new HumanCardCounting(settings, deck);
+                }
+            }
         }
     }
 }

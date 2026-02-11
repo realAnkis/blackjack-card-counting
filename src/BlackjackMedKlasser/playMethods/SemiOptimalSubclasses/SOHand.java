@@ -43,17 +43,6 @@ public class SOHand {
         return firstCardValue;
     }
 
-    public int addCard(Card card) {
-        cardAmount++;
-        total += card.getValue();
-        if (card.getValue() == 11) availabelAces++;
-        if (total > 21 && availabelAces != 0) {
-            total -= 10;
-            availabelAces -= 1;
-        }
-        return total;
-    }
-
     public void addCard(int card) {
         cardAmount++;
         total += card;

@@ -1,8 +1,11 @@
 package BlackjackMedKlasser.playMethods.SemiOptimalSubclasses;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public class SODeck {
     private int[] cards = new int[10];
     private int cardAmount;
+    private ThreadLocalRandom random = ThreadLocalRandom.current();
 
     public DeckSaveState saveState() {
         return new DeckSaveState(cards,cardAmount);
@@ -14,7 +17,7 @@ public class SODeck {
     }
 
     public int deal() {
-        int selectedIndex = (int) (Math.random() * cardAmount);
+        int selectedIndex = random.nextInt(10, cardAmount);;
         for (int i = 9; i >= 0; i--) {
             selectedIndex -= cards[i];
             if (selectedIndex >= 0) continue;
