@@ -1,14 +1,10 @@
 package BlackjackMedKlasser.playMethods.SemiOptimalSubclasses;
 
-import BlackjackMedKlasser.Card;
-
-import java.util.LinkedList;
-
 public class SOHand {
-    private int cardAmount;
-    private int firstCardValue = 0;
-    private int total = 0;
-    private int availabelAces;
+    private short cardAmount;
+    private byte firstCardValue = 0;
+    private byte total = 0;
+    private byte availableAces;
 
     public SOHand(HandSaveState ss) {
         setState(ss);
@@ -20,36 +16,36 @@ public class SOHand {
         cardAmount = ss.getCardAmount();
         firstCardValue = ss.getFirstCard();
         total = ss.getTotal();
-        availabelAces = ss.getAvailabelAces();
+        availableAces = ss.getAvailabelAces();
     }
 
-    public int getAvailabelAces() {
-        return availabelAces;
+    public byte getAvailableAces() {
+        return availableAces;
     }
 
-    public int getTotal() {
+    public byte getTotal() {
         return total;
     }
 
     public HandSaveState saveState() {
-        return new HandSaveState(cardAmount,total,firstCardValue,availabelAces);
+        return new HandSaveState(cardAmount,total,firstCardValue, availableAces);
     }
 
-    public void setTotal(int newTotal) {
+    public void setTotal(byte newTotal) {
         total = newTotal;
     }
 
-    public int getFirstCardValue() {
+    public byte getFirstCardValue() {
         return firstCardValue;
     }
 
-    public void addCard(int card) {
+    public void addCard(byte card) {
         cardAmount++;
         total += card;
-        if (card == 11) availabelAces++;
-        if (total > 21 && availabelAces != 0) {
+        if (card == 11) availableAces++;
+        if (total > 21 && availableAces != 0) {
             total -= 10;
-            availabelAces -= 1;
+            availableAces -= 1;
         }
     }
 

@@ -4,7 +4,7 @@ import BlackjackMedKlasser.*;
 import BlackjackMedKlasser.playMethods.SemiOptimalSubclasses.*;
 
 public class SemiOptimal extends PlayMethod {
-    private final int betSimulationAmount = 100;
+    private final int betSimulationAmount = 10000;
     private final int actionSimulationAmount = 100;
     private final int actionDepthSimulationAmount = 10;
 
@@ -48,13 +48,14 @@ public class SemiOptimal extends PlayMethod {
     //handIndex är den hand som just nu spelas, bör användas i till exempel: round.getHands()[handIndex].getTotal()
     @Override
     public String actionMethod(Round round, int allowedActions, int handIndex) {
-        String obviousAction = checkIfActionIsObvious(round.getHands()[handIndex].getTotal(), allowedActions, round.getHands()[handIndex].getAvailabelAces(),round.getDealerCard());
-        if (!obviousAction.equals("none")) {
+        String obviousAction = checkIfActionIsObvious(round.getHands()[handIndex].getTotal(), allowedActions, round.getHands()[handIndex].getAvailabelAces(), round.getDealerCard());
+        if (!obviousAction.equals("none") && !obviousAction.equals("exclude_h")) {
             return obviousAction;
         }
-            if(allowedActions == 3 && round.getHands()[handIndex].getCards().getFirst().getValue() <= 6 && round.getDealerCard() >= 8) allowedActions = 2;
-        dealerhss = new HandSaveState(1, round.getDealerCard(), round.getDealerCard(), round.getDealerHand().getAvailabelAces());
-        HandSaveState hss = new HandSaveState(round.getHands()[handIndex].getCards().size(), round.getHands()[handIndex].getTotal(), round.getHands()[handIndex].getCards().getFirst().getValue(), round.getHands()[handIndex].getAvailabelAces());
+        if (allowedActions == 3 && round.getHands()[handIndex].getCards().getFirst().getValue() <= 6 && round.getDealerCard() >= 8)
+            allowedActions = 2;
+        dealerhss = new HandSaveState((byte) round.getDealerCard(), (byte) round.getDealerHand().getAvailabelAces());
+        HandSaveState hss = new HandSaveState((short) round.getHands()[handIndex].getCards().size(), (byte) round.getHands()[handIndex].getTotal(), (byte) round.getHands()[handIndex].getCards().getFirst().getValue(), (byte) round.getHands()[handIndex].getAvailabelAces());
         DeckSaveState dss = new DeckSaveState(predictedGameDeck.getCards());
         float[] winnings = tryActions(allowedActions, actionSimulationAmount, hss, dss);
 
@@ -71,17 +72,17 @@ public class SemiOptimal extends PlayMethod {
 
         if (simulatedPlayerHand.getTotal() > 21) return new float[]{-2, -2, -2, -2};
 
-        String obviousAction = checkIfActionIsObvious(simulatedPlayerHand.getTotal(), allowedActions, simulatedPlayerHand.getAvailabelAces(), simulatedDealerHand.getFirstCardValue());
+        String obviousAction = checkIfActionIsObvious(simulatedPlayerHand.getTotal(), allowedActions, simulatedPlayerHand.getAvailableAces(), simulatedDealerHand.getFirstCardValue());
 
         float[] winnings = new float[4]; //index 0 = stand, 1 = hit, 2 = double, 3 = split
 
         //stand
-        if ((obviousAction.equals("s") || obviousAction.equals("none")) || simulatedPlayerHand.getTotal() >= 12) {
+        if ((obviousAction.equals("none") || obviousAction.equals("s") || obviousAction.equals("exclude_h")) || simulatedPlayerHand.getTotal() >= 12) {
             for (int i = 0; i < iterationsPerAction; i++) {
                 simulatedDeck.setState(dss);
                 winnings[0] += playSimulatedDealerHandTest(1);
             }
-        winnings[0] /= iterationsPerAction;
+            winnings[0] /= iterationsPerAction;
         } else winnings[0] = -100000000;
         if (obviousAction.equals("s")) {
             winnings[1] = -100000000;
@@ -109,7 +110,7 @@ public class SemiOptimal extends PlayMethod {
             return winnings;
         }
         //double
-        if (obviousAction.equals("d") || obviousAction.equals("none")) {
+        if (obviousAction.equals("d") || obviousAction.equals("none") || obviousAction.equals("exclude_h")) {
             for (int i = 0; i < iterationsPerAction; i++) {
                 simulatedDeck.setState(dss);
                 simulatedPlayerHand.setState(hss);
@@ -129,11 +130,11 @@ public class SemiOptimal extends PlayMethod {
             simulatedDeck.setState(dss);
             simulatedPlayerHand.setState(hss);
 
-            HandSaveState beginningState = new HandSaveState(1, simulatedPlayerHand.getFirstCardValue(), simulatedPlayerHand.getFirstCardValue(), simulatedPlayerHand.getAvailabelAces());
+            HandSaveState beginningState = new HandSaveState(simulatedPlayerHand.getFirstCardValue(), simulatedPlayerHand.getAvailableAces());
 
             simulatedPlayerHand.addCard(simulatedDeck.deal());
 
-            int secondCard = simulatedDeck.deal();
+            byte secondCard = simulatedDeck.deal();
 
             DeckSaveState newdss = simulatedDeck.saveState();
 
@@ -164,16 +165,29 @@ public class SemiOptimal extends PlayMethod {
 
     public String checkIfActionIsObvious(int total, int allowedActions, int availableAces, int dealerCard) {
         if (total == 20) return "s";
+        if (allowedActions == 1 && total <= 11) return "h";
+        if (availableAces == 1 && allowedActions == 1 && total <= 16) return "h";
+        if(availableAces == 1 && total == 19) {
+            if (allowedActions == 1) return "s";
+            else return "exclude_h";
+        }
         if (allowedActions != 3) {
-            if (total > 13 && dealerCard < 6 && availableAces != 1) return "s";
+            if (total > 13 && dealerCard <= 6 && availableAces != 1) return "s";
+            if (total > 11 && total < 16 && dealerCard >= 7) return "h";
+            if (total == 11 && allowedActions == 2) return "d";
             if (total > 17 && availableAces != 1) return "s";
             if (total < 8) return "h";
+        } else {
+            if(availableAces == 1) return "sp";
+            if (total >= 12 && total <= 16 && dealerCard <= 6) return "sp";
+            if (total >= 16) return "exclude_h";
         }
-        if (allowedActions == 1 && total <= 11) return "h";
-        if (availableAces == 1 && dealerCard <= 6 && allowedActions == 2) {
-            if (total < 17) {
-                if ((total + 1) / 2 + dealerCard > 12) return "d";
-            } else if (total < 19 && total + dealerCard > 20) return "d";
+        if (availableAces == 1 && allowedActions == 2) {
+            if(dealerCard <= 6) {
+                if (total < 17) {
+                    if ((total + 1) / 2 + dealerCard > 12) return "d";
+                } else if (total < 19 && total + dealerCard > 20) return "d";
+            } else if(total == 16) return "h";
         }
         return "none";
     }
@@ -217,8 +231,9 @@ public class SemiOptimal extends PlayMethod {
         }
         if (simulatedWinnings > 0) return settings.getMaxBet();
         return settings.getMinBet();
-
          */
+
+
     }
 
     //körs ifall möjlighet för ett insurance bet finns (dvs. ifall dealern har ett ess)

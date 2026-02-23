@@ -78,6 +78,7 @@ public class Round {
     }
 
     private void playHand(int handIndex) {
+        //allowedActions 1: s, h       2: s, h, d      3: s, h, d, sp
 
         String action = "";
         int allowedActions = 2;
@@ -108,8 +109,7 @@ public class Round {
 
                 hands[nextEmptyHand].setBet(hands[handIndex].getBet());
 
-                nextEmptyHand++;
-                playHand(nextEmptyHand - 1);
+                playHand(nextEmptyHand++);
                 playHand(handIndex);
                 break;
             }

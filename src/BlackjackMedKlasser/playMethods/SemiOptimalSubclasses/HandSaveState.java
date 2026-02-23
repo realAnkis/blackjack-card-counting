@@ -3,31 +3,37 @@ package BlackjackMedKlasser.playMethods.SemiOptimalSubclasses;
 import BlackjackMedKlasser.Card;
 
 public class HandSaveState {
-    private final int cardAmount;
-    private final int firstCardValue;
-    private final int total;
-    private final int availabelAces;
+    private final short cardAmount;
+    private final byte firstCardValue;
+    private final byte total;
+    private final byte availabelAces;
 
-    public HandSaveState(int cardAmount, int total, int firstCardValue, int availabelAces) {
+    public HandSaveState(short cardAmount, byte total, byte firstCardValue, byte availabelAces) {
         this.cardAmount = cardAmount;
         this.total = total;
         this.firstCardValue = firstCardValue;
         this.availabelAces = availabelAces;
     }
 
-    public int getCardAmount() {
+    public HandSaveState( byte firstCardValue, byte availabelAces) {
+        cardAmount = 1;
+        total = this.firstCardValue = firstCardValue;
+        this.availabelAces = availabelAces;
+    }
+
+    public short getCardAmount() {
         return cardAmount;
     }
 
-    public int getFirstCard() {
+    public byte getFirstCard() {
         return firstCardValue;
     }
 
-    public int getTotal() {
+    public byte getTotal() {
         return total;
     }
 
-    public int getAvailabelAces() {
+    public byte getAvailabelAces() {
         return availabelAces;
     }
 }

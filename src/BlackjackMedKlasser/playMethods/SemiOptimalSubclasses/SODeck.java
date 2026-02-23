@@ -3,9 +3,9 @@ package BlackjackMedKlasser.playMethods.SemiOptimalSubclasses;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SODeck {
-    private int[] cards = new int[10];
-    private int cardAmount;
-    private ThreadLocalRandom random = ThreadLocalRandom.current();
+    private byte[] cards = new byte[10];
+    private short cardAmount;
+    private final ThreadLocalRandom random = ThreadLocalRandom.current();
 
     public DeckSaveState saveState() {
         return new DeckSaveState(cards,cardAmount);
@@ -16,7 +16,7 @@ public class SODeck {
         cardAmount = ss.getCardAmount();
     }
 
-    public int deal() {
+    public byte deal() {
         int selectedIndex = random.nextInt(10, cardAmount);;
         for (int i = 9; i >= 0; i--) {
             selectedIndex -= cards[i];
@@ -26,9 +26,9 @@ public class SODeck {
         return removeCard(0);
     }
 
-    private int removeCard(int index) {
+    private byte removeCard(int index) {
         cards[index]--;
         cardAmount--;
-        return index + 2;
+        return (byte) (index + 2);
     }
 }
