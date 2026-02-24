@@ -6,6 +6,8 @@ import BlackjackMedKlasser.Round;
 import BlackjackMedKlasser.Settings;
 import BlackjackMedKlasser.playMethods.PlayMethod;
 
+import java.util.Arrays;
+
 public class HumanCardCounting extends PlayMethod {
     private Settings settings;
     private Deck deck;
@@ -578,114 +580,172 @@ public class HumanCardCounting extends PlayMethod {
                 if (playerTotal == Integer.parseInt(proBJ[i][0]) && dealersCard == Integer.parseInt(proBJ[i][1]) && tC >= Integer.parseInt(proBJ[i][2])) {
                     if (tC > Integer.parseInt(proBJ[i][2])) return proBJ[i][3];
                     else if (tC == Integer.parseInt(proBJ[i][2]) && Math.random() > 0.5) return proBJ[i][3];
-                    else return basicArrMetod(round, allowdActions, handIndx);
+                    else return proBJBaciStrategy(round, allowdActions, handIndx);
                 }
             }
             for (int i = 11; i < 43; i++) {
                 if (playerTotal == Integer.parseInt(proBJ[i][0]) && dealersCard == Integer.parseInt(proBJ[i][1]) && tC >= Integer.parseInt(proBJ[i][2])){
                     if (tC > Integer.parseInt(proBJ[i][2])) return proBJ[i][3];
                     else if (tC == Integer.parseInt(proBJ[i][2]) && Math.random() > 0.5) return proBJ[i][3];
-                    else return basicArrMetod(round, allowdActions, handIndx);
+                    else return proBJBaciStrategy(round, allowdActions, handIndx);
                 }
             }
-            return basicArrMetod(round, allowdActions, handIndx);
+            return proBJBaciStrategy(round, allowdActions, handIndx);
         } else if (allowdActions == 2 && playerAces > 0) {
             for (int i = 11; i < 43; i++) {
                 if (playerTotal == Integer.parseInt(proBJ[i][0]) && dealersCard == Integer.parseInt(proBJ[i][1]) && tC >= Integer.parseInt(proBJ[i][2]) && proBJ[i][4].equals("t")){
                     if (tC > Integer.parseInt(proBJ[i][2])) return proBJ[i][3];
                     else if (tC == Integer.parseInt(proBJ[i][2]) && Math.random() > 0.5) return proBJ[i][3];
-                    else return basicArrMetod(round, allowdActions, handIndx);
+                    else return proBJBaciStrategy(round, allowdActions, handIndx);
                 }
-            } return basicArrMetod(round, allowdActions, handIndx);
+            } return proBJBaciStrategy(round, allowdActions, handIndx);
         } else if (allowdActions == 2) {
             for (int i = 11; i < 43; i++) {
                 if (playerTotal == Integer.parseInt(proBJ[i][0]) && dealersCard == Integer.parseInt(proBJ[i][1]) && tC >= Integer.parseInt(proBJ[i][2])){
                     if (tC > Integer.parseInt(proBJ[i][2])) return proBJ[i][3];
                     else if (tC == Integer.parseInt(proBJ[i][2]) && Math.random() > 0.5) return proBJ[i][3];
-                    else return basicArrMetod(round, allowdActions, handIndx);
+                    else return proBJBaciStrategy(round, allowdActions, handIndx);
                 }
-            } return basicArrMetod(round, allowdActions, handIndx);
+            } return proBJBaciStrategy(round, allowdActions, handIndx);
         } else if (allowdActions == 1 && playerAces > 0) {
             for (int i = 11; i < 43; i++) {
                 if (playerTotal == Integer.parseInt(proBJ[i][0]) && dealersCard == Integer.parseInt(proBJ[i][1]) && tC >= Integer.parseInt(proBJ[i][2]) && !proBJ[i][3].equals("d") && proBJ[i][4].equals("t")){
                     if (tC > Integer.parseInt(proBJ[i][2])) return proBJ[i][3];
                     else if (tC == Integer.parseInt(proBJ[i][2]) && Math.random() > 0.5) return proBJ[i][3];
-                    else return basicArrMetod(round, allowdActions, handIndx);
+                    else return proBJBaciStrategy(round, allowdActions, handIndx);
                 }
-            } return basicArrMetod(round, allowdActions, handIndx);
+            } return proBJBaciStrategy(round, allowdActions, handIndx);
         } else if (allowdActions == 1) {
             for (int i = 11; i < 43; i++) {
                 if (playerTotal == Integer.parseInt(proBJ[i][0]) && dealersCard == Integer.parseInt(proBJ[i][1]) && tC >= Integer.parseInt(proBJ[i][2]) && !proBJ[i][3].equals("d")){
                     if (tC > Integer.parseInt(proBJ[i][2])) return proBJ[i][3];
                     else if (tC == Integer.parseInt(proBJ[i][2]) && Math.random() > 0.5) return proBJ[i][3];
-                    else return basicArrMetod(round, allowdActions, handIndx);
+                    else return proBJBaciStrategy(round, allowdActions, handIndx);
                 }
-            } return basicArrMetod(round, allowdActions, handIndx);
+            } return proBJBaciStrategy(round, allowdActions, handIndx);
         }
 
         return "sp";
     }
-
-
-    public String[][] ProBasicStategy ={
-            // x axel =action vs Dealer card  + soft t/f?
+    public String[][] proHiLoBasicStategy ={
+            // x axel =action vs Dealer card  + soft t/f? + pt
             // y axel =player total
-            // {"2", "3", "4", "5", "6", "7", "8", "9", "10","11","t/f",player total},
-            {"sp","sp","sp","sp","sp","sp","sp","sp","sp","sp","t","12"},     //0     A-A
-            {"sp","sp","sp","sp","sp","--","sp","sp","--","--","f","18"},     //1     9-9
-            {"sp","sp","sp","sp","sp","sp","sp","sp","sp","sp","f","16"},     //2     8-8
-            {"sp","sp","sp","sp","sp","sp","--","--","--","--","f","14"},     //3     7-7
-            {"sp","sp","sp","sp","sp","--","--","--","--","--","f","12"},     //4     6-6
-            {"--","--","--","sp","sp","--","--","--","--","--","f","8" },     //5     4-4
-            {"--","--","sp","sp","sp","sp","--","--","--","--","f","6" },     //6     3-3
-            {"--","--","sp","sp","sp","sp","--","--","--","--","f","4" },     //7     2-2
-            // Hard >=12  ->inte double
-            {"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"-" ,"f","11"},     //8
-            {"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"-" ,"-" ,"f","10"},     //9
-            {"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"-" ,"-" ,"f","9" },     //10
+         // {"2" ,"3" ,"4" ,"5" ,"6" ,"7" ,"8" ,"9" ,"10","11","t/f",player total},
+            {"-" ,"-" ,"sp","sp","sp","sp","-" ,"-" ,"-" ,"-" ,"f","4" },     /*2-2*/ // 0
+            {"-" ,"-" ,"sp","sp","sp","sp","-" ,"-" ,"-" ,"-" ,"f","6" },     /*3-3*/ //1
+            {"-" ,"-" ,"-" ,"sp","sp","-" ,"-" ,"-" ,"-" ,"-" ,"f","8" },     /*4-4*/ //2
+            {"-" ,"-" ,"-" ,"-" ,"-" ,"-" ,"-" ,"-" ,"-" ,"-" ,"f","10"},     /*5-5*/ //3
+            {"sp","sp","sp","sp","sp","-" ,"-" ,"-" ,"-" ,"-" ,"f","12"},     /*6-6*/ //4
+            {"sp","sp","sp","sp","sp","sp","-" ,"-" ,"-" ,"-" ,"f","14"},     /*7-7*/ //5
+            {"sp","sp","sp","sp","sp","sp","sp","sp","sp","sp","f","16"},     /*8-8*/ //6
+            {"sp","sp","sp","sp","sp","-" ,"sp","sp","-" ,"-" ,"f","18"},     /*9-9*/ //7
+            {"sp","sp","sp","sp","sp","sp","sp","sp","sp","sp","t","12"},     /*A-A*/ //8
             // Hard <=8   -> inte double
-            // Soft >=19  -> inte double
-            {"-" ,"d" ,"d" ,"d" ,"d" ,"-" ,"-" ,"-" ,"-" ,"-" ,"t","18"},     //11
-            {"-" ,"d" ,"d" ,"d" ,"d" ,"-" ,"-" ,"-" ,"-" ,"-" ,"t","17"},     //12
-            {"-" ,"-" ,"d" ,"d" ,"d" ,"-" ,"-" ,"-" ,"-" ,"-" ,"t","16"},     //13
+            {"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"-" ,"-" ,"f","9" },     //9
+            {"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"-" ,"-" ,"f","10"},     //10
+            {"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"d" ,"-" ,"f","11"},     //11
+            // Hard >=12  ->inte double
+            // soft 12 = A-A = pair ->inte double
+            {"-" ,"-" ,"-" ,"d" ,"d" ,"-" ,"-" ,"-" ,"-" ,"-" ,"t","13"},     //12
+            {"-" ,"-" ,"d" ,"d" ,"d" ,"-" ,"-" ,"-" ,"-" ,"-" ,"t","14"},     //13
             {"-" ,"-" ,"d" ,"d" ,"d" ,"-" ,"-" ,"-" ,"-" ,"-" ,"t","15"},     //14
-            {"-" ,"-" ,"d" ,"d" ,"d" ,"-" ,"-" ,"-" ,"-" ,"-" ,"t","14"},     //15
-            {"-" ,"-" ,"-" ,"d" ,"d" ,"-" ,"-" ,"-" ,"-" ,"-" ,"t","13"},     //16
-
-            {"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"t","20"},     //17
-            {"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"t","19"},     //18
-            {"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"h" ,"h" ,"h" ,"t","18"},     //19
-            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"t","17"},     //20
-            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"t","16"},     //21
-            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"t","15"},     //22
-            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"t","14"},     //23
-            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"t","13"},     //24
-            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"t","12"},     //25
-            {"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"f","20"},     //26
-            {"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"f","19"},     //27
-            {"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"f","18"},     //28
-            {"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"f","17"},     //29
-            {"s" ,"s" ,"s" ,"s" ,"s" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","16"},     //30
-            {"s" ,"s" ,"s" ,"s" ,"s" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","15"},     //31
-            {"s" ,"s" ,"s" ,"s" ,"s" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","14"},     //32
-            {"s" ,"s" ,"s" ,"s" ,"s" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","13"},     //33
-            {"h" ,"h" ,"s" ,"s" ,"s" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","12"},     //34
-            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","11"},     //35
-            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","10"},     //36
-            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","9" },     //37
-            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","8" },     //38
-            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","7" },     //39
-            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","6" },     //40
-            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","5" },     //41
-            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","4" },     //42
-
-
-
-
-
-
-
-
+            {"-" ,"-" ,"d" ,"d" ,"d" ,"-" ,"-" ,"-" ,"-" ,"-" ,"t","16"},     //15
+            {"-" ,"d" ,"d" ,"d" ,"d" ,"-" ,"-" ,"-" ,"-" ,"-" ,"t","17"},     //16
+            {"-" ,"d" ,"d" ,"d" ,"d" ,"-" ,"-" ,"-" ,"-" ,"-" ,"t","18"},     //17
+            // Soft >=19  -> inte double
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"t","12"},     //18
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"t","13"},     //19
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"t","14"},     //20
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"t","15"},     //21
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"t","16"},     //22
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"t","17"},     //23
+            {"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"h" ,"h" ,"h" ,"t","18"},     //24
+            {"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"t","19"},     //25
+            {"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"t","20"},     //26
+             // icke soft
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","4" },     //27
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","5" },     //28
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","6" },     //29
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","7" },     //30
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","8" },     //31
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","9" },     //32
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","10"},     //33
+            {"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","11"},     //34
+            {"h" ,"h" ,"s" ,"s" ,"s" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","12"},     //35
+            {"s" ,"s" ,"s" ,"s" ,"s" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","13"},     //36
+            {"s" ,"s" ,"s" ,"s" ,"s" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","14"},     //37
+            {"s" ,"s" ,"s" ,"s" ,"s" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","15"},     //38
+            {"s" ,"s" ,"s" ,"s" ,"s" ,"h" ,"h" ,"h" ,"h" ,"h" ,"f","16"},     //39
+            {"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"f","17"},     //40
+            {"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"f","18"},     //41
+            {"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"f","19"},     //42
+            {"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"s" ,"f","20"},     //43
     };
+    public String proBJBaciStrategy(Round round, int allowdActions, int handIndx) {
+        int playerTotal = round.getHands()[handIndx].getTotal();
+        int playerAces = round.getHands()[handIndx].getAvailabelAces();
+        int dealersCard = round.getDealerCard();
+        int action =dealersCard-2;
+
+        if (allowdActions == 3 && round.getHands()[handIndx].getAvailabelAces() > 0 ){
+        return "sp";  //a soft pair is allways A-A which you allways split
+        }
+        else if (allowdActions == 3 && round.getHands()[handIndx].getAvailabelAces() == 0 ){
+            for (int i = 0; i <= 43; i++) {
+                if (    !proHiLoBasicStategy[i][action].equals("-") // action is not blank
+                        &&Integer.parseInt(proHiLoBasicStategy[i][11])==playerTotal // pt = pt
+                        && proHiLoBasicStategy[i][10].equals("f") //has ace=?
+                )
+                    return proHiLoBasicStategy[i][action]; // borde alltid vara sp
+                }
+        return "sp"; // return is "sp" by deafult so it has the highest chance of causeing an error insted of getting stuck in a loop not doing anything
+        }
+
+        else if (allowdActions == 2 && round.getHands()[handIndx].getAvailabelAces() > 0){
+            for (int i = 12; i <= 43; i++) { // i starts at 12 because it cant be a pair and is soft
+                if (    !proHiLoBasicStategy[i][action].equals("-") // action is not blank
+                        &&Integer.parseInt(proHiLoBasicStategy[i][11])==playerTotal // pt = pt
+                        && proHiLoBasicStategy[i][10].equals("t") //has ace=?
+                )
+                    return proHiLoBasicStategy[i][action];
+            }
+        return "sp"; // return is "sp" by deafult so it has the highest chance of causeing an error insted of getting stuck in a loop not doing anything
+    }
+        else if (allowdActions == 2 && round.getHands()[handIndx].getAvailabelAces() == 0){
+            for (int i = 9; i <= 43; i++) { // i starts at 9 because it cant be a pair
+                if (    !proHiLoBasicStategy[i][action].equals("-") // action is not blank
+                        &&Integer.parseInt(proHiLoBasicStategy[i][11])==playerTotal // pt = pt
+                        && proHiLoBasicStategy[i][10].equals("f") //has ace=?
+                )
+                    return proHiLoBasicStategy[i][action];
+            }
+            return "sp"; // return is "sp" by deafult so it has the highest chance of causeing an error insted of getting stuck in a loop not doing anything
+        }
+        else if (allowdActions == 1 && round.getHands()[handIndx].getAvailabelAces() > 0){
+            for (int i = 18; i <= 43; i++) { // i starts at 18 because it cant be a pair and you cant double
+                if (    !proHiLoBasicStategy[i][action].equals("-") // action is not blank
+                        &&Integer.parseInt(proHiLoBasicStategy[i][11])==playerTotal // pt = pt
+                        && proHiLoBasicStategy[i][10].equals("t") //has ace=?
+                )
+                    return proHiLoBasicStategy[i][action];
+            }
+            return "sp"; // return is "sp" by deafult so it has the highest chance of causeing an error insted of getting stuck in a loop not doing anything
+        }
+
+        else if (allowdActions == 1 && round.getHands()[handIndx].getAvailabelAces() == 0){
+            for (int i = 27; i <= 43; i++) { // i starts at 27 because it cant be a pair and you cant double and is not soft
+                if (    !proHiLoBasicStategy[i][action].equals("-") // action is not blank
+                        &&Integer.parseInt(proHiLoBasicStategy[i][11])==playerTotal // pt = pt
+                        && proHiLoBasicStategy[i][10].equals("f") //has ace=?
+                )
+                    return proHiLoBasicStategy[i][action];
+            }
+            return "sp"; // return is "sp" by deafult so it has the highest chance of causeing an error insted of getting stuck in a loop not doing anything
+        }
+        return "sp";
+    }
+
+
+
 }
 
