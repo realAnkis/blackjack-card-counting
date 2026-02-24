@@ -5,7 +5,7 @@ import BlackjackMedKlasser.playMethods.SemiOptimalSubclasses.*;
 
 public class SemiOptimal extends PlayMethod {
     private final int betSimulationAmount = 10000;
-    private final int actionSimulationAmount = 100;
+    private final int actionSimulationAmount = 10000;
     private final int actionDepthSimulationAmount = 10;
 
     private final Settings settings;
@@ -50,7 +50,7 @@ public class SemiOptimal extends PlayMethod {
     public String actionMethod(Round round, int allowedActions, int handIndex) {
         String obviousAction = checkIfActionIsObvious(round.getHands()[handIndex].getTotal(), allowedActions, round.getHands()[handIndex].getAvailabelAces(), round.getDealerCard());
         if (!obviousAction.equals("none") && !obviousAction.equals("exclude_h")) {
-            return obviousAction;
+            //return obviousAction;
         }
         if (allowedActions == 3 && round.getHands()[handIndex].getCards().getFirst().getValue() <= 6 && round.getDealerCard() >= 8)
             allowedActions = 2;
@@ -62,6 +62,9 @@ public class SemiOptimal extends PlayMethod {
         String[] actions = new String[]{"s", "h", "d", "sp"};
 
         //System.out.println(Arrays.toString(winnings) + " " + round.getHands()[handIndex].getAvailabelAces() + " " + actions[indexWithHighestValue(winnings)] + " p: " + round.getHands()[handIndex].getTotal() + " d: " + round.getDealerCard());
+        if(!obviousAction.equals(actions[indexWithHighestValue(winnings)]) && !obviousAction.equals("none") && !obviousAction.equals("exclude_h")) {
+            System.out.println("O A: " + obviousAction + " actual: " + actions[indexWithHighestValue(winnings)] + " player: " + round.getHands()[handIndex].getTotal() + " dealer: " + round.getDealerCard() + " aa: " + round.getHands()[handIndex].getAvailabelAces() + " cards: " + round.getHands()[handIndex].getCards().getFirst().getValue() + " " + (round.getHands()[handIndex].getCards().get(1).getValue()));
+        }
 
         return actions[indexWithHighestValue(winnings)];
     }
@@ -173,7 +176,7 @@ public class SemiOptimal extends PlayMethod {
         }
         if (allowedActions != 3) {
             if (total > 13 && dealerCard <= 6 && availableAces != 1) return "s";
-            if (total > 11 && total < 16 && dealerCard >= 7) return "h";
+            if (total > 11 && total < 14 && dealerCard >= 7) return "h";
             if (total == 11 && allowedActions == 2) return "d";
             if (total > 17 && availableAces != 1) return "s";
             if (total < 8) return "h";
@@ -185,8 +188,8 @@ public class SemiOptimal extends PlayMethod {
         if (availableAces == 1 && allowedActions == 2) {
             if(dealerCard <= 6) {
                 if (total < 17) {
-                    if ((total + 1) / 2 + dealerCard > 12) return "d";
-                } else if (total < 19 && total + dealerCard > 20) return "d";
+                    if ((total + 1) / 2 + dealerCard > 13) return "d";
+                } else if (total < 19 && total + dealerCard > 21) return "d";
             } else if(total == 16) return "h";
         }
         return "none";
