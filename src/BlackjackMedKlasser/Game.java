@@ -66,6 +66,7 @@ public class Game {
         System.out.println("Please select one of the following playmethods:");
         System.out.println("- SpelaSjälv");
         System.out.println("- Visuell");
+        System.out.println("- BasicStrategy");
         System.out.println("- TestMethod");
         System.out.println("- SemiOptimal");
         System.out.println("- HumanCardCounting");
@@ -80,6 +81,9 @@ public class Game {
                 }
                 case "Visuell" -> {
                     return new SpelaSjälvVisuell(settings);
+                }
+                case "BasicStrategy" -> {
+                    return new BasicStrategy(settings);
                 }
                 case "TestMethod" -> {
                     return new TestMethod(settings);
