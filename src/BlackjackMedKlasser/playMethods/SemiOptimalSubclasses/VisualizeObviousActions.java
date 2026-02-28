@@ -34,7 +34,7 @@ public class VisualizeObviousActions {
             System.out.println();
             System.out.print(p + " ");
             for (int i = 2; i < 12; i++) {
-                String obviousAction = so.checkIfActionIsObvious(p,allowedActions,availableAces,i);
+                String obviousAction = so.obviousActionsHandler.getObviousAction(p, i, allowedActions, availableAces);
                 if(obviousAction.equals("none")) obviousAction = "-";
                 if(obviousAction.equals("exclude_h")) obviousAction = "e";
                 if(obviousAction.equals("sp")) obviousAction = "S";
