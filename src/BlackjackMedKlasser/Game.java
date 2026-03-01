@@ -15,10 +15,12 @@ public class Game {
     private static boolean createThreads = false;
     private PlayMethod playMethod;
     private int threadsCompleted;
+
     public static void main(String[] args) {
         Settings settings = new Settings();
         Game game = new Game(settings);
     }
+
     public Game(Settings settings) {
         threadAmount = settings.threadAmount;
         deck = new Deck(settings);
@@ -64,33 +66,37 @@ public class Game {
         System.out.println("Please select one of the following playmethods:");
         System.out.println("- SpelaSjälv");
         System.out.println("- Visuell");
+        System.out.println("- BasicStrategy");
         System.out.println("- TestMethod");
         System.out.println("- SemiOptimal");
         System.out.println("- HumanCardCounting");
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
-                String input = scanner.nextLine();
+            String input = scanner.nextLine();
 
-                switch (input) {
-                    case "SpelaSjälv" -> {
-                        return new SpelaSjälv(settings);
-                    }
-                    case "Visuell" -> {
-                        return new SpelaSjälvVisuell(settings);
-                    }
-                    case "TestMethod" -> {
-                        return new TestMethod(settings);
-                    }
-                    case "SemiOptimal" -> {
-                        createThreads = true;
-                        return new SemiOptimal(settings);
-                    }
-                    case "HumanCardCounting" -> {
-                        System.out.println("Stating");
-                        return new HumanCardCounting(settings, deck);
-                    }
+            switch (input) {
+                case "SpelaSjälv" -> {
+                    return new SpelaSjälv(settings);
                 }
+                case "Visuell" -> {
+                    return new SpelaSjälvVisuell(settings);
+                }
+                case "BasicStrategy" -> {
+                    return new BasicStrategy(settings);
+                }
+                case "TestMethod" -> {
+                    return new TestMethod(settings);
+                }
+                case "SemiOptimal" -> {
+                    createThreads = true;
+                    return new SemiOptimal(settings);
+                }
+                case "HumanCardCounting" -> {
+                    System.out.println("Stating");
+                    return new HumanCardCounting(settings, deck);
+                }
+            }
         }
     }
 }

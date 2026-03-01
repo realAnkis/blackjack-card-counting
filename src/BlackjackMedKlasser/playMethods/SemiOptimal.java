@@ -9,6 +9,7 @@ public class SemiOptimal extends PlayMethod {
     private final int actionDepthSimulationAmount = 10;
 
     private final Settings settings;
+    public final ObviousActionsHandler obviousActionsHandler = new ObviousActionsHandler();
     private final Deck predictedGameDeck;
     private Deck betDeck;
     private final SODeck simulatedDeck;
@@ -16,6 +17,8 @@ public class SemiOptimal extends PlayMethod {
     private final SOHand simulatedDealerHand;
     private final SOHand simulatedPlayerHand;
     private HandSaveState dealerhss;
+
+    private FindObviousActions findObviousActions = new FindObviousActions();
 
     public SemiOptimal(Settings settings) {
         this.settings = settings;
@@ -48,12 +51,13 @@ public class SemiOptimal extends PlayMethod {
     //handIndex är den hand som just nu spelas, bör användas i till exempel: round.getHands()[handIndex].getTotal()
     @Override
     public String actionMethod(Round round, int allowedActions, int handIndex) {
-        String obviousAction = checkIfActionIsObvious(round.getHands()[handIndex].getTotal(), allowedActions, round.getHands()[handIndex].getAvailabelAces(), round.getDealerCard());
+        String obviousAction = obviousActionsHandler.getObviousAction(round.getHands()[handIndex].getTotal(), round.getDealerCard(), allowedActions, round.getHands()[handIndex].getAvailabelAces());
         if (!obviousAction.equals("none") && !obviousAction.equals("exclude_h")) {
             return obviousAction;
         }
-        if (allowedActions == 3 && round.getHands()[handIndex].getCards().getFirst().getValue() <= 6 && round.getDealerCard() >= 8)
-            allowedActions = 2;
+        if (allowedActions == 3 && round.getHands()[handIndex].getCards().getFirst().getValue() <= 6 && round.getDealerCard() >= 8) {
+            //allowedActions = 2;
+        }
         dealerhss = new HandSaveState((byte) round.getDealerCard(), (byte) round.getDealerHand().getAvailabelAces());
         HandSaveState hss = new HandSaveState((short) round.getHands()[handIndex].getCards().size(), (byte) round.getHands()[handIndex].getTotal(), (byte) round.getHands()[handIndex].getCards().getFirst().getValue(), (byte) round.getHands()[handIndex].getAvailabelAces());
         DeckSaveState dss = new DeckSaveState(predictedGameDeck.getCards());
@@ -62,9 +66,12 @@ public class SemiOptimal extends PlayMethod {
         String[] actions = new String[]{"s", "h", "d", "sp"};
 
         //System.out.println(Arrays.toString(winnings) + " " + round.getHands()[handIndex].getAvailabelAces() + " " + actions[indexWithHighestValue(winnings)] + " p: " + round.getHands()[handIndex].getTotal() + " d: " + round.getDealerCard());
-        if(!obviousAction.equals(actions[indexWithHighestValue(winnings)]) && !obviousAction.equals("none") && !obviousAction.equals("exclude_h")) {
-            System.out.println("O A: " + obviousAction + " actual: " + actions[indexWithHighestValue(winnings)] + " player: " + round.getHands()[handIndex].getTotal() + " dealer: " + round.getDealerCard() + " aa: " + round.getHands()[handIndex].getAvailabelAces() + " cards: " + round.getHands()[handIndex].getCards().getFirst().getValue() + " " + (round.getHands()[handIndex].getCards().get(1).getValue()));
-        }
+
+        //findObviousActions.gatherResult(round.getHands()[handIndex].getTotal(), round.getDealerCard(), allowedActions, round.getHands()[handIndex].getAvailabelAces() == 1 ,actions[indexWithHighestValue(winnings)]);
+
+        //if(!obviousAction.equals(actions[indexWithHighestValue(winnings)]) && !obviousAction.equals("none") && !obviousAction.equals("exclude_h")) {
+        //System.out.println("O A: " + obviousAction + " actual: " + actions[indexWithHighestValue(winnings)] + " player: " + round.getHands()[handIndex].getTotal() + " dealer: " + round.getDealerCard() + " aa: " + round.getHands()[handIndex].getAvailabelAces() + " cards: " + round.getHands()[handIndex].getCards().getFirst().getValue() + " " + (round.getHands()[handIndex].getCards().get(1).getValue()));
+        //}
 
         return actions[indexWithHighestValue(winnings)];
     }
@@ -75,7 +82,9 @@ public class SemiOptimal extends PlayMethod {
 
         if (simulatedPlayerHand.getTotal() > 21) return new float[]{-2, -2, -2, -2};
 
-        String obviousAction = checkIfActionIsObvious(simulatedPlayerHand.getTotal(), allowedActions, simulatedPlayerHand.getAvailableAces(), simulatedDealerHand.getFirstCardValue());
+        String obviousAction;
+        if (simulatedPlayerHand.getTotal() == 21) obviousAction = "s";
+        else obviousAction = obviousActionsHandler.getObviousAction(simulatedPlayerHand.getTotal(), dealerhss.getFirstCard(), allowedActions, simulatedPlayerHand.getAvailableAces());
 
         float[] winnings = new float[4]; //index 0 = stand, 1 = hit, 2 = double, 3 = split
 
@@ -166,35 +175,6 @@ public class SemiOptimal extends PlayMethod {
         return highestIndex;
     }
 
-    public String checkIfActionIsObvious(int total, int allowedActions, int availableAces, int dealerCard) {
-        if (total == 20) return "s";
-        if (allowedActions == 1 && total <= 11) return "h";
-        if (availableAces == 1 && allowedActions == 1 && total <= 16) return "h";
-        if(availableAces == 1 && total == 19) {
-            if (allowedActions == 1) return "s";
-            else return "exclude_h";
-        }
-        if (allowedActions != 3) {
-            //if (total > 13 && dealerCard <= 6 && availableAces != 1) return "s";
-            if (total > 16 && dealerCard <= 6 && availableAces != 1) return "s";
-            if (total > 11 && total < 14 && dealerCard >= 7) return "h";
-            if (total == 11 && allowedActions == 2) return "d";
-            if (total > 17 && availableAces != 1) return "s";
-            if (total < 8) return "h";
-        } else {
-            if(availableAces == 1) return "sp";
-            //if (total >= 12 && total <= 16 && dealerCard <= 6) return "sp";
-            if (total >= 16) return "exclude_h";
-        }
-        if (availableAces == 1 && allowedActions == 2) {
-            if(dealerCard <= 6) {
-                if (total < 17) {
-                    if ((total + 1) / 2 + dealerCard > 13) return "d";
-                } //else if (total < 19 && total + dealerCard > 21) return "d";
-            } else if(total == 16) return "h";
-        }
-        return "none";
-    }
 
     public int playSimulatedDealerHandTest(int betMultiplier) {
         //plays the dealer hand and then returns winnings for given hand
