@@ -15,12 +15,10 @@ public class Game {
     private static boolean createThreads = false;
     private PlayMethod playMethod;
     private int threadsCompleted;
-
     public static void main(String[] args) {
         Settings settings = new Settings();
         Game game = new Game(settings);
     }
-
     public Game(Settings settings) {
         threadAmount = settings.threadAmount;
         deck = new Deck(settings);
@@ -72,27 +70,27 @@ public class Game {
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            String input = scanner.nextLine();
+                String input = scanner.nextLine();
 
-            switch (input) {
-                case "SpelaSjälv" -> {
-                    return new SpelaSjälv(settings);
+                switch (input) {
+                    case "SpelaSjälv" -> {
+                        return new SpelaSjälv(settings);
+                    }
+                    case "Visuell" -> {
+                        return new SpelaSjälvVisuell(settings);
+                    }
+                    case "TestMethod" -> {
+                        return new TestMethod(settings);
+                    }
+                    case "SemiOptimal" -> {
+                        createThreads = true;
+                        return new SemiOptimal(settings);
+                    }
+                    case "HumanCardCounting" -> {
+                        System.out.println("Stating");
+                        return new HumanCardCounting(settings, deck);
+                    }
                 }
-                case "Visuell" -> {
-                    return new SpelaSjälvVisuell(settings);
-                }
-                case "TestMethod" -> {
-                    return new TestMethod(settings);
-                }
-                case "SemiOptimal" -> {
-                    createThreads = true;
-                    return new SemiOptimal(settings);
-                }
-                case "HumanCardCounting" -> {
-                    System.out.println("Stating");
-                    return new HumanCardCounting(settings, deck);
-                }
-            }
         }
     }
 }

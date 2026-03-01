@@ -22,6 +22,10 @@ public class Deck {
         return cards.size();
     }
 
+    public int getNumberOfDecks() {
+        return numberOfDecks;
+    }
+
     public void setCards(LinkedList<Card> newCards) {
         cards.clear();
         cards.addAll(newCards);
