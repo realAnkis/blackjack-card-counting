@@ -6,6 +6,8 @@ import BlackjackMedKlasser.Round;
 import BlackjackMedKlasser.Settings;
 import BlackjackMedKlasser.playMethods.PlayMethod;
 
+import java.util.LinkedList;
+
 
 public class HumanCardCounting extends PlayMethod {
     private Settings settings;
