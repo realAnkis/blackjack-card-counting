@@ -3,8 +3,8 @@ package BlackjackMedKlasser;
 public class Settings {
     int numberOfDecks = 2;
     double[] reshufflePercentInterval = new double[]{0.25,0.55};
-    int numberOfGames = 10000000;
-    //                  10000000  = 10 000 000
+    int numberOfGames = 10_000_000;
+    //
     int maxBet = 100;
     int minBet = 10;
     int threadAmount = 6;
