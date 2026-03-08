@@ -6,8 +6,6 @@ import BlackjackMedKlasser.playMethods.SemiOptimal;
 
 public class SimulatedRound extends SemiOptimal {
     private Settings settings;
-    private final int actionSimulationAmount = 50;
-    private final int actionDepthSimulationAmount = 10;
 
     public SimulatedRound(Settings settings) {
         super(settings);

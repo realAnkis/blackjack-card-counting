@@ -3,10 +3,13 @@ package BlackjackMedKlasser.playMethods;
 import BlackjackMedKlasser.*;
 import BlackjackMedKlasser.playMethods.SemiOptimalSubclasses.*;
 
+import java.util.HashMap;
+import java.util.HexFormat;
+
 public class SemiOptimal extends PlayMethod {
-    private final int betSimulationAmount = 10000;
-    private final int actionSimulationAmount = 100;
-    private final int actionDepthSimulationAmount = 10;
+    private final int betSimulationAmount = 50000;
+    private final int actionSimulationAmount = 1000;
+    private final int actionDepthSimulationAmount = 15;
 
     private final Settings settings;
     public final ObviousActionsHandler obviousActionsHandler = new ObviousActionsHandler();
@@ -17,6 +20,7 @@ public class SemiOptimal extends PlayMethod {
     private final SOHand simulatedDealerHand;
     private final SOHand simulatedPlayerHand;
     private HandSaveState dealerhss;
+    private HashMap<String, Boolean> betLookupTable = new HashMap<>();
 
     private FindObviousActions findObviousActions = new FindObviousActions();
 
@@ -84,7 +88,8 @@ public class SemiOptimal extends PlayMethod {
 
         String obviousAction;
         if (simulatedPlayerHand.getTotal() == 21) obviousAction = "s";
-        else obviousAction = obviousActionsHandler.getObviousAction(simulatedPlayerHand.getTotal(), dealerhss.getFirstCard(), allowedActions, simulatedPlayerHand.getAvailableAces());
+        else
+            obviousAction = obviousActionsHandler.getObviousAction(simulatedPlayerHand.getTotal(), dealerhss.getFirstCard(), allowedActions, simulatedPlayerHand.getAvailableAces());
 
         float[] winnings = new float[4]; //index 0 = stand, 1 = hit, 2 = double, 3 = split
 
@@ -204,8 +209,16 @@ public class SemiOptimal extends PlayMethod {
     //körs när det ursprungliga bettet ska bestämmas
     @Override
     public int betMethod(Round round) {
-        return settings.getMinBet();
-        /*
+        //return settings.getMinBet();
+
+        DeckSaveState dss = new DeckSaveState(predictedGameDeck.getCards());
+        String currentDeckString = dss.getString();
+
+        if (betLookupTable.containsKey(currentDeckString)) {
+            if (betLookupTable.get(currentDeckString)) return settings.getMaxBet();
+            return settings.getMinBet();
+        }
+
         int simulatedWinnings = 0;
         for (int i = 0; i < betSimulationAmount; i++) {
             betDeck.setCards(predictedGameDeck.getCards());
@@ -213,9 +226,12 @@ public class SemiOptimal extends PlayMethod {
             simulatedWinnings += simulatedRound.playRound();
             simulatedRound.reset();
         }
-        if (simulatedWinnings > 0) return settings.getMaxBet();
+        if (simulatedWinnings > 0) {
+            betLookupTable.put(currentDeckString,true);
+            return settings.getMaxBet();
+        }
+        betLookupTable.put(currentDeckString,false);
         return settings.getMinBet();
-         */
 
 
     }
@@ -231,4 +247,7 @@ public class SemiOptimal extends PlayMethod {
         return 0;
     }
 
+    public String deckToString() {
+        return simulatedDeck.toString();
+    }
 }
