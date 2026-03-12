@@ -376,7 +376,6 @@ public class IndexSort{
                 {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s", "f", "20"},     //43
         };
 
-
      private final String[][] omega2BasicStrategy = {
                 //     soft  pair
                 //{"t/f",t/f,"2" ,"3" ,"4" ,"5" ,"6" ,"7" ,"8" ,"9" ,"10","11", playerTotal},

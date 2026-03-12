@@ -86,7 +86,6 @@ public class HumanCardCounting extends PlayMethod {
         if (betVariable > 5) return settings.getMaxBet();
         else return 0;
     }
-
     //counting methods
     public int hiLo(Card card) {
         if (card.getValue() > 9) return -1;
