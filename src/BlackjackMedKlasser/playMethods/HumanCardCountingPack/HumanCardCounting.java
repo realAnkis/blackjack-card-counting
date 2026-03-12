@@ -69,7 +69,7 @@ public class HumanCardCounting extends PlayMethod {
     //körs ifall möjlighet för ett insurance bet finns (dvs. ifall dealern har ett ess)
     @Override
     public int insuranceBetMethod(Round round) {
-        if (betVariable > 3) return settings.getMaxBet();
+        if (betVariable >=6 ) return settings.getMaxBet();
         else return 0;
     }
 
@@ -838,7 +838,7 @@ public class HumanCardCounting extends PlayMethod {
             {"f", "f", "-10", "-10", "-14", "-17", "-17", "22", "21", "15", "6", "18", "15"},    // 28
             {"f", "f", "-14", "-17", "-19", "-22", "-20", "15", "14", "7", "0", "14", "16"},    // 29
             {"f", "f", "s", "s", "s", "s", "s", "s", "s", "s", "s", "-10", "17"},    // 30
-            // if your 14 cosists of 7-7 standat +6 or greater in double deack game; +11 or greater in four- or more deck games
+            // if your 14 cosists of 7-7 stand at +6 or greater in double deck game; +11 or greater in four- or more deck games
     };
 
     public String omega2BasicStrategy(Round round, int allowdActions, int handIndx) {
@@ -881,7 +881,8 @@ public class HumanCardCounting extends PlayMethod {
             if (playerTotal !=12) {
                 System.out.println("soft pari =/= 12"); return "Loop";
             }
-            return "sp";
+            if(trueCount >= Integer.parseInt(omega2CountStrategy[9][dealerCard])) return "sp";
+            else return "h";
         } else  if (allowdActions == 3 && playerAces == 0) { // hard pair
             if(omega2CountStrategy[((playerTotal - 4) / 2)][dealerCard].equals("*")){
                 if (playerTotal==10){
