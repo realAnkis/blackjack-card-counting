@@ -8,8 +8,8 @@ import java.util.HexFormat;
 
 public class SemiOptimal extends PlayMethod {
     private final int betSimulationAmount = 50000;
-    private final int actionSimulationAmount = 1000;
-    private final int actionDepthSimulationAmount = 15;
+    private final int actionSimulationAmount = 100;
+    private final int actionDepthSimulationAmount = 10;
 
     private final Settings settings;
     public final ObviousActionsHandler obviousActionsHandler = new ObviousActionsHandler();
@@ -17,6 +17,7 @@ public class SemiOptimal extends PlayMethod {
     private Deck betDeck;
     private final SODeck simulatedDeck;
     private Round simulatedRound;
+    private int simulatedHandAmount;
     private final SOHand simulatedDealerHand;
     private final SOHand simulatedPlayerHand;
     private HandSaveState dealerhss;
@@ -57,21 +58,19 @@ public class SemiOptimal extends PlayMethod {
     public String actionMethod(Round round, int allowedActions, int handIndex) {
         String obviousAction = obviousActionsHandler.getObviousAction(round.getHands()[handIndex].getTotal(), round.getDealerCard(), allowedActions, round.getHands()[handIndex].getAvailabelAces());
         if (!obviousAction.equals("none") && !obviousAction.equals("exclude_h")) {
-            return obviousAction;
-        }
-        if (allowedActions == 3 && round.getHands()[handIndex].getCards().getFirst().getValue() <= 6 && round.getDealerCard() >= 8) {
-            //allowedActions = 2;
+            //return obviousAction;
         }
         dealerhss = new HandSaveState((byte) round.getDealerCard(), (byte) round.getDealerHand().getAvailabelAces());
         HandSaveState hss = new HandSaveState((short) round.getHands()[handIndex].getCards().size(), (byte) round.getHands()[handIndex].getTotal(), (byte) round.getHands()[handIndex].getCards().getFirst().getValue(), (byte) round.getHands()[handIndex].getAvailabelAces());
         DeckSaveState dss = new DeckSaveState(predictedGameDeck.getCards());
+        simulatedHandAmount = round.getNextEmptyHand();
         float[] winnings = tryActions(allowedActions, actionSimulationAmount, hss, dss);
 
         String[] actions = new String[]{"s", "h", "d", "sp"};
 
         //System.out.println(Arrays.toString(winnings) + " " + round.getHands()[handIndex].getAvailabelAces() + " " + actions[indexWithHighestValue(winnings)] + " p: " + round.getHands()[handIndex].getTotal() + " d: " + round.getDealerCard());
 
-        //findObviousActions.gatherResult(round.getHands()[handIndex].getTotal(), round.getDealerCard(), allowedActions, round.getHands()[handIndex].getAvailabelAces() == 1 ,actions[indexWithHighestValue(winnings)]);
+        findObviousActions.gatherResult(round.getHands()[handIndex].getTotal(), round.getDealerCard(), allowedActions, round.getHands()[handIndex].getAvailabelAces() == 1 ,actions[indexWithHighestValue(winnings)]);
 
         //if(!obviousAction.equals(actions[indexWithHighestValue(winnings)]) && !obviousAction.equals("none") && !obviousAction.equals("exclude_h")) {
         //System.out.println("O A: " + obviousAction + " actual: " + actions[indexWithHighestValue(winnings)] + " player: " + round.getHands()[handIndex].getTotal() + " dealer: " + round.getDealerCard() + " aa: " + round.getHands()[handIndex].getAvailabelAces() + " cards: " + round.getHands()[handIndex].getCards().getFirst().getValue() + " " + (round.getHands()[handIndex].getCards().get(1).getValue()));
@@ -138,36 +137,104 @@ public class SemiOptimal extends PlayMethod {
             }
             winnings[2] /= iterationsPerAction;
         } else winnings[2] = -100000000;
-        if (allowedActions == 2 || obviousAction.equals("d")) {
+        if (simulatedHandAmount == 4 || allowedActions == 2 || obviousAction.equals("d")) {
             winnings[3] = -100000000;
             return winnings;
         }
         //split
         for (int i = 0; i < iterationsPerAction; i++) {
+            /*
+                run first hand
+                see how many splits that one does???
+                or wait
+                what if i just check if splitting again is allowed in currect case
+                then i somehow need to check if its already split too many times
+                otherwise we can just split it
+                no need for sending info back really
+
+                but problem becomes what if avg. run splits 3x on both hands
+
+                therefore the need for calling back how many hands used
+                if winnings[3] is the highest then we assume a new hand is created and can be created
+
+                ok fuck im just gonna try to multiply the winnings of one hand with the average amount of times we can split and see if it gives better results, cuz if you want to split once, chances are you want to do it again
+                we could also use the deck - 1 of the card used for splitting and it might give a lil more perspective
+
+
+
+               ok fuck all that, here's what we do
+               create two save states for the different split hands
+               if any one of them can split (meaning 2 of same card and max amount of hands not reached),
+               we check with tryActions if they want to,
+               if they dont we can just continue playing the hands,
+               if they do we create another hand and redo all checks,
+             */
+
             simulatedDeck.setState(dss);
             simulatedPlayerHand.setState(hss);
 
-            HandSaveState beginningState = new HandSaveState(simulatedPlayerHand.getFirstCardValue(), simulatedPlayerHand.getAvailableAces());
+            HandSaveState beginningState = new HandSaveState(simulatedPlayerHand.getFirstCardValue(), simulatedPlayerHand.getAvailableAces(), hss.getUsedHands() + 1);
 
-            simulatedPlayerHand.addCard(simulatedDeck.deal());
 
-            byte secondCard = simulatedDeck.deal();
+            HandSaveState[] hands = new HandSaveState[4];
+
+            createSplitHand(beginningState,hands,0);
+            createSplitHand(beginningState,hands,1);
+
+            if(beginningState.getUsedHands() != 4) {
+                int splitHandIndex = handWantsToSplit(hands);
+
+                if (splitHandIndex != -1) {
+                    beginningState.setUsedHands(beginningState.getUsedHands() + 1);
+                    hands[0].setUsedHands(beginningState.getUsedHands());
+                    hands[1].setUsedHands(beginningState.getUsedHands());
+                    createSplitHand(beginningState, hands, splitHandIndex);
+                    createSplitHand(beginningState, hands, 2);
+
+                    if (beginningState.getUsedHands() != 4) {
+                        splitHandIndex = handWantsToSplit(hands);
+                        if (splitHandIndex != -1) {
+                            createSplitHand(beginningState, hands, splitHandIndex);
+                            createSplitHand(beginningState, hands, 3);
+                        }
+                    }
+                }
+            }
 
             DeckSaveState newdss = simulatedDeck.saveState();
 
-            float[] splitWinnings = tryActions(2, actionDepthSimulationAmount, simulatedPlayerHand.saveState(), newdss);
+            float[] splitWinnings;
 
-            winnings[3] += splitWinnings[indexWithHighestValue(splitWinnings)];
+            for (int j = 0; j < 4; j++) {
+                if(hands[j] == null) break;
 
-            simulatedPlayerHand.setState(beginningState);
-            simulatedPlayerHand.addCard(secondCard);
-
-            splitWinnings = tryActions(2, actionDepthSimulationAmount, simulatedPlayerHand.saveState(), newdss);
-            winnings[3] += splitWinnings[indexWithHighestValue(splitWinnings)];
+                splitWinnings = tryActions(2, actionDepthSimulationAmount, hands[j], newdss);
+                winnings[3] += splitWinnings[indexWithHighestValue(splitWinnings)];
+            }
         }
 
         winnings[3] /= iterationsPerAction;
         return winnings;
+    }
+
+    public int handWantsToSplit(HandSaveState[] hands) {
+        for (int i = 0; i < 4; i++) {
+            if (hands[i] == null) return -1;
+            if(!hands[i].canSplit()) continue;
+            DeckSaveState newdss = simulatedDeck.saveState();
+            float[] splitWinnings = tryActions(3, actionDepthSimulationAmount, hands[i], newdss);
+            if(indexWithHighestValue(splitWinnings) == 3) return i;
+        }
+        return -1;
+    }
+
+    public void createSplitHand(HandSaveState beginningState,HandSaveState[] hands, int index) {
+        simulatedPlayerHand.setState(beginningState);
+        byte card = simulatedDeck.deal();
+        simulatedPlayerHand.addCard(card);
+        hands[index] = simulatedPlayerHand.saveState();
+        hands[index].setUsedHands(beginningState.getUsedHands());
+        hands[index].setCanSplit(card == beginningState.getFirstCardValue());
     }
 
     public int indexWithHighestValue(float[] array) {
@@ -209,8 +276,9 @@ public class SemiOptimal extends PlayMethod {
     //körs när det ursprungliga bettet ska bestämmas
     @Override
     public int betMethod(Round round) {
-        //return settings.getMinBet();
+        return settings.getMinBet();
 
+        /*
         DeckSaveState dss = new DeckSaveState(predictedGameDeck.getCards());
         String currentDeckString = dss.getString();
 
@@ -232,6 +300,7 @@ public class SemiOptimal extends PlayMethod {
         }
         betLookupTable.put(currentDeckString,false);
         return settings.getMinBet();
+         */
 
 
     }
@@ -245,9 +314,5 @@ public class SemiOptimal extends PlayMethod {
         }
         if ((double) (cardsWithValue10) / predictedGameDeck.getSizeOfDeck() > 0.5) return settings.getMaxBet();
         return 0;
-    }
-
-    public String deckToString() {
-        return simulatedDeck.toString();
     }
 }

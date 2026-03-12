@@ -17,7 +17,7 @@ public class SODeck {
     }
 
     public byte deal() {
-        int selectedIndex = random.nextInt(10, cardAmount);;
+        int selectedIndex = random.nextInt(10, cardAmount);
         for (int i = 9; i >= 0; i--) {
             selectedIndex -= cards[i];
             if (selectedIndex >= 0) continue;
