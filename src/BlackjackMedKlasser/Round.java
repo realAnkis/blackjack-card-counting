@@ -33,6 +33,10 @@ public class Round {
         return currentHandIndex;
     }
 
+    public int getNextEmptyHand() {
+        return nextEmptyHand;
+    }
+
     public int getEndOfRoundProfit() {
         return endOfRoundProfit;
     }
