@@ -13,8 +13,11 @@ public class HumanCardCounting extends PlayMethod {
     private Settings settings;
     private Deck deck;
     private double count = 0;
+    private int countInsurance = 0;
     private double trueCount;
-    private double cardsPlayedCunter;
+    private double perfectBetcount;
+    private double TrueperfectBetcount;
+    private double perfectPlaycount;
     private IndexSort indexSort = new IndexSort();
     private final String[][] hardTotals1 = indexSort.getHardTotals1();
     private final String[][] hardTotals2 = indexSort.getHardTotals2();
@@ -27,6 +30,11 @@ public class HumanCardCounting extends PlayMethod {
     private final String[][] proHiLoBasicStategy = indexSort.getProHiLoBasicStategy();
     private final String[][] omega2BasicStrategy = indexSort.getOmega2BasicStrategy();
     private final String[][] omega2CountStrategy = indexSort.getOmega2CountStrategy();
+    private final String[][] omega2CSTPairs = indexSort.getOmega2CSTPairs();
+    private final String[][] omega2CSTDouble_S = indexSort.getOmega2CSTDouble_S();
+    private final String[][] omega2CSTDouble_H = indexSort.getOmega2CSTDouble_H();
+    private final String[][] omega2CSTStand_S = indexSort.getOmega2CSTStand_S();
+    private final String[][] omega2CSTStand_H = indexSort.getOmega2CSTStand_H();
 
     //körs när ett kort delas ut från kortleken
     public HumanCardCounting(Settings settings, Deck deck) {
@@ -37,11 +45,14 @@ public class HumanCardCounting extends PlayMethod {
 
     @Override
     public void cardDealtMethod(Card card) {
-        cardsPlayedCunter+=1;
         count += omega2(card);
+        countInsurance += insuranceCount(card);
+        perfectBetcount += insuranceCount(card);
+        perfectPlaycount += insuranceCount(card);
         int deckSize = deck.getSizeOfDeck();
         if (deckSize < 1) deckSize = 1;
         trueCount = (count / ((double) deckSize / 52));
+        TrueperfectBetcount = (perfectBetcount / ((double) deckSize / 52));
 
     }
 
@@ -50,6 +61,9 @@ public class HumanCardCounting extends PlayMethod {
     @Override
     public void reshuffleMethod() {
         count = 0;
+        countInsurance = 0;
+        perfectBetcount = 0;
+        perfectPlaycount = 0;
     }
 
     //körs när en aktion i spelet behöver bestämmas, bör returna "s", "h", "d" eller "sp"
@@ -59,7 +73,7 @@ public class HumanCardCounting extends PlayMethod {
     /*===========================================================================================*/
     @Override
     public String actionMethod(Round round, int allowedActions, int handIndex) {
-        return omega2BasicStrategy(round, allowedActions, handIndex);
+        return omega2CountingSplitString(round, allowedActions, handIndex);
     }
     /*===========================================================================================*/
 
@@ -68,37 +82,204 @@ public class HumanCardCounting extends PlayMethod {
     //körs när det ursprungliga bettet ska bestämmas
     @Override
     public int betMethod(Round round) {
+        int betUnit =settings.getMaxBet()/20;
         int bet;
-       if (betVariable <= 1) bet = settings.getMinBet();
-        else if (betVariable <= 2) bet = (settings.getMaxBet() / 10 * 2);
-        else if (betVariable <= 3) bet = (settings.getMaxBet() / 10 * 4);
-        else if (betVariable <= 4) bet = (settings.getMaxBet() / 10 * 6);
-        else if (betVariable <= 5) bet = (settings.getMaxBet() / 10 * 8);
+        if (betVariable <= 0) bet = settings.getMinBet();
+        else if (betVariable <= 1) bet = ((settings.getMaxBet()/10 )* 2);
+        else if (betVariable <= 2) bet = ((settings.getMaxBet()/10 )* 4);
+        else if (betVariable <= 3) bet = ((settings.getMaxBet()/10 )* 6);
+        else if (betVariable <= 4) bet = ((settings.getMaxBet()/10 )* 8);
+        else if (betVariable <= 5) bet = ((settings.getMaxBet()/10 )* 10);
+       /*else if (betVariable <= 1) bet = (betUnit*3);
+        else if (betVariable <= 2) bet = (betUnit*6);
+        else if (betVariable <= 3) bet = (betUnit*10);
+        else if (betVariable <= 4) bet = (betUnit*15);
+        else if (betVariable <= 5) bet = (betUnit*20);*/
         else bet = settings.getMaxBet();
-        return bet;
-    }
+        return bet;/**/
 
+        //Test with Insurance = countInsurance, Betting = TrueperfectBetcount, play = omega2CountingSplitString with omega2 count and 10_000_000 rounds
+             /*=== 2 decks ===
+=====================================================
+Total time: 10s 0m 0h (955994.5937358531 rounds/s)
+Final balance: 298820
+Total amount bet: 115844605
+Player edge: 0.2579489998692645%
+=====================================================
+Total time: 11s 0m 0h (846122.7967015257 rounds/s)
+Final balance: 214685
+Total amount bet: 115849055
+Player edge: 0.18531441624620934%
+=====================================================
+Total time: 9s 0m 0h (1061245.4400803896 rounds/s)
+Final balance: 239595
+Total amount bet: 115840935
+Player edge: 0.2068310308441485%
+=====================================================
+Total time: 9s 0m 0h (1047150.2105457807 rounds/s)
+Final balance: 318035
+Total amount bet: 115836250
+Player edge: 0.2745556766556238%
+=====================================================
+Total time: 9s 0m 0h (1011335.3806874203 rounds/s)
+Final balance: 265270
+Total amount bet: 115836580
+Player edge: 0.22900365325012184%
+===================================================== Special 100_000_000 rounds
+Total time: 49s 1m 0h (916435.6979886597 rounds/s)
+Final balance: 2694425
+Total amount bet: 1158533865
+Player edge: 0.2325719671560917%
+===================================================== Special 100_000_000 rounds
+
+        === 6 decks ===
+
+
+=====================================================
+Total time: 9s 0m 0h (1041655.1650575525 rounds/s)
+Final balance: 1345
+Total amount bet: 115700700
+Player edge: 0.0011624821630292644%
+=====================================================
+Total time: 8s 0m 0h (1167377.1869002162 rounds/s)
+Final balance: 46120
+Total amount bet: 115710040
+Player edge: 0.039858252576872324%
+=====================================================
+Total time: 9s 0m 0h (1068617.2493524847 rounds/s)
+Final balance: 25955
+Total amount bet: 115702180
+Player edge: 0.022432593750610404%
+===================================================== Special 100_000_000 rounds
+Total time: 50s 1m 0h (903449.8634166304 rounds/s)
+Final balance: -10535
+Total amount bet: 1157066105
+Player edge: -9.104924908330972E-4%
+===================================================== Special 100_000_000 rounds */
+        //Test with Insurance = trueCount > 5 for omega2, Betting = trueCount, play = omega2CountingSplitString with omega2 count and 10_000_000 rounds
+             /*
+=====================    2 decks      ===============
+=====================================================
+Total time: 11s 0m 0h (890197.8912582861 rounds/s)
+Final balance: 306170
+Total amount bet: 114467265
+Player edge: 0.26747384940139873%
+=====================================================
+Total time: 9s 0m 0h (1058795.227192521 rounds/s)
+Final balance: 294005
+Total amount bet: 114473355
+Player edge: 0.2568326926383873%
+=====================================================
+HumanCardCountingPack.HumanCardCounting:
+Total time: 9s 0m 0h (1013797.5515025124 rounds/s)
+Final balance: 317460
+Total amount bet: 114473630
+Player edge: 0.2773215106396119%
+=====================================================
+Total time: 9s 0m 0h (1016076.9073488341 rounds/s)
+Final balance: 260385
+Total amount bet: 114459605
+Player edge: 0.2274907378895812%
+=====================================================
+Total time: 9s 0m 0h (1043693.1709068441 rounds/s)
+Final balance: 336055
+Total amount bet: 114441035
+Player edge: 0.29364903943764575%
+===================================================== Special 100_000_000 rounds
+Total time: 35s 1m 0h (1043910.4357958927 rounds/s)
+Final balance: 2748560
+Total amount bet: 1144576695
+Player edge: 0.24013768688519382%
+===================================================== Special 100_000_000 rounds
+
+
+=====================    6 decks      ===============
+
+
+=====================================================
+Total time: 9s 0m 0h (1026948.6525262957 rounds/s)
+Final balance: 122735
+Total amount bet: 113983200
+Player edge: 0.1076781490605633%
+=====================================================
+Total time: 10s 0m 0h (959385.2412875468 rounds/s)
+Final balance: 59130
+Total amount bet: 113966195
+Player edge: 0.05188380642172005%
+=====================================================
+Total time: 10s 0m 0h (960566.6359531888 rounds/s)
+Final balance: 21030
+Total amount bet: 113955445
+Player edge: 0.018454581086493935%
+===================================================== Special 100_000_000 rounds
+Total time: 46s 1m 0h (942200.3235436766 rounds/s)
+Final balance: 728225
+Total amount bet: 1139668280
+Player edge: 0.06389797915582945%
+===================================================== Special 100_000_000 rounds
+*/
+
+    }
     //körs ifall möjlighet för ett insurance bet finns (dvs. ifall dealern har ett ess)
     @Override
     public int insuranceBetMethod(Round round) {
-
-        //if (betVariable > 2) return settings.getMaxBet();
-        if (betVariable > 5) return settings.getMaxBet();
-        else return 0;
+        /*
+        testing when you allways bet 10 and allways stand -- 2 decks 10_000_000 roudns
+            incurance allways 0  Player edge ca= -15.95% -- -15.89%
+            incurance allways maxbet   Player edge ca= -15.68% -- -15.64%
+            incurance max when count > 5 for omega2    Player edge ca= -15.85% -- -15.76%
+            incurance max when trueCount > 5 for omega2    Player edge ca= -15.83% --  -15.74%
+            incurance max when trueCount > 2 for hiLo    Player edge ca= -15.998% --  -15.92%
+            incurance max when count > 2 for hiLo    Player edge ca= -15.87% --  -15.78%
+            incurance max when countInsurance > 0    Player edge ca= -15.72% --  -15.58%
+         */
+        if(countInsurance > 0) return settings.getMaxBet(); // for insuranceCount
+        //if (count > 2) return settings.getMaxBet(); // for hiLo
+        //if (trueCount > 5) return settings.getMaxBet(); // for omega2
+        else  return 0;/**/
     }
     //counting methods
+
+    public double perfectPlay(Card card) {
+        if      (card.getValue() == 2)  return 3;
+        else if (card.getValue() == 3)  return 4;
+        else if (card.getValue() == 4 ) return 6;
+        else if (card.getValue() == 5)  return 8;
+        else if (card.getValue() == 6)  return 6;
+        else if (card.getValue() == 7)  return 5;
+        else if (card.getValue() == 8)  return 2;
+        else if (card.getValue() == 9)  return -2;
+        else if (card.getValue() == 10) return -8.5;
+        else if (card.getValue() == 11) return 2;
+      return 0;
+    };
+    public double perfectBet(Card card) {
+        if      (card.getValue() == 2)  return 5;
+        else if (card.getValue() == 3)  return 5;
+        else if (card.getValue() == 4 ) return 7;
+        else if (card.getValue() == 5)  return 10;
+        else if (card.getValue() == 6)  return 5;
+        else if (card.getValue() == 7)  return 4;
+        else if (card.getValue() == 8)  return 0;
+        else if (card.getValue() == 9)  return -2;
+        else if (card.getValue() == 10) return -6.5;
+        else if (card.getValue() == 11) return -8;
+        return 0;
+    };
+    public int insuranceCount(Card card) {
+        if (card.getValue() == 10) return -9;
+        else return 4;
+    }
     public int hiLo(Card card) {
         if (card.getValue() > 9) return -1;
         else if (card.getValue() < 7) return 1;
         else return 0;
     }
-
     public int hiOpt1(Card card) {
         if (card.getValue() == 10) return -1;
         else if (card.getValue() < 7 && card.getValue() != 2) return 1;
         else return 0;
     }
-
     public int hiOpt2(Card card) {
         if (card.getValue() == 10) return -2;
         else if (card.getValue() < 8) {
@@ -107,7 +288,6 @@ public class HumanCardCounting extends PlayMethod {
                 return 1;
         } else return 0;
     }
-
     public int omega2(Card card) {
         if (card.getValue() == 10) return -2;
         else if (card.getValue() > 7) {
@@ -116,8 +296,6 @@ public class HumanCardCounting extends PlayMethod {
         } else if (card.getValue() == 4 || card.getValue() == 5 || card.getValue() == 6) return +2;
         else return 1;
     }
-
-
     public double halvs(Card card) {
         if (card.getValue() > 9) return -1;
         else if (card.getValue() == 3 || card.getValue() == 4 || card.getValue() == 6) return +1;
@@ -127,10 +305,7 @@ public class HumanCardCounting extends PlayMethod {
         else return 0.5;
     }
 
-    public int tenCount(Card card) {
-        if (card.getValue() == 10) return -2;
-        else return 1;
-    }
+
 
     public String basicArrMetod(Round round, int allowdActions, int handIndx) {
         if (allowdActions == 3 && round.getHands()[handIndx].getAvailabelAces() > 0)
@@ -548,26 +723,198 @@ public class HumanCardCounting extends PlayMethod {
         }
         return "sp";
     }
-    public String omega2CountingOrGoToBasic(Round round, int allowdActions, int handIndx) {
-     int playerTotal = round.getHands()[handIndx].getTotal();
-     int playerAces = round.getHands()[handIndx].getAvailabelAces();
-     int dealerCard = round.getDealerCard();
-     int pairPos=1;
-     int softPos=0;
+    public String omega2CountingLoopMethod(Round round, int allowdActions, int handIndx){
+        int playerTotal = round.getHands()[handIndx].getTotal();
+        int playerAces = round.getHands()[handIndx].getAvailabelAces();
+        int dealerCard = round.getDealerCard();
+        if (allowdActions == 3 && playerAces > 0) { // soft pair
+            if (playerTotal !=12) {
+                System.out.println("soft pari =/= 12"); return "Loop";
+            }
+            if(trueCount >= Integer.parseInt(omega2CountStrategy[9][dealerCard])) return "sp";
+            else return "h";
+        } else if (allowdActions == 3 && playerAces == 0) { // hard pair
+            if(omega2CountStrategy[((playerTotal - 4) / 2)][dealerCard].equals("*")){
+                if (playerTotal==10){
+                    if(trueCount >= Integer.parseInt(omega2CountStrategy[20][dealerCard])) return "d";
+                    else return "h";
+                }
+                if(playerTotal == 14 && dealerCard>=9) {
+                    if (dealerCard==10){
+                        if (deck.getNumberOfDecks()>=4) {if(trueCount >= 11) return "s";
+                        else return "h";}
+                        if (deck.getNumberOfDecks()<4) {if(trueCount >= 6) return "s";
+                        else return "h";}
+                    }
+                    try{
+                        if(trueCount >= Integer.parseInt(omega2CountStrategy[27][dealerCard])) return "s";
+                        else return "h";} catch (NumberFormatException e) {
+                        return omega2CountStrategy[27][dealerCard];
+                    }
+                }
+            }
+            if(playerTotal==16 && dealerCard==10 && omega2CountStrategy[((playerTotal - 4) / 2)][1].equals("t")){
+                if(trueCount < Integer.parseInt(omega2CountStrategy[((playerTotal - 4) / 2)][dealerCard])) return "sp";
+                else return "s";
+            }
+            if(playerTotal==6 && dealerCard==7 && omega2CountStrategy[((playerTotal - 4) / 2)][1].equals("t")){
+                if(trueCount < Integer.parseInt(omega2CountStrategy[((playerTotal - 4) / 2)][dealerCard])) return "sp";
+                else return "h";
+            }
 
-     if(playerTotal == 14 && dealerCard>=9 && omega2CountStrategy[(playerTotal-4)/2][pairPos].equals("t")) {
-         if (dealerCard==10){
-             if (deck.getNumberOfDecks()>=4) {if(trueCount >= 11) return "s";
-             else return "h";}
-             if (deck.getNumberOfDecks()<4) {if(trueCount >= 6) return "s";
-             else return "h";}
-         }
-         try{
-             if(trueCount >= Integer.parseInt(omega2CountStrategy[27][dealerCard])) return "s";
-             else return "h";} catch (NumberFormatException e) {
-             return omega2CountStrategy[27][dealerCard];
-         }
-     }
+            for (int i = 0; i < 9; i++) {
+
+
+                try {if (playerTotal==Integer.parseInt(omega2CountStrategy[i][12])
+                        && omega2CountStrategy[i][1].equals("t") //is a pair
+                        && omega2CountStrategy[i][0].equals("f") // is hard
+                        && trueCount>=Integer.parseInt(omega2CountStrategy[i][dealerCard])
+                ) {return "sp";}
+                }catch (NumberFormatException n){return omega2CountStrategy[i][dealerCard];}
+            }
+            if(omega2BasicStrategy(round,allowdActions,handIndx).equals("sp")) return "d";
+            else return omega2BasicStrategy(round,allowdActions,handIndx);
+        }else if ((allowdActions == 2 && playerAces > 0)){ // soft any 2 cards
+            if(playerTotal==12){return omega2BasicStrategy(round, allowdActions, handIndx);}
+            if(deck.getNumberOfDecks()>=4) {
+                if (playerTotal == 18 && dealerCard == 11) {
+                    if (trueCount >= 2) return "s";
+                    else return "h";
+                }
+            }else if(playerTotal==18 && dealerCard==11){ if(trueCount >= Integer.parseInt(omega2CountStrategy[23][dealerCard])) return "s"; else return"h";}
+            if (playerTotal == 18 && dealerCard == 8) {
+                if (trueCount >= Integer.parseInt(omega2CountStrategy[23][dealerCard])) return "s";
+                else return "h";
+            }
+            for (int i = 10; i <=24 ; i++) {
+                try {if (playerTotal==Integer.parseInt(omega2CountStrategy[i][12])
+                        &&omega2CountStrategy[i][0].equals("t") // is soft
+                        && omega2CountStrategy[i][1].equals("f") //is not pair
+                        && trueCount>=Integer.parseInt(omega2CountStrategy[i][dealerCard])
+                ) {return "d";}
+                }catch (NumberFormatException n){return omega2CountStrategy[i][dealerCard];}
+            }
+            return omega2BasicStrategy(round,allowdActions,handIndx);
+        }
+        else if ((allowdActions == 2 && playerAces == 0)) {// hard any 2 cards
+            for (int i = 18; i <= 30; i++) {
+                try {if (playerTotal==Integer.parseInt(omega2CountStrategy[i][12])
+                        &&omega2CountStrategy[i][0].equals("f") // is hard
+                        && omega2CountStrategy[i][1].equals("f") //is not pair
+                        && trueCount>=Integer.parseInt(omega2CountStrategy[i][dealerCard])
+                ) {return "d";}
+                }catch (NumberFormatException n){return omega2CountStrategy[i][dealerCard];}
+            }
+            return omega2BasicStrategy(round,allowdActions,handIndx);
+        }
+        else if ((allowdActions == 1 && playerAces > 0)) {// soft any 3+ cards
+            for (int i = 22; i <= 24; i++) {
+                try {if (playerTotal==Integer.parseInt(omega2CountStrategy[i][12])
+                        &&omega2CountStrategy[i][0].equals("t") // is soft
+                        && omega2CountStrategy[i][1].equals("f") //is not pair
+                        && trueCount>=Integer.parseInt(omega2CountStrategy[i][dealerCard])
+                ) {return "s";}
+                }catch (NumberFormatException n){return omega2CountStrategy[i][dealerCard];}
+            }
+            if (omega2BasicStrategy(round,allowdActions,handIndx).equals("d")) System.out.println("Doubeling when not allowed");
+            return omega2BasicStrategy(round,allowdActions,handIndx);
+        }
+        else if ((allowdActions == 1 && playerAces == 0)) {// soft any 3+ cards
+            for (int i = 25; i <= 30; i++) {
+                try {if (playerTotal==Integer.parseInt(omega2CountStrategy[i][12])
+                        &&omega2CountStrategy[i][0].equals("f") // is hard
+                        && omega2CountStrategy[i][1].equals("f") //is not pair
+                        && trueCount>=Integer.parseInt(omega2CountStrategy[i][dealerCard])
+                ) {return "s";}
+                }catch (NumberFormatException n){return omega2CountStrategy[i][dealerCard];}
+            }
+            if (omega2BasicStrategy(round,allowdActions,handIndx).equals("d")) System.out.println("Doubeling when not allowed");
+            return omega2BasicStrategy(round,allowdActions,handIndx);
+        }
+        return omega2BasicStrategy(round,allowdActions,handIndx);
+    }
+    public String omega2CountingSplitString(Round round, int allowdActions, int handIndx){
+      double playvariable = trueCount;
+
+        int playerTotal = round.getHands()[handIndx].getTotal();
+        int playerAces = round.getHands()[handIndx].getAvailabelAces();
+        int dealerCard = round.getDealerCard();
+        if(allowdActions==3 && playerAces>0){
+            if (playerTotal==Integer.parseInt(omega2CSTPairs[9][12])
+                    && omega2CSTPairs[9][1].equals("t") //is a pair
+                    && omega2CSTPairs[9][0].equals("t") // is soft?
+                    && playvariable>=Integer.parseInt(omega2CSTPairs[9][dealerCard])) return "sp";
+            return omega2CountingSplitString(round,2,handIndx);
+        }
+        else if(allowdActions==3 && playerAces==0){
+            for (int i = 0; i < omega2CSTPairs.length-1; i++) {
+                try {if (playerTotal==Integer.parseInt(omega2CSTPairs[i][12])
+                        && omega2CSTPairs[i][1].equals("t") // is a pair
+                        && omega2CSTPairs[i][0].equals("f") // is soft?
+                        && playvariable>=Integer.parseInt(omega2CSTPairs[i][dealerCard])
+                )return "sp";
+                }catch (NumberFormatException n){
+                    if (omega2CSTPairs[i][dealerCard].equals("*")) {
+                        if (playerTotal==10 && playvariable>=Integer.parseInt(omega2CSTDouble_H[2][dealerCard]) && playerTotal==Integer.parseInt(omega2CSTDouble_H[2][12])){ return "d";}
+                        if (playerTotal==14 && dealerCard==9)return "h";
+                        if (playerTotal==14 && playvariable>=Integer.parseInt(omega2CSTStand_H[2][dealerCard]) && playerTotal==Integer.parseInt(omega2CSTStand_H[2][12])){ return "s";}
+                    }
+                    else return omega2CSTPairs[i][dealerCard];
+                }
+            }
+            return omega2BasicStrategy(round,allowdActions,handIndx);
+        }else if(allowdActions==2 && playerAces>0){
+            for (int i = 0; i < omega2CSTDouble_S.length-1; i++) {
+                try {if (playerTotal==Integer.parseInt(omega2CSTDouble_S[i][12])
+                        && omega2CSTDouble_S[i][1].equals("f") // is a pair
+                        && omega2CSTDouble_S[i][0].equals("t") // is soft?
+                        && playvariable>=Integer.parseInt(omega2CSTDouble_S[i][dealerCard])
+                )return "d";
+        }catch (NumberFormatException n){
+                if (omega2CSTDouble_S[i][dealerCard].equals("*"))
+                    return omega2CountingSplitString(round,1,handIndx);
+                return omega2CSTDouble_S[i][dealerCard];
+                }
+            }
+        return omega2BasicStrategy(round,allowdActions,handIndx);
+    }else if(allowdActions==2 && playerAces==0){
+            for (int i = 0; i < omega2CSTDouble_H.length-1; i++) {
+                try {if (playerTotal==Integer.parseInt(omega2CSTDouble_H[i][12])
+                        && omega2CSTDouble_H[i][1].equals("f") // is a pair
+                        && omega2CSTDouble_H[i][0].equals("f") // is soft?
+                        && playvariable>=Integer.parseInt(omega2CSTDouble_H[i][dealerCard])
+                )return "d";
+                }catch (NumberFormatException n){
+                return omega2CSTDouble_H[i][dealerCard];
+            }
+        }
+            return omega2BasicStrategy(round,allowdActions,handIndx);
+        }else if(allowdActions==1 && playerAces>0){
+                for (int i = 0; i < omega2CSTStand_S.length-1; i++) {
+                    try {if (playerTotal==Integer.parseInt(omega2CSTStand_S[i][12])
+                            && omega2CSTStand_S[i][1].equals("f") // is a pair
+                            && omega2CSTStand_S[i][0].equals("t") // is soft?
+                            && playvariable>=Integer.parseInt(omega2CSTStand_S[i][dealerCard])
+                    )return "s";
+                    }catch (NumberFormatException n){
+                        return omega2CSTStand_S[i][dealerCard];
+                    }
+                }
+            return omega2BasicStrategy(round,allowdActions,handIndx);
+        } else if(allowdActions==1 && playerAces==0) {
+            for (int i = 0; i < omega2CSTStand_H.length - 1; i++) {
+                try {
+                    if (playerTotal == Integer.parseInt(omega2CSTStand_H[i][12])
+                            && omega2CSTStand_H[i][1].equals("f") // is a pair
+                            && omega2CSTStand_H[i][0].equals("f") // is soft?
+                            && playvariable >= Integer.parseInt(omega2CSTStand_H[i][dealerCard])
+                    ) return "s";
+                } catch (NumberFormatException n) {
+                    return omega2CSTStand_H[i][dealerCard];
+                }
+            }
+            return omega2BasicStrategy(round, allowdActions, handIndx);
+        }
         return omega2BasicStrategy(round, allowdActions, handIndx);
- }
+    }
 }

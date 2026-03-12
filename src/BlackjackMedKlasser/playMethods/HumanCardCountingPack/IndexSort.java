@@ -61,7 +61,23 @@ public class IndexSort{
         return omega2CountStrategy;
     }
 
-     private final String[][] hardTotals1 = {
+    public String[][] getOmega2CSTPairs() {
+        return omega2CSTPairs;
+    }
+    public String[][] getOmega2CSTDouble_S() {
+        return omega2CSTDouble_S;
+    }
+    public String[][] getOmega2CSTDouble_H() {
+        return omega2CSTDouble_H;
+    }
+    public String[][] getOmega2CSTStand_S() {
+        return omega2CSTStand_S;
+    }
+    public String[][] getOmega2CSTStand_H() {
+        return omega2CSTStand_H;
+    }
+
+    private final String[][] hardTotals1 = {
                 //{"2","3","4","5","6","7","8","9",10","A"}, //Dealers card
                 {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //3
                 {"h", "h", "h", "h", "h", "h", "h", "h", "h", "h"},          //4
@@ -137,8 +153,6 @@ public class IndexSort{
                 {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},              //20 10 10
                 {"sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp"},    //12 AA
         };
-
-        
         private final String[][] sortedHiLoIndexTabel = {
                 
                 // sorted first after index so largest indexs is first, then moved up all that can split
@@ -193,7 +207,6 @@ public class IndexSort{
                 {"11", "10", "-5", "d", "f", "f"},   //47
                 {"15", "2", "-6", "s", "f", "f"},   //48
         };
-        
         private final String[][] halvsTabel = {
                 
                 //{player toal [0], dealer card[1], index[2], action[3], Soft?(t,f)[4], pair?(t,f)[5]}
@@ -266,8 +279,6 @@ public class IndexSort{
                 {"8", "5", "1", "sp", "f", "t"}  //54
 
         };
-
-      
         private final String[][] proBJ = {
                 
                 //{player toal [0], dealer card[1], index[2], action[3], Soft?(t,f)[4], pair?(t,f)[5]}
@@ -319,7 +330,6 @@ public class IndexSort{
                 {"12", "4", "0", "s", "f", "f"}, // 41
                 {"12", "6", "-1", "s", "f", "f"}, // 42
         };
-
      private final String[][] proHiLoBasicStategy = {
                 
                 // x axel =action vs Dealer card  + soft t/f? + pt
@@ -375,7 +385,6 @@ public class IndexSort{
                 {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s", "f", "19"},     //42
                 {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s", "f", "20"},     //43
         };
-
      private final String[][] omega2BasicStrategy = {
                 //     soft  pair
                 //{"t/f",t/f,"2" ,"3" ,"4" ,"5" ,"6" ,"7" ,"8" ,"9" ,"10","11", playerTotal},
@@ -419,6 +428,7 @@ public class IndexSort{
                 // if not allowed to "d" than "h" exept A-7 (soft 18) stand if you cant hit
         };
      private final String[][] omega2CountStrategy = {
+             // String[][] was split into its individual tables for loop method.
                 // some actions are replaced with tc, if action is * than its described under paragraf and should be handeld later
                 //soft   pair
                 //{"t/f",t/f,"2"  ,"3"  ,"4"  ,"5"  ,"6"  ,"7"  ,"8"  ,"9"  ,"10" ,"11" , playerTotal  },
@@ -427,9 +437,9 @@ public class IndexSort{
                 {"f", "t", "-7", "-9", "-13", "-18", "sp", "sp", "15", "h", "h", "h", "4"},    // 0/* 2-2  */
                 {"f", "t", "-3", "-11", "-15", "-18", "sp", "15", "h", "h", "h", "h", "6"},    // 1 /* 3-3  */
                 {"f", "t", "h", "14", "7", "3", "0", "h", "h", "h", "h", "h", "8"},    // 2 /* 4-4  */
-                {"f", "t", "*", "*", "*", "*", "*", "*", "*", "*", "*", "*", "10"},    // 3 /* 5-5  */
+                {"f", "t", "*", "*", "*", "*", "*", "*", "*", "*", "*", "*", "10"},    // 3 /* 5-5 ======= */
                 {"f", "t", "-2", "-6", "-8", "-12", "-22", "h", "h", "h", "h", "h", "12"},    // 4 /* 6-6  */
-                {"f", "t", "-15", "-18", "-21", "sp", "sp", "sp", "-1", "*", "*", "*", "14"},    // 5 /* 7-7  */
+                {"f", "t", "-15", "-18", "-21", "sp", "sp", "sp", "-1", "*", "*", "*", "14"},    // 5 /* 7-7 ======= */
                 {"f", "t", "sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp", "12", "sp", "16"},    // 6 /* 8-8  */
                 {"f", "t", "-3", "-7", "-10", "-11", "-13", "8", "sp", "sp", "s", "9", "18"},    // 7 /* 9-9  */
                 {"f", "t", "s", "15", "12", "9", "8", "s", "s", "s", "s", "s", "20"},    // 8 /*10-10 */
@@ -444,7 +454,7 @@ public class IndexSort{
                 {"t", "f", "h", "8", "0", "-7", "-11", "h", "h", "h", "h", "h", "15"},    // 12/* A-4  */
                 {"t", "f", "h", "6", "-3", "-10", "-16", "h", "h", "h", "h", "h", "16"},    // 13/* A-5  */
                 {"t", "f", "2", "-5", "-9", "-16", "-19", "23", "h", "h", "h", "h", "17"},    // 14/* A-6  */
-                {"t", "f", "2", "-2", "-8", "-12", "-12", "s", "*", "h", "h", "*", "18"},    // 15/* A-7  */
+                {"t", "f", "2", "-2", "-8", "-12", "-12", "s", "*", "h", "h", "*", "18"},    // 15/* A-7=======  */
                 {"t", "f", "s", "9", "6", "3", "2", "s", "s", "s", "s", "s", "19"},    // 16/* A-8  */
                 {"t", "f", "s", "16", "13", "10", "9", "s", "s", "s", "s", "s", "20"},    // 17/* A-9  */
                 /* se tabel 7.2 */
@@ -468,9 +478,73 @@ public class IndexSort{
                 {"f", "f", "-10", "-10", "-14", "-17", "-17", "22", "21", "15", "6", "18", "15"},    // 28
                 {"f", "f", "-14", "-17", "-19", "-22", "-20", "15", "14", "7", "0", "14", "16"},    // 29
                 {"f", "f", "s", "s", "s", "s", "s", "s", "s", "s", "s", "-10", "17"}    // 30
-                // if your 14 cosists of 7-7 standat +6 or greater in double deack game; +11 or greater in four- or more deck games
+                // if your 14 cosists of 7-7 stand at +6 or greater in double-deck game; +11 or greater in four- or more deck games
         };
-        
-
+    private final String[][] omega2CSTPairs = {
+            //soft   pair
+            //{"t/f",t/f,"2"  ,"3"  ,"4"  ,"5"  ,"6"  ,"7"  ,"8"  ,"9"  ,"10" ,"11" , playerTotal  },
+            //spliting pairs : 7.5b
+            {"f", "t", "-7", "-9", "-13", "-18", "sp", "sp", "15", "h", "h", "h", "4"},             // 0/* 2-2  */
+            {"f", "t", "-3", "-11", "-15", "-18", "sp", "15", "h", "h", "h", "h", "6"},             // 1 /* 3-3  */
+            {"f", "t", "h", "14", "7", "3", "0", "h", "h", "h", "h", "h", "8"},                     // 2 /* 4-4  */
+            {"f", "t", "*", "*", "*", "*", "*", "*", "*", "*", "*", "*", "10"},                     // 3 /* 5-5 ======= */
+            {"f", "t", "-2", "-6", "-8", "-12", "-22", "h", "h", "h", "h", "h", "12"},              // 4 /* 6-6  */
+            {"f", "t", "-15", "-18", "-21", "sp", "sp", "sp", "-1", "*", "*", "*", "14"},           // 5 /* 7-7 ======= */
+            {"f", "t", "sp", "sp", "sp", "sp", "sp", "sp", "sp", "sp", "12", "sp", "16"},           // 6 /* 8-8  */
+            {"f", "t", "-3", "-7", "-10", "-11", "-13", "8", "sp", "sp", "s", "9", "18"},           // 7 /* 9-9  */
+            {"f", "t", "s", "15", "12", "9", "8", "s", "s", "s", "s", "s", "20"},                   // 8 /*10-10 */
+            {"t", "t", "-18", "-19", "-20", "-21", "-22", "-15", "-14", "-13", "-13", "-7", "12"}   // 9/* A-A  */};
+            // * = see tabeles 7.1, or 7.3
+            //split if tc>= index otherwise if "*" refer to other sheets
+            /* for 8-8 vs 10 and 3-3 vs 7 split when tc is LESS than index */
+    };
+    private final String[][] omega2CSTDouble_S = {
+            //soft   pair
+            //{"t/f",t/f,"2"  ,"3"  ,"4"  ,"5"  ,"6"  ,"7"  ,"8"  ,"9"  ,"10" ,"11" , playerTotal  },
+            // doubeling soft hands: 7.4
+            {"t", "f", "h", "11", "5", "0", "-3", "h", "h", "h", "h", "h", "13"},                   // 0        /* A-2  */
+            {"t", "f", "h", "10", "2", "-4", "-8", "h", "h", "h", "h", "h", "14"},                  // 1        /* A-3  */
+            {"t", "f", "h", "8", "0", "-7", "-11", "h", "h", "h", "h", "h", "15"},                  // 2        /* A-4  */
+            {"t", "f", "h", "6", "-3", "-10", "-16", "h", "h", "h", "h", "h", "16"},                // 3        /* A-5  */
+            {"t", "f", "2", "-5", "-9", "-16", "-19", "23", "h", "h", "h", "h", "17"},              // 4        /* A-6  */
+            {"t", "f", "2", "-2", "-8", "-12", "-12", "s", "*", "h", "h", "*", "18"},               // 5        /* A-7=======  */
+            {"t", "f", "s", "9", "6", "3", "2", "s", "s", "s", "s", "s", "19"},                     // 6        /* A-8  */
+            {"t", "f", "s", "16", "13", "10", "9", "s", "s", "s", "s", "s", "20"},                  // 7        /* A-9  */
+            /* se tabel 7.2 */
+            //double if tc>= index otherwise if "*" refer to other sheets
+    };
+    private final String[][] omega2CSTDouble_H = {
+            //soft   pair
+            //{"t/f",t/f,"2"  ,"3"  ,"4"  ,"5"  ,"6"  ,"7"  ,"8"  ,"9"  ,"10" ,"11" , playerTotal  },
+            //doubeling hard hands: tabel 7.3
+            {"f", "f", "h", "17", "12", "7", "5", "h", "h", "h", "h", "h", "8"},                    // 0
+            {"f", "f", "4", "0", "-3", "-7", "-9", "7", "17", "h", "h", "h", "9"},                  // 1
+            {"f", "f", "-13", "-15", "-17", "-19", "-21", "-10", "-6", "-2", "9", "8", "10"},       // 2
+            {"f", "f", "-17", "-18", "-19", "-21", "-23", "-12", "-9", "-6", "-6", "2", "11"},      // 3
+            //double if tc>= index otherwise if "*" refer to other sheets
+    };
+    private final String[][] omega2CSTStand_S = {
+            //soft   pair
+            //{"t/f",t/f,"2"  ,"3"  ,"4"  ,"5"  ,"6"  ,"7"  ,"8"  ,"9"  ,"10" ,"11" , playerTotal  },
+            //standing / hitting soft hands  tabel 7.2
+            {"t", "f", "h", "h", "h", "h", "h", "h", "h", "h", "h", "h", "17"},                     // 0   /* A-6  */
+            {"t", "f", "s", "s", "s", "s", "s", "s", "-22", "h", "h", "0", "18"},                   // 1   /* A-7  */
+            {"t", "f", "s", "s", "s", "s", "s", "s", "s", "s", "s", "s", "19"},                     // 2   /* A-8  */
+            /* for A-7 vs A stand when tc =+2 or greater in 4+ deck games*/
+            //stand if tc>= index otherwise if "*" refer to other sheets
+    };
+    private final String[][] omega2CSTStand_H = {
+            //soft   pair
+            //{"t/f",t/f,"2"  ,"3"  ,"4"  ,"5"  ,"6"  ,"7"  ,"8"  ,"9"  ,"10" ,"11" , playerTotal  },
+            //standing / hitting hard hands 7.1
+            {"f", "f", "5", "2", "0", "-2", "-2", "h", "h", "h", "h", "h", "12"},                   // 0
+            {"f", "f", "-1", "-3", "-5", "-8", "-8", "h", "h", "h", "h", "h", "13"},                // 1
+            {"f", "f", "-7", "-7", "-10", "-12", "-12", "h", "h", "h", "15", "22", "14"},           // 2
+            {"f", "f", "-10", "-10", "-14", "-17", "-17", "22", "21", "15", "6", "18", "15"},       // 3
+            {"f", "f", "-14", "-17", "-19", "-22", "-20", "15", "14", "7", "0", "14", "16"},        // 4
+            {"f", "f", "s", "s", "s", "s", "s", "s", "s", "s", "s", "-10", "17"}                    // 5
+            // if your 14 cosists of 7-7 stand at +6 or greater in double-deck game; +11 or greater in four- or more deck games
+            //stand if tc>= index otherwise if "*" refer to other sheets
+    };
 
 }
