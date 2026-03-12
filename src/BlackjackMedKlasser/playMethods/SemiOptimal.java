@@ -8,8 +8,8 @@ import java.util.HexFormat;
 
 public class SemiOptimal extends PlayMethod {
     private final int betSimulationAmount = 50000;
-    private final int actionSimulationAmount = 100;
-    private final int actionDepthSimulationAmount = 10;
+    private final int actionSimulationAmount = 1000;
+    private final int actionDepthSimulationAmount = 15;
 
     private final Settings settings;
     public final ObviousActionsHandler obviousActionsHandler = new ObviousActionsHandler();
@@ -24,6 +24,9 @@ public class SemiOptimal extends PlayMethod {
     private HashMap<String, Boolean> betLookupTable = new HashMap<>();
 
     private FindObviousActions findObviousActions = new FindObviousActions();
+
+    public int actionSimulationAmount() { return actionSimulationAmount; }
+    public int actionDepthSimulationAmount() { return actionDepthSimulationAmount; }
 
     public SemiOptimal(Settings settings) {
         this.settings = settings;
@@ -58,19 +61,19 @@ public class SemiOptimal extends PlayMethod {
     public String actionMethod(Round round, int allowedActions, int handIndex) {
         String obviousAction = obviousActionsHandler.getObviousAction(round.getHands()[handIndex].getTotal(), round.getDealerCard(), allowedActions, round.getHands()[handIndex].getAvailabelAces());
         if (!obviousAction.equals("none") && !obviousAction.equals("exclude_h")) {
-            //return obviousAction;
+            return obviousAction;
         }
         dealerhss = new HandSaveState((byte) round.getDealerCard(), (byte) round.getDealerHand().getAvailabelAces());
         HandSaveState hss = new HandSaveState((short) round.getHands()[handIndex].getCards().size(), (byte) round.getHands()[handIndex].getTotal(), (byte) round.getHands()[handIndex].getCards().getFirst().getValue(), (byte) round.getHands()[handIndex].getAvailabelAces());
         DeckSaveState dss = new DeckSaveState(predictedGameDeck.getCards());
         simulatedHandAmount = round.getNextEmptyHand();
-        float[] winnings = tryActions(allowedActions, actionSimulationAmount, hss, dss);
+        float[] winnings = tryActions(allowedActions, actionSimulationAmount(), hss, dss);
 
         String[] actions = new String[]{"s", "h", "d", "sp"};
 
         //System.out.println(Arrays.toString(winnings) + " " + round.getHands()[handIndex].getAvailabelAces() + " " + actions[indexWithHighestValue(winnings)] + " p: " + round.getHands()[handIndex].getTotal() + " d: " + round.getDealerCard());
 
-        findObviousActions.gatherResult(round.getHands()[handIndex].getTotal(), round.getDealerCard(), allowedActions, round.getHands()[handIndex].getAvailabelAces() == 1 ,actions[indexWithHighestValue(winnings)]);
+        //findObviousActions.gatherResult(round.getHands()[handIndex].getTotal(), round.getDealerCard(), allowedActions, round.getHands()[handIndex].getAvailabelAces() == 1 ,actions[indexWithHighestValue(winnings)]);
 
         //if(!obviousAction.equals(actions[indexWithHighestValue(winnings)]) && !obviousAction.equals("none") && !obviousAction.equals("exclude_h")) {
         //System.out.println("O A: " + obviousAction + " actual: " + actions[indexWithHighestValue(winnings)] + " player: " + round.getHands()[handIndex].getTotal() + " dealer: " + round.getDealerCard() + " aa: " + round.getHands()[handIndex].getAvailabelAces() + " cards: " + round.getHands()[handIndex].getCards().getFirst().getValue() + " " + (round.getHands()[handIndex].getCards().get(1).getValue()));
@@ -115,7 +118,7 @@ public class SemiOptimal extends PlayMethod {
                 simulatedPlayerHand.addCard(simulatedDeck.deal());
                 DeckSaveState newPredictedDeck = simulatedDeck.saveState();
                 HandSaveState newHand = simulatedPlayerHand.saveState();
-                float[] hitWinnings = tryActions(1, actionDepthSimulationAmount, newHand, newPredictedDeck);
+                float[] hitWinnings = tryActions(1, actionDepthSimulationAmount(), newHand, newPredictedDeck);
                 winnings[1] += hitWinnings[indexWithHighestValue(hitWinnings)];
             }
             winnings[1] /= iterationsPerAction;
@@ -208,7 +211,7 @@ public class SemiOptimal extends PlayMethod {
             for (int j = 0; j < 4; j++) {
                 if(hands[j] == null) break;
 
-                splitWinnings = tryActions(2, actionDepthSimulationAmount, hands[j], newdss);
+                splitWinnings = tryActions(2, actionDepthSimulationAmount(), hands[j], newdss);
                 winnings[3] += splitWinnings[indexWithHighestValue(splitWinnings)];
             }
         }
@@ -222,7 +225,7 @@ public class SemiOptimal extends PlayMethod {
             if (hands[i] == null) return -1;
             if(!hands[i].canSplit()) continue;
             DeckSaveState newdss = simulatedDeck.saveState();
-            float[] splitWinnings = tryActions(3, actionDepthSimulationAmount, hands[i], newdss);
+            float[] splitWinnings = tryActions(3, actionDepthSimulationAmount(), hands[i], newdss);
             if(indexWithHighestValue(splitWinnings) == 3) return i;
         }
         return -1;
@@ -276,9 +279,9 @@ public class SemiOptimal extends PlayMethod {
     //körs när det ursprungliga bettet ska bestämmas
     @Override
     public int betMethod(Round round) {
-        return settings.getMinBet();
+        //return settings.getMinBet();
 
-        /*
+
         DeckSaveState dss = new DeckSaveState(predictedGameDeck.getCards());
         String currentDeckString = dss.getString();
 
@@ -300,7 +303,6 @@ public class SemiOptimal extends PlayMethod {
         }
         betLookupTable.put(currentDeckString,false);
         return settings.getMinBet();
-         */
 
 
     }
