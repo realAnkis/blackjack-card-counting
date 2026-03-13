@@ -70,7 +70,7 @@ public class Round {
             game.addBetTotal(insuranceBet);
         }
 
-        if (dealerHand.hasBlackjack()) return calculateNetProfit(insuranceBet * 2);
+        if (dealerHand.hasBlackjack()) return calculateNetProfit(insuranceBet * 3);
 
         playHand(0);
 
