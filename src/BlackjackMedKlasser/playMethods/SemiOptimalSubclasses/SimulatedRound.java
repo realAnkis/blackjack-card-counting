@@ -1,5 +1,6 @@
 package BlackjackMedKlasser.playMethods.SemiOptimalSubclasses;
 
+import BlackjackMedKlasser.Game;
 import BlackjackMedKlasser.Round;
 import BlackjackMedKlasser.Settings;
 import BlackjackMedKlasser.playMethods.SemiOptimal;
@@ -10,7 +11,7 @@ public class SimulatedRound extends SemiOptimal {
     private final int actionDepthSimulationAmount = 10;
 
     public SimulatedRound(Settings settings) {
-        super(settings);
+        super(settings, new Game());
         this.settings = settings;
     }
 

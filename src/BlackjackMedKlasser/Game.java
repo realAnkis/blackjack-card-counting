@@ -2,8 +2,10 @@ package BlackjackMedKlasser;
 
 import BlackjackMedKlasser.playMethods.*;
 import BlackjackMedKlasser.playMethods.HumanCardCountingPack.HumanCardCounting;
+
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class Game {
@@ -15,6 +17,7 @@ public class Game {
     private static boolean createThreads = false;
     private PlayMethod playMethod;
     private int threadsCompleted;
+    private HashMap<String, Boolean> betLookupTable = new HashMap<>();
 
     public static void main(String[] args) {
         Settings settings = new Settings();
@@ -24,10 +27,10 @@ public class Game {
     public Game(Settings settings) {
         threadAmount = settings.threadAmount;
         deck = new Deck(settings);
-        playMethod = selectPlayMethod(settings,deck);
+        playMethod = selectPlayMethod(settings, deck);
         startTime = LocalDateTime.now();
 
-        if(createThreads) {
+        if (createThreads) {
             for (int i = 0; i < threadAmount; i++) {
                 Thread thread = new RoundRunner(settings, this);
                 thread.start();
@@ -43,7 +46,7 @@ public class Game {
             round.reset();
         }
         LocalDateTime endTime = LocalDateTime.now();
-        Statistics statistics = new Statistics(money, betTotal, playMethod,startTime,endTime);
+        Statistics statistics = new Statistics(money, betTotal, playMethod, startTime, endTime);
     }
 
     public Game() {
@@ -52,9 +55,12 @@ public class Game {
 
     public void gatherResults(long money) {
         this.money += money;
-        if(++threadsCompleted == threadAmount) {
-        LocalDateTime endTime = LocalDateTime.now();
-        Statistics statistics = new Statistics(money, betTotal, playMethod,startTime,endTime);
+        if (++threadsCompleted == threadAmount) {
+            LocalDateTime endTime = LocalDateTime.now();
+            System.out.println(betLookupTable.size());
+            System.out.println(betLookupTable.keySet());
+            System.out.println(betLookupTable.values());
+            Statistics statistics = new Statistics(money, betTotal, playMethod, startTime, endTime);
         }
     }
 
@@ -90,7 +96,7 @@ public class Game {
                 }
                 case "SemiOptimal" -> {
                     createThreads = true;
-                    return new SemiOptimal(settings);
+                    return new SemiOptimal(settings, new Game());
                 }
                 case "HumanCardCounting" -> {
                     System.out.println("Stating");
@@ -98,5 +104,9 @@ public class Game {
                 }
             }
         }
+    }
+
+    public HashMap<String, Boolean> getBetLookupTable() {
+        return betLookupTable;
     }
 }

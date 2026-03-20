@@ -61,9 +61,16 @@ public class BasicStrategy extends PlayMethod {
 
                 {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"}
 
+
+
+
         };
 
         String[][] softHand = new String[][]{
+
+                {"h", "h", "h", "h", "d/h", "h", "h", "h", "h", "h"},
+
+                {"h", "h", "h", "d/h", "d/h", "h", "h", "h", "h", "h"},
 
                 {"h", "h", "h", "d/h", "d/h", "h", "h", "h", "h", "h"},
 
@@ -73,13 +80,9 @@ public class BasicStrategy extends PlayMethod {
 
                 {"h", "d/h", "d/h", "d/h", "d/h", "h", "h", "h", "h", "h"},
 
-                {"s", "d/h", "d/h", "d/h", "d/h", "s", "s", "h", "h", "h"},
+                {"d/s", "d/s", "d/s", "d/s", "d/s", "s", "s", "h", "h", "h"},
 
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},
-
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},
-
-                {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"},
+                {"s", "s", "s", "s", "d/s", "s", "s", "s", "s", "s"},
 
                 {"s", "s", "s", "s", "s", "s", "s", "s", "s", "s"}
 
@@ -126,6 +129,18 @@ public class BasicStrategy extends PlayMethod {
                 }
 
                 return "h";
+
+            }
+
+            if ("d/s".equals(action)) {
+
+                if (allowedActions == 2) {
+
+                    return "d";
+
+                }
+
+                return "s";
 
             }
 

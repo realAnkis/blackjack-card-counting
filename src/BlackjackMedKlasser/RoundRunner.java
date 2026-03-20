@@ -11,7 +11,7 @@ public class RoundRunner extends Thread {
 
     public RoundRunner(Settings settings, Game game) {
         this.settings = settings;
-        playMethod = new SemiOptimal(settings);
+        playMethod = new SemiOptimal(settings, game);
         this.game = game;
     }
 

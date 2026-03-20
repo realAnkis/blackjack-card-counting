@@ -1,5 +1,6 @@
 package BlackjackMedKlasser.playMethods.SemiOptimalSubclasses;
 
+import BlackjackMedKlasser.Game;
 import BlackjackMedKlasser.Settings;
 import BlackjackMedKlasser.playMethods.SemiOptimal;
 
@@ -22,7 +23,7 @@ public class VisualizeObviousActions {
     }
 
     public void print(int allowedActions, int availableAces) {
-        SemiOptimal so = new SemiOptimal(new Settings());
+        SemiOptimal so = new SemiOptimal(new Settings(), new Game());
         System.out.print("   ");
         for (int i = 2; i < 12; i++) {
             System.out.print(i + " ");

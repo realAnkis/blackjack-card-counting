@@ -3,36 +3,48 @@ package BlackjackMedKlasser.playMethods;
 import BlackjackMedKlasser.*;
 import BlackjackMedKlasser.playMethods.SemiOptimalSubclasses.*;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HexFormat;
 
 public class SemiOptimal extends PlayMethod {
-    private final int betSimulationAmount = 50000;
+    private final int betSimulationAmount = 5000;
     private final int actionSimulationAmount = 1000;
     private final int actionDepthSimulationAmount = 15;
 
     private final Settings settings;
     public final ObviousActionsHandler obviousActionsHandler = new ObviousActionsHandler();
-    private final Deck predictedGameDeck;
+    private final SODeck predictedGameDeck;
     private Deck betDeck;
     private final SODeck simulatedDeck;
     private Round simulatedRound;
-    private int simulatedHandAmount;
     private final SOHand simulatedDealerHand;
     private final SOHand simulatedPlayerHand;
+    private final SimulatedRound simulatedRoundPlayMethod;
     private HandSaveState dealerhss;
     private HashMap<String, Boolean> betLookupTable = new HashMap<>();
+    private Game game;
 
     private FindObviousActions findObviousActions = new FindObviousActions();
 
-    public int actionSimulationAmount() { return actionSimulationAmount; }
-    public int actionDepthSimulationAmount() { return actionDepthSimulationAmount; }
+    public int actionSimulationAmount() {
+        return actionSimulationAmount;
+    }
 
-    public SemiOptimal(Settings settings) {
+    public int actionDepthSimulationAmount() {
+        return actionDepthSimulationAmount;
+    }
+
+    public SemiOptimal(Settings settings, Game game) {
         this.settings = settings;
+        this.game = game;
         betDeck = new Deck(settings);
-        predictedGameDeck = new Deck(settings);
-        if (!isSimulated()) simulatedRound = new Round(betDeck, new SimulatedRound(settings), new Game());
+        predictedGameDeck = new SODeck(settings);
+        if (!isSimulated()) {
+            simulatedRoundPlayMethod = new SimulatedRound(settings);
+            simulatedRound = new Round(betDeck, simulatedRoundPlayMethod, new Game());
+        } else simulatedRoundPlayMethod = null;
         simulatedDealerHand = new SOHand();
         simulatedPlayerHand = new SOHand();
         simulatedDeck = new SODeck();
@@ -45,7 +57,11 @@ public class SemiOptimal extends PlayMethod {
     //körs när ett kort delas ut från kortleken
     @Override
     public void cardDealtMethod(Card card) {
-        predictedGameDeck.getCards().remove(card);
+        predictedGameDeck.removeCard(card.getValue() - 2);
+    }
+
+    public void setPredictedGameDeck(DeckSaveState dss) {
+        predictedGameDeck.setState(dss);
     }
 
     //körs när kortleken blandas
@@ -63,10 +79,11 @@ public class SemiOptimal extends PlayMethod {
         if (!obviousAction.equals("none") && !obviousAction.equals("exclude_h")) {
             return obviousAction;
         }
+
         dealerhss = new HandSaveState((byte) round.getDealerCard(), (byte) round.getDealerHand().getAvailabelAces());
         HandSaveState hss = new HandSaveState((short) round.getHands()[handIndex].getCards().size(), (byte) round.getHands()[handIndex].getTotal(), (byte) round.getHands()[handIndex].getCards().getFirst().getValue(), (byte) round.getHands()[handIndex].getAvailabelAces());
-        DeckSaveState dss = new DeckSaveState(predictedGameDeck.getCards());
-        simulatedHandAmount = round.getNextEmptyHand();
+        hss.setUsedHands(round.getNextEmptyHand());
+        DeckSaveState dss = predictedGameDeck.saveState();
         float[] winnings = tryActions(allowedActions, actionSimulationAmount(), hss, dss);
 
         String[] actions = new String[]{"s", "h", "d", "sp"};
@@ -140,7 +157,7 @@ public class SemiOptimal extends PlayMethod {
             }
             winnings[2] /= iterationsPerAction;
         } else winnings[2] = -100000000;
-        if (simulatedHandAmount == 4 || allowedActions == 2 || obviousAction.equals("d")) {
+        if (allowedActions == 2 || obviousAction.equals("d")) {
             winnings[3] = -100000000;
             return winnings;
         }
@@ -176,15 +193,39 @@ public class SemiOptimal extends PlayMethod {
             simulatedDeck.setState(dss);
             simulatedPlayerHand.setState(hss);
 
+            if (true) {
+                int betMultiplier = 2;
+                int splitOppurtunities = 3 - hss.getUsedHands();
+                byte firstCard = simulatedPlayerHand.getFirstCardValue();
+                HandSaveState beginningState = new HandSaveState(firstCard, simulatedPlayerHand.getAvailableAces(), hss.getUsedHands() + 1);
+                for (int j = 0; j < 2; j++) {
+                    if (firstCard == simulatedDeck.deal() && splitOppurtunities > 0) {
+                        betMultiplier++;
+                        splitOppurtunities--;
+                        if (firstCard == simulatedDeck.deal() && splitOppurtunities > 0) {
+                            splitOppurtunities--;
+                            betMultiplier++;
+                        }
+                    }
+                }
+                simulatedPlayerHand.setState(beginningState);
+                simulatedPlayerHand.addCard(simulatedDeck.deal());
+                DeckSaveState newPredictedDeck = simulatedDeck.saveState();
+                HandSaveState newHand = simulatedPlayerHand.saveState();
+                float[] splitWinnings = tryActions(2, actionDepthSimulationAmount(), newHand, newPredictedDeck);
+                winnings[3] += splitWinnings[indexWithHighestValue(splitWinnings)] * betMultiplier;
+                continue;
+            }
+
             HandSaveState beginningState = new HandSaveState(simulatedPlayerHand.getFirstCardValue(), simulatedPlayerHand.getAvailableAces(), hss.getUsedHands() + 1);
 
 
             HandSaveState[] hands = new HandSaveState[4];
 
-            createSplitHand(beginningState,hands,0);
-            createSplitHand(beginningState,hands,1);
+            createSplitHand(beginningState, hands, 0);
+            createSplitHand(beginningState, hands, 1);
 
-            if(beginningState.getUsedHands() != 4) {
+            if (beginningState.getUsedHands() != 4) {
                 int splitHandIndex = handWantsToSplit(hands);
 
                 if (splitHandIndex != -1) {
@@ -209,7 +250,7 @@ public class SemiOptimal extends PlayMethod {
             float[] splitWinnings;
 
             for (int j = 0; j < 4; j++) {
-                if(hands[j] == null) break;
+                if (hands[j] == null) break;
 
                 splitWinnings = tryActions(2, actionDepthSimulationAmount(), hands[j], newdss);
                 winnings[3] += splitWinnings[indexWithHighestValue(splitWinnings)];
@@ -223,15 +264,16 @@ public class SemiOptimal extends PlayMethod {
     public int handWantsToSplit(HandSaveState[] hands) {
         for (int i = 0; i < 4; i++) {
             if (hands[i] == null) return -1;
-            if(!hands[i].canSplit()) continue;
+            if (!hands[i].canSplit()) continue;
             DeckSaveState newdss = simulatedDeck.saveState();
             float[] splitWinnings = tryActions(3, actionDepthSimulationAmount(), hands[i], newdss);
-            if(indexWithHighestValue(splitWinnings) == 3) return i;
+            if (indexWithHighestValue(splitWinnings) == 3) return i;
+            else return -1;
         }
         return -1;
     }
 
-    public void createSplitHand(HandSaveState beginningState,HandSaveState[] hands, int index) {
+    public void createSplitHand(HandSaveState beginningState, HandSaveState[] hands, int index) {
         simulatedPlayerHand.setState(beginningState);
         byte card = simulatedDeck.deal();
         simulatedPlayerHand.addCard(card);
@@ -279,29 +321,31 @@ public class SemiOptimal extends PlayMethod {
     //körs när det ursprungliga bettet ska bestämmas
     @Override
     public int betMethod(Round round) {
-        //return settings.getMinBet();
+        if (false) {
+            return settings.getMinBet();
+        }
 
-
-        DeckSaveState dss = new DeckSaveState(predictedGameDeck.getCards());
+        DeckSaveState dss = predictedGameDeck.saveState();
         String currentDeckString = dss.getString();
 
-        if (betLookupTable.containsKey(currentDeckString)) {
-            if (betLookupTable.get(currentDeckString)) return settings.getMaxBet();
+        if (game.getBetLookupTable().containsKey(currentDeckString)) {
+            if (game.getBetLookupTable().get(currentDeckString)) return settings.getMaxBet();
             return settings.getMinBet();
         }
 
         int simulatedWinnings = 0;
         for (int i = 0; i < betSimulationAmount; i++) {
-            betDeck.setCards(predictedGameDeck.getCards());
-            betDeck.shuffle();
+            betDeck.setCards(predictedGameDeck.turnIntoList());
+            Collections.shuffle(betDeck.getCards());
+            simulatedRoundPlayMethod.setPredictedGameDeck(predictedGameDeck.saveState());
             simulatedWinnings += simulatedRound.playRound();
             simulatedRound.reset();
         }
         if (simulatedWinnings > 0) {
-            betLookupTable.put(currentDeckString,true);
+            game.getBetLookupTable().put(currentDeckString, true);
             return settings.getMaxBet();
         }
-        betLookupTable.put(currentDeckString,false);
+        game.getBetLookupTable().put(currentDeckString, false);
         return settings.getMinBet();
 
 
@@ -310,11 +354,7 @@ public class SemiOptimal extends PlayMethod {
     //körs ifall möjlighet för ett insurance bet finns (dvs. ifall dealern har ett ess)
     @Override
     public int insuranceBetMethod(Round round) {
-        int cardsWithValue10 = 0;
-        for (Card card : predictedGameDeck.getCards()) {
-            if (card.getValue() == 10) cardsWithValue10++;
-        }
-        if ((double) (cardsWithValue10) / predictedGameDeck.getSizeOfDeck() > 0.5) return settings.getMaxBet();
+        if (predictedGameDeck.fractionThatIs10() > 0.3333) return settings.getMaxBet();
         return 0;
     }
 }

@@ -15,7 +15,7 @@ public class TestingMethod {
         Settings settings = new Settings();
         Round round = new Round(new Deck(settings),new PlayMethod(),new Game());
 
-        PlayMethod semiOptimal = new SemiOptimal(settings);
+        PlayMethod semiOptimal = new SemiOptimal(settings, new Game());
 
         for (int i = 0; i < testAmount; i++) {
 
