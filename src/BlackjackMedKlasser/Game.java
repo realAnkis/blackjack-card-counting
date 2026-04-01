@@ -64,7 +64,7 @@ public class Game {
         }
     }
 
-    public void addBetTotal(int addedAmount) {
+    public synchronized void addBetTotal(int addedAmount) {
         betTotal += addedAmount;
     }
 
